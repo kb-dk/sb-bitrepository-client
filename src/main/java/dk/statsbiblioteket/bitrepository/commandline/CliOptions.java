@@ -17,10 +17,21 @@ public class CliOptions {
     private final static Option typeOption;
     private final static Option helpOption;
     
+    final static String ACTION_OPT = "a";
+    final static String COLLECTION_OPT = "c";
+    final static String SOURCE_OPT = "s";
+    final static String SUMFILE_OPT = "f";
+    final static String PREFIX_OPT = "x";
+    final static String PILLAR_OPT = "p";
+    final static String DESTINATION_OPT = "d";
+    final static String TYPE_OPT = "t";
+    final static String HELP_OPT = "h";
+    
+    
     static {
-        actionOption = new Option("a", "action", true, "Action to perform");
+        actionOption = new Option(ACTION_OPT, "action", true, "Action to perform");
         actionOption.setRequired(true);
-        collectionOption = new Option("c", "collection", true, "Collection to work on");
+        collectionOption = new Option(COLLECTION_OPT, "collection", true, "Collection to work on");
         sourceOption = new Option("s", "source", true, "Source directory to get files from");
         sumfileOption = new Option("f", "sumfile", true, "Sumfile containing list of files to work on");
         prefixOption = new Option("x", "prefix", true, "Prefix for operations");

@@ -1,13 +1,18 @@
 package dk.statsbiblioteket.bitrepository.commandline;
 
-import java.util.Arrays;
-
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.DefaultParser;
 import org.apache.commons.cli.MissingOptionException;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
+
+import dk.statsbiblioteket.bitrepository.commandline.action.ClientAction;
+import dk.statsbiblioteket.bitrepository.commandline.action.DeleteAction;
+import dk.statsbiblioteket.bitrepository.commandline.action.DownloadAction;
+import dk.statsbiblioteket.bitrepository.commandline.action.ListAction;
+import dk.statsbiblioteket.bitrepository.commandline.action.MakeChecksumsAction;
+import dk.statsbiblioteket.bitrepository.commandline.action.UploadAction;
 
 public class Commandline {
 
@@ -42,22 +47,38 @@ public class Commandline {
     }
     
     public static void main(String[] args) throws ParseException {
-        System.out.println("Hello world");
-        System.out.println("myargs:" + Arrays.asList(args));
-        Action foo = Action.MAKECHECKUSMS;
-        Action bar = Action.fromString("upload");
-        System.out.println("foo: " + foo.toString() + ", bar: " + bar.toString());
         Options options = CliOptions.getAllOptions();
         CommandLineParser parser = new DefaultParser();
         try {
             
             CommandLine cmd = parser.parse(options, args);
-            Action action = Action.fromString(cmd.getOptionValue("a"));
-            if(action == null) {
-                System.out.println("Unknown action");
-                System.exit(1);
+            Action action = Action.fromString(cmd.getOptionValue(CliOptions.ACTION_OPT));
+            if(action != null) {
+                ClientAction ca = null;
+                cmd = parser.parse(CliOptions.getActionOptions(action), args);
+                switch(action) {
+                case MAKECHECKUSMS:
+                    ca = new MakeChecksumsAction(cmd);
+                    break;
+                case UPLOAD:
+                    ca = new UploadAction(cmd);
+                    break;
+                case LIST: 
+                    ca = new ListAction(cmd);
+                    break;
+                case DOWNLOAD:
+                    ca = new DownloadAction(cmd);
+                    break;
+                case DELETE:
+                    ca = new DeleteAction(cmd);
+                    break;
+                default:
+                    throw new RuntimeException("Unknown action: '" + action + "'");
+                }
+                
+                ca.performAction();
             }
-            if(cmd.hasOption("h")) {
+            if(cmd.hasOption(CliOptions.HELP_OPT)) {
                 CliOptions.printHelp(CliOptions.getActionOptions(action));
             }
         } catch (MissingOptionException e) {
