@@ -17,28 +17,28 @@ public class CliOptions {
     private final static Option typeOption;
     private final static Option helpOption;
     
-    final static String ACTION_OPT = "a";
-    final static String COLLECTION_OPT = "c";
-    final static String SOURCE_OPT = "s";
-    final static String SUMFILE_OPT = "f";
-    final static String PREFIX_OPT = "x";
-    final static String PILLAR_OPT = "p";
-    final static String DESTINATION_OPT = "d";
-    final static String TYPE_OPT = "t";
-    final static String HELP_OPT = "h";
+    public final static String ACTION_OPT = "a";
+    public final static String COLLECTION_OPT = "c";
+    public final static String SOURCE_OPT = "s";
+    public final static String SUMFILE_OPT = "f";
+    public final static String PREFIX_OPT = "x";
+    public final static String PILLAR_OPT = "p";
+    public final static String DESTINATION_OPT = "d";
+    public final static String TYPE_OPT = "t";
+    public final static String HELP_OPT = "h";
     
     
     static {
         actionOption = new Option(ACTION_OPT, "action", true, "Action to perform");
         actionOption.setRequired(true);
         collectionOption = new Option(COLLECTION_OPT, "collection", true, "Collection to work on");
-        sourceOption = new Option("s", "source", true, "Source directory to get files from");
-        sumfileOption = new Option("f", "sumfile", true, "Sumfile containing list of files to work on");
-        prefixOption = new Option("x", "prefix", true, "Prefix for operations");
-        pillarOption = new Option("p", "pillar", true, "Pillar to perform delete on");
-        destinationOption = new Option("d", "destination", true, "Destination directory to place files in");
-        typeOption = new Option("t", "type", true, "Type of listing");
-        helpOption = new Option("h", "help", false, "Prints help and usage information");
+        sourceOption = new Option(SOURCE_OPT, "source", true, "Source directory to get files from");
+        sumfileOption = new Option(SUMFILE_OPT, "sumfile", true, "Sumfile containing list of files to work on");
+        prefixOption = new Option(PREFIX_OPT, "prefix", true, "Prefix for operations");
+        pillarOption = new Option(PILLAR_OPT, "pillar", true, "Pillar to perform delete on");
+        destinationOption = new Option(DESTINATION_OPT, "destination", true, "Destination directory to place files in");
+        typeOption = new Option(TYPE_OPT, "type", true, "Type of listing");
+        helpOption = new Option(HELP_OPT, "help", false, "Prints help and usage information");
     }
     
     

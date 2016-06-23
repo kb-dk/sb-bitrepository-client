@@ -54,8 +54,18 @@ public class Commandline {
             CommandLine cmd = parser.parse(options, args);
             Action action = Action.fromString(cmd.getOptionValue(CliOptions.ACTION_OPT));
             if(action != null) {
+                if(cmd.hasOption(CliOptions.HELP_OPT)) {
+                    CliOptions.printHelp(CliOptions.getActionOptions(action));
+                    System.exit(0);
+                }
+
                 ClientAction ca = null;
-                cmd = parser.parse(CliOptions.getActionOptions(action), args);
+                try {
+                    cmd = parser.parse(CliOptions.getActionOptions(action), args);    
+                } catch (MissingOptionException e) {
+                    CliOptions.printHelp(CliOptions.getActionOptions(action));
+                    System.exit(2);
+                } 
                 switch(action) {
                 case MAKECHECKUSMS:
                     ca = new MakeChecksumsAction(cmd);
@@ -78,11 +88,12 @@ public class Commandline {
                 
                 ca.performAction();
             }
-            if(cmd.hasOption(CliOptions.HELP_OPT)) {
-                CliOptions.printHelp(CliOptions.getActionOptions(action));
-            }
         } catch (MissingOptionException e) {
             CliOptions.printHelp(CliOptions.getAllOptions());
+            System.exit(2);
+        } catch (RuntimeException e) {
+            System.err.println(e.getMessage());
+            System.exit(1);
         }
     }
 
