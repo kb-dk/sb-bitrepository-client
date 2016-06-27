@@ -12,6 +12,8 @@ public class CliOptions {
     private final static Option sourceOption;
     private final static Option sumfileOption;
     private final static Option prefixOption;
+    private final static Option localOption;
+    private final static Option remoteOption;
     private final static Option pillarOption;
     private final static Option destinationOption;
     private final static Option typeOption;
@@ -26,6 +28,8 @@ public class CliOptions {
     public final static String DESTINATION_OPT = "d";
     public final static String TYPE_OPT = "t";
     public final static String HELP_OPT = "h";
+    public final static String LOCAL_PREFIX_OPT = "l";
+    public final static String REMOTE_PREFIX_OPT = "r";
     
     
     static {
@@ -35,6 +39,8 @@ public class CliOptions {
         sourceOption = new Option(SOURCE_OPT, "source", true, "Source directory to get files from");
         sumfileOption = new Option(SUMFILE_OPT, "sumfile", true, "Sumfile containing list of files to work on");
         prefixOption = new Option(PREFIX_OPT, "prefix", true, "Prefix for operations");
+        localOption = new Option(LOCAL_PREFIX_OPT, "prefix", true, "Local prefix for operations");
+        remoteOption = new Option(REMOTE_PREFIX_OPT, "prefix", true, "Remote prefix for operations");
         pillarOption = new Option(PILLAR_OPT, "pillar", true, "Pillar to perform delete on");
         destinationOption = new Option(DESTINATION_OPT, "destination", true, "Destination directory to place files in");
         typeOption = new Option(TYPE_OPT, "type", true, "Type of listing");
@@ -42,12 +48,12 @@ public class CliOptions {
     }
     
     
-    public static void printHelp(Options options) {
+    public static void printHelp(String scriptName, Options options) {
         String header = "Batch client to work with bitrepository.org bitrepository\n\n";
         String footer = "\nPlease report issues at https://github.com/statsbiblioteket/sb-bitrepository-client";
         
         HelpFormatter formatter = new HelpFormatter();
-        formatter.printHelp("sbclient", header, options, footer, true);
+        formatter.printHelp(scriptName, header, options, footer, true);
     }
     
     public static Options getAllOptions() {
@@ -57,6 +63,8 @@ public class CliOptions {
         options.addOption((Option) sourceOption.clone());
         options.addOption((Option) sumfileOption.clone());
         options.addOption((Option) prefixOption.clone());
+        options.addOption((Option) localOption.clone());
+        options.addOption((Option) remoteOption.clone());
         options.addOption((Option) pillarOption.clone());
         options.addOption((Option) destinationOption.clone());
         options.addOption((Option) typeOption.clone());
@@ -76,9 +84,9 @@ public class CliOptions {
             break;
         case UPLOAD: 
             options.addOption(makeOptionRequired(collectionOption));
-            options.addOption(makeOptionRequired(sourceOption));
             options.addOption(makeOptionRequired(sumfileOption));
-            options.addOption((Option) prefixOption.clone());
+            options.addOption((Option) localOption.clone());
+            options.addOption((Option) remoteOption.clone());
             break;
         case LIST: 
             options.addOption(makeOptionRequired(collectionOption));

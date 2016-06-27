@@ -1,5 +1,8 @@
 package dk.statsbiblioteket.bitrepository.commandline;
 
+import java.nio.file.Path;
+import java.nio.file.Paths;
+
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.DefaultParser;
@@ -16,6 +19,10 @@ import dk.statsbiblioteket.bitrepository.commandline.action.UploadAction;
 
 public class Commandline {
 
+    private final static String SCRIPT_NAME_PROPERTY = "sbclient.script.name"; 
+    private final static String CONFIG_DIR_PROPERTY = "sbclient.config.dir";
+    private final static String CLIENT_CERTIFICATE_FILE = "client-certificate.pem";
+    
     public static enum Action {
         MAKECHECKUSMS("makechecksums"), 
         UPLOAD("upload"),
@@ -49,13 +56,16 @@ public class Commandline {
     public static void main(String[] args) throws ParseException {
         Options options = CliOptions.getAllOptions();
         CommandLineParser parser = new DefaultParser();
+        String scriptName = System.getProperty(SCRIPT_NAME_PROPERTY);
+        Path configDir = Paths.get(System.getProperty(CONFIG_DIR_PROPERTY));
+        Path clientCertificate = configDir.resolve(CLIENT_CERTIFICATE_FILE);
         try {
             
             CommandLine cmd = parser.parse(options, args);
             Action action = Action.fromString(cmd.getOptionValue(CliOptions.ACTION_OPT));
             if(action != null) {
                 if(cmd.hasOption(CliOptions.HELP_OPT)) {
-                    CliOptions.printHelp(CliOptions.getActionOptions(action));
+                    CliOptions.printHelp(scriptName, CliOptions.getActionOptions(action));
                     System.exit(0);
                 }
 
@@ -63,7 +73,7 @@ public class Commandline {
                 try {
                     cmd = parser.parse(CliOptions.getActionOptions(action), args);    
                 } catch (MissingOptionException e) {
-                    CliOptions.printHelp(CliOptions.getActionOptions(action));
+                    CliOptions.printHelp(scriptName, CliOptions.getActionOptions(action));
                     System.exit(2);
                 } 
                 switch(action) {
@@ -89,7 +99,7 @@ public class Commandline {
                 ca.performAction();
             }
         } catch (MissingOptionException e) {
-            CliOptions.printHelp(CliOptions.getAllOptions());
+            CliOptions.printHelp(scriptName, CliOptions.getAllOptions());
             System.exit(2);
         } catch (RuntimeException e) {
             System.err.println(e.getMessage());
