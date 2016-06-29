@@ -6,6 +6,7 @@ import java.nio.file.Paths;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.DefaultParser;
+import org.apache.commons.cli.MissingArgumentException;
 import org.apache.commons.cli.MissingOptionException;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
@@ -16,6 +17,7 @@ import dk.statsbiblioteket.bitrepository.commandline.action.DownloadAction;
 import dk.statsbiblioteket.bitrepository.commandline.action.ListAction;
 import dk.statsbiblioteket.bitrepository.commandline.action.MakeChecksumsAction;
 import dk.statsbiblioteket.bitrepository.commandline.action.UploadAction;
+import dk.statsbiblioteket.bitrepository.commandline.util.BitmagUtils;
 
 public class Commandline {
 
@@ -59,6 +61,7 @@ public class Commandline {
         String scriptName = System.getProperty(SCRIPT_NAME_PROPERTY);
         Path configDir = Paths.get(System.getProperty(CONFIG_DIR_PROPERTY));
         Path clientCertificate = configDir.resolve(CLIENT_CERTIFICATE_FILE);
+        BitmagUtils.initialize(configDir, clientCertificate);
         try {
             
             CommandLine cmd = parser.parse(options, args);
@@ -81,7 +84,7 @@ public class Commandline {
                     ca = new MakeChecksumsAction(cmd);
                     break;
                 case UPLOAD:
-                    ca = new UploadAction(cmd);
+                    ca = new UploadAction(cmd, BitmagUtils.getPutFileClient(), BitmagUtils.getFileExchange());
                     break;
                 case LIST: 
                     ca = new ListAction(cmd);
@@ -100,6 +103,9 @@ public class Commandline {
             }
         } catch (MissingOptionException e) {
             CliOptions.printHelp(scriptName, CliOptions.getAllOptions());
+            System.exit(2);
+        } catch (MissingArgumentException e) {
+            CliOptions.printActionHelp(scriptName);
             System.exit(2);
         } catch (RuntimeException e) {
             System.err.println(e.getMessage());
