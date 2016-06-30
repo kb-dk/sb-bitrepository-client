@@ -4,4 +4,4 @@
 .settings/*
 src/main/config/Re*.xml
 src/main/config/*.pem
-
+test-output/
