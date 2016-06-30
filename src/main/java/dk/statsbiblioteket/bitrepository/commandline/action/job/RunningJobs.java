@@ -1,4 +1,4 @@
-package dk.statsbiblioteket.bitrepository.commandline.action.upload;
+package dk.statsbiblioteket.bitrepository.commandline.action.job;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -8,8 +8,8 @@ import java.util.concurrent.Semaphore;
  * Class for holding running PutJobs
  * Makes it possible to limit the number of asynchronous jobs and share job objects between different threads
  */
-public class RunningJobs {
-    private Map<String, PutJob> jobs = new ConcurrentHashMap<>(); 
+public class RunningJobs<T extends Job > {
+    private Map<String, T> jobs = new ConcurrentHashMap<>(); 
     private Semaphore jobLimiter;
 
     public RunningJobs(int limit) {
@@ -20,7 +20,7 @@ public class RunningJobs {
      * Will block until the there is room for a new job.
      * @param job The job in the queue.
      */
-    public void addJob(PutJob job) {
+    public void addJob(T job) {
         jobLimiter.acquireUninterruptibly();
         jobs.put(job.getRemoteFileID(), job);
 
@@ -31,7 +31,7 @@ public class RunningJobs {
      * @param fileID The fileID to get the job for
      * @return PutJob the PutJob with relevant info for the job. May return null if no job matching fileID is found
      */
-    public PutJob getJob(String fileID) {
+    public T getJob(String fileID) {
         return jobs.get(fileID);
     }
 
@@ -39,8 +39,8 @@ public class RunningJobs {
      * Removes a job from the queue
      * @param job the PutJob to remove 
      */
-    public void removeJob(PutJob job) {
-        PutJob removedJob = jobs.remove(job.getRemoteFileID());
+    public void removeJob(T job) {
+        T removedJob = jobs.remove(job.getRemoteFileID());
         if(removedJob != null) {
             jobLimiter.release();
         }

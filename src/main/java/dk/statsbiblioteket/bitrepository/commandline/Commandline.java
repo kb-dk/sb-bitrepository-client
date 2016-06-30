@@ -3,6 +3,8 @@ package dk.statsbiblioteket.bitrepository.commandline;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
+import javax.jms.JMSException;
+
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.DefaultParser;
@@ -10,6 +12,8 @@ import org.apache.commons.cli.MissingArgumentException;
 import org.apache.commons.cli.MissingOptionException;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import dk.statsbiblioteket.bitrepository.commandline.action.ClientAction;
 import dk.statsbiblioteket.bitrepository.commandline.action.DeleteAction;
@@ -21,6 +25,7 @@ import dk.statsbiblioteket.bitrepository.commandline.util.BitmagUtils;
 
 public class Commandline {
 
+    final static Logger log = LoggerFactory.getLogger(Commandline.class);
     private final static String SCRIPT_NAME_PROPERTY = "sbclient.script.name"; 
     private final static String CONFIG_DIR_PROPERTY = "sbclient.config.dir";
     private final static String CLIENT_CERTIFICATE_FILE = "client-certificate.pem";
@@ -101,6 +106,7 @@ public class Commandline {
                 
                 ca.performAction();
             }
+            BitmagUtils.shutdown();
         } catch (MissingOptionException e) {
             CliOptions.printHelp(scriptName, CliOptions.getAllOptions());
             System.exit(2);
@@ -108,8 +114,11 @@ public class Commandline {
             CliOptions.printActionHelp(scriptName);
             System.exit(2);
         } catch (RuntimeException e) {
+            Commandline.log.error("Caught RuntimeException", e);
             System.err.println(e.getMessage());
             System.exit(1);
+        } catch (JMSException e) {
+            Commandline.log.error("Caught an error shutting down bitrepository", e);
         }
     }
 

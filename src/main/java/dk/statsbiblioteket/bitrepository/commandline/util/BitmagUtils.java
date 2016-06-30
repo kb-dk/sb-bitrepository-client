@@ -4,6 +4,8 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.file.Path;
 
+import javax.jms.JMSException;
+
 import org.bitrepository.access.AccessComponentFactory;
 import org.bitrepository.access.getchecksums.GetChecksumsClient;
 import org.bitrepository.access.getfile.GetFileClient;
@@ -24,6 +26,8 @@ import org.bitrepository.modify.deletefile.DeleteFileClient;
 import org.bitrepository.modify.putfile.PutFileClient;
 import org.bitrepository.protocol.FileExchange;
 import org.bitrepository.protocol.ProtocolComponentFactory;
+import org.bitrepository.protocol.messagebus.MessageBus;
+import org.bitrepository.protocol.messagebus.MessageBusManager;
 import org.bitrepository.protocol.security.BasicMessageAuthenticator;
 import org.bitrepository.protocol.security.BasicMessageSigner;
 import org.bitrepository.protocol.security.BasicOperationAuthorizor;
@@ -77,17 +81,32 @@ public class BitmagUtils {
                 authenticator, signer, authorizer, permissionStore,
                 settings.getComponentID());
     }
-    
+
+    /**
+     * Method to get the base part of the URL to the file exchange server. 
+     * @return {@link URL} URL with the base part of the file exchange server.  
+     */
     public static URL getFileExchangeBaseURL() throws MalformedURLException {
         FileExchangeSettings feSettings = settings.getReferenceSettings().getFileExchangeSettings();
         return new URL(feSettings.getProtocolType().value(), feSettings.getServerName(), 
                 feSettings.getPort().intValue(), feSettings.getPath() + "/");
     }
     
+    /**
+     * Method to retrieve the instance of the FileExchange. 
+     * To be used for transferring files to and from the FileExchange server
+     * @return {@link FileExchange} The FileExchange instance
+     */
     public static FileExchange getFileExchange() {
         return ProtocolComponentFactory.getInstance().getFileExchange(settings);
     }
     
+    /**
+     * Method to build the datastructure to transport checksums in
+     * @param checksum The string form of the checksum 
+     * @return {@link ChecksumDataForFileTYPE} The bitrepository.org data structure 
+     * to transport the checksum 
+     */
     public static ChecksumDataForFileTYPE getChecksum(String checksum) {
         ChecksumDataForFileTYPE checksumData = new ChecksumDataForFileTYPE();
         checksumData.setChecksumValue(Base16Utils.encodeBase16(checksum));
@@ -100,6 +119,7 @@ public class BitmagUtils {
     
     /**
      * Retreive a PutFileClient
+     * @return {@link PutFileClient} The PutFileClient
      */
     public static PutFileClient getPutFileClient() {
         return ModifyComponentFactory.getInstance().retrievePutClient(settings, 
@@ -108,6 +128,7 @@ public class BitmagUtils {
 
     /**
      * Retreive a DeleteFileClient
+     * @return {@link DeleteFileClient} The DeleteFileClient
      */
     public static DeleteFileClient getDeleteFileClient() {
         return ModifyComponentFactory.getInstance().retrieveDeleteFileClient(settings, 
@@ -116,6 +137,7 @@ public class BitmagUtils {
     
     /**
      * Retreive a GetChecksumsClient
+     * @return {@link GetChecksumsClient} The GetChecksumsClient
      */
     public static GetChecksumsClient getChecksumsClient() {
         return AccessComponentFactory.getInstance().createGetChecksumsClient(settings, 
@@ -124,6 +146,7 @@ public class BitmagUtils {
     
     /**
      * Retreive a GetFileIDsClient
+     * @return {@link GetFileIDsClient} The GetFileIDsClient
      */
     public static GetFileIDsClient getFileIDsClient() {
         return AccessComponentFactory.getInstance().createGetFileIDsClient(settings, securityManager,
@@ -132,9 +155,20 @@ public class BitmagUtils {
     
     /**
      * Retreive a GetFileClient
+     * @return {@link GetFileClient} The GetFileClient
      */
     public static GetFileClient getFileClient() {
         return AccessComponentFactory.getInstance().createGetFileClient(settings, securityManager, 
                 settings.getComponentID());
+    }
+    
+    /**
+     * Method to shutdown the bitrepository connections if such exists 
+     */
+    public static void shutdown() throws JMSException {
+        MessageBus messageBus = MessageBusManager.getMessageBus();
+        if (messageBus != null) {
+            messageBus.close();
+        }
     }
 }

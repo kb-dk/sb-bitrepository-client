@@ -32,7 +32,7 @@ public class FileIDTranslationUtil {
         }
         
         //return remoteFileID; //Temporary to ensure that the file can be stored in a SB Pillar
-        return remoteFileID.replaceAll("/", "\\");
+        return remoteFileID.replace("/", "\\");
     }
     
     /**
@@ -44,7 +44,7 @@ public class FileIDTranslationUtil {
      */    
     public static String remoteToLocal(String remoteFileID, String localPrefix, String remotePrefix) throws SkipFileException {
         String stripped;
-        remoteFileID = remoteFileID.replaceAll("\\", "/"); // Temporary measure to ensure that files can handled on SB pillar
+        remoteFileID = remoteFileID.replace("\\", "/"); // Temporary measure to ensure that files can handled on SB pillar
         if(remotePrefix != null) {
             if(remoteFileID.startsWith(remotePrefix)) {
                stripped = remoteFileID.replaceFirst(remotePrefix, "");

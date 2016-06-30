@@ -13,13 +13,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import dk.statsbiblioteket.bitrepository.commandline.Commandline.Action;
+import dk.statsbiblioteket.bitrepository.commandline.action.job.RunningJobs;
 import dk.statsbiblioteket.bitrepository.commandline.util.StatusReporter;
 
 public class PutFilesEventHandler implements EventHandler {
     
     private final Logger log = LoggerFactory.getLogger(getClass());
     private final FileExchange fileExchange;
-    private final RunningJobs runningJobs;
+    private final RunningJobs<PutJob> runningJobs;
     private final BlockingQueue<PutJob> failedJobsQueue;
     private final StatusReporter reporter;
     

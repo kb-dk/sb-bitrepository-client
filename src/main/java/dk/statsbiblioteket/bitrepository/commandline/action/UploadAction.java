@@ -23,9 +23,9 @@ import org.slf4j.LoggerFactory;
 
 import dk.statsbiblioteket.bitrepository.commandline.CliOptions;
 import dk.statsbiblioteket.bitrepository.commandline.Commandline.Action;
+import dk.statsbiblioteket.bitrepository.commandline.action.job.RunningJobs;
 import dk.statsbiblioteket.bitrepository.commandline.action.upload.PutFilesEventHandler;
 import dk.statsbiblioteket.bitrepository.commandline.action.upload.PutJob;
-import dk.statsbiblioteket.bitrepository.commandline.action.upload.RunningJobs;
 import dk.statsbiblioteket.bitrepository.commandline.util.BitmagUtils;
 import dk.statsbiblioteket.bitrepository.commandline.util.FileIDTranslationUtil;
 import dk.statsbiblioteket.bitrepository.commandline.util.SkipFileException;

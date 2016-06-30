@@ -5,7 +5,9 @@ import java.nio.file.Path;
 
 import org.bitrepository.bitrepositoryelements.ChecksumDataForFileTYPE;
 
-public class PutJob {
+import dk.statsbiblioteket.bitrepository.commandline.action.job.Job;
+
+public class PutJob implements Job {
 
     private int putAttempts = 0;
     private Path localFile;

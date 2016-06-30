@@ -50,8 +50,8 @@ public class CliOptions {
         pillarOption = new Option(PILLAR_OPT, "pillar", true, "Pillar to perform delete on");
         destinationOption = new Option(DESTINATION_OPT, "destination", true, "Destination directory to place files in");
         typeOption = new Option(TYPE_OPT, "type", true, "Type of listing");
-        retryOption = new Option(TYPE_OPT, "retrys", true, "Number of retries before failing a file (Default: no retries)");
-        parallelOption = new Option(TYPE_OPT, "parallel", true, "Number of parallel operations (Default: 1)");
+        retryOption = new Option(RETRY_OPT, "retrys", true, "Number of retries before failing a file (Default: no retries)");
+        parallelOption = new Option(ASYNC_OPT, "parallel", true, "Number of parallel operations (Default: 1)");
         helpOption = new Option(HELP_OPT, "help", false, "Prints help and usage information");
     }
     
