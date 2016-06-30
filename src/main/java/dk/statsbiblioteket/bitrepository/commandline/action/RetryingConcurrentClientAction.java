@@ -6,11 +6,15 @@ import java.net.MalformedURLException;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
+import org.apache.commons.cli.CommandLine;
+
+import dk.statsbiblioteket.bitrepository.commandline.CliOptions;
 import dk.statsbiblioteket.bitrepository.commandline.Commandline.Action;
 import dk.statsbiblioteket.bitrepository.commandline.action.job.Job;
 import dk.statsbiblioteket.bitrepository.commandline.action.job.RunningJobs;
@@ -23,12 +27,21 @@ public abstract class RetryingConcurrentClientAction<T extends Job> implements C
     protected int maxRetries;
     protected String localPrefix = null;
     protected String remotePrefix = null;
+    protected String collectionID;
     protected Path sumFile;
     protected Action clientAction;
     protected RunningJobs<T> runningJobs;
     protected final BlockingQueue<T> failedJobsQueue = new LinkedBlockingQueue<>();
     protected StatusReporter reporter = new StatusReporter(System.err);
     
+    public RetryingConcurrentClientAction(CommandLine cmd) {
+        collectionID = cmd.getOptionValue(CliOptions.COLLECTION_OPT);
+        sumFile = Paths.get(cmd.getOptionValue(CliOptions.SUMFILE_OPT));
+        localPrefix = cmd.hasOption(CliOptions.LOCAL_PREFIX_OPT) ? cmd.getOptionValue(CliOptions.LOCAL_PREFIX_OPT) : null;
+        remotePrefix = cmd.hasOption(CliOptions.REMOTE_PREFIX_OPT) ? cmd.getOptionValue(CliOptions.REMOTE_PREFIX_OPT) : null;
+        maxRetries = cmd.hasOption(CliOptions.RETRY_OPT) ? Integer.parseInt(cmd.getOptionValue(CliOptions.RETRY_OPT)) : 1;
+        asyncJobs = cmd.hasOption(CliOptions.ASYNC_OPT) ? Integer.parseInt(cmd.getOptionValue(CliOptions.ASYNC_OPT)) : 1;
+    }
     
     @Override
     public void performAction() {

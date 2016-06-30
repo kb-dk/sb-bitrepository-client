@@ -116,6 +116,8 @@ public class CliOptions {
             options.addOption(makeOptionRequired(sumfileOption));
             options.addOption((Option) localOption.clone());
             options.addOption((Option) remoteOption.clone());
+            options.addOption((Option) retryOption.clone());
+            options.addOption((Option) parallelOption.clone());
             break; 
         case DELETE:
             options.addOption(makeOptionRequired(collectionOption));
@@ -123,6 +125,8 @@ public class CliOptions {
             options.addOption(makeOptionRequired(sumfileOption));
             options.addOption((Option) localOption.clone());
             options.addOption((Option) remoteOption.clone());
+            options.addOption((Option) retryOption.clone());
+            options.addOption((Option) parallelOption.clone());
             break;
         }
         

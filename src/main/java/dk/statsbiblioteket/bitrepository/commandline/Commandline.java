@@ -98,7 +98,7 @@ public class Commandline {
                     ca = new DownloadAction(cmd);
                     break;
                 case DELETE:
-                    ca = new DeleteAction(cmd);
+                    ca = new DeleteAction(cmd, BitmagUtils.getDeleteFileClient());
                     break;
                 default:
                     throw new RuntimeException("Unknown action: '" + action + "'");
