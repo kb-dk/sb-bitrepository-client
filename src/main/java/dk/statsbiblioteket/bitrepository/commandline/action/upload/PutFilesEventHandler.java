@@ -24,7 +24,7 @@ public class PutFilesEventHandler implements EventHandler {
     private final BlockingQueue<PutJob> failedJobsQueue;
     private final StatusReporter reporter;
     
-    public PutFilesEventHandler(FileExchange fileExchange, RunningJobs runningJobs, BlockingQueue<PutJob> failedJobsQueue,
+    public PutFilesEventHandler(FileExchange fileExchange, RunningJobs<PutJob> runningJobs, BlockingQueue<PutJob> failedJobsQueue,
             StatusReporter reporter) {
         this.fileExchange = fileExchange;
         this.runningJobs = runningJobs;
