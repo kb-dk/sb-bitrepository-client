@@ -10,6 +10,9 @@
     <appender-ref ref="FILE" />
   </root>
 
+  <logger name="dk.statsbiblioteket" level="DEBUG" additivity="false">
+    <appender-ref ref="FILE" />
+  </logger>
   <logger name="org.bitrepository" level="DEBUG" additivity="false">
     <appender-ref ref="FILE" />
   </logger>
