@@ -92,10 +92,10 @@ public class Commandline {
                     ca = new UploadAction(cmd, BitmagUtils.getPutFileClient(), BitmagUtils.getFileExchange());
                     break;
                 case LIST: 
-                    ca = new ListAction(cmd);
+                    ca = new ListAction(cmd, BitmagUtils.getChecksumsClient());
                     break;
                 case DOWNLOAD:
-                    ca = new DownloadAction(cmd);
+                    ca = new DownloadAction(cmd, BitmagUtils.getFileClient(), BitmagUtils.getFileExchange());
                     break;
                 case DELETE:
                     ca = new DeleteAction(cmd, BitmagUtils.getDeleteFileClient());
