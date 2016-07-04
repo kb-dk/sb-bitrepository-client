@@ -4,11 +4,9 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.concurrent.BlockingQueue;
 
 import org.bitrepository.client.eventhandler.EventHandler;
-import org.bitrepository.client.eventhandler.IdentificationCompleteEvent;
 import org.bitrepository.client.eventhandler.OperationEvent;
 import org.bitrepository.protocol.FileExchange;
 import org.slf4j.Logger;

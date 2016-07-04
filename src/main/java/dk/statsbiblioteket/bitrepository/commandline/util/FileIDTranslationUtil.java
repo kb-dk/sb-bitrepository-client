@@ -18,7 +18,7 @@ public class FileIDTranslationUtil {
             if(localFileID.startsWith(localPrefix)) {
                 stripped = localFileID.replaceFirst(localPrefix, "");
             } else {
-                throw new SkipFileException("Local prefix provided, bur not found in local file");
+                throw new SkipFileException("Local prefix provided, but not found in local file");
             }
         } else {
             stripped = localFileID;
@@ -49,7 +49,7 @@ public class FileIDTranslationUtil {
             if(remoteFileID.startsWith(remotePrefix)) {
                stripped = remoteFileID.replaceFirst(remotePrefix, "");
             } else {
-                throw new SkipFileException("Remote prefix provided, bur not found in remote file");
+                throw new SkipFileException("Remote prefix provided, but not found in remote file");
             }
         } else {
             stripped = remoteFileID;

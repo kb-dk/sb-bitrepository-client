@@ -108,7 +108,6 @@ public class CliOptions {
         case LIST: 
             options.addOption(makeOptionRequired(collectionOption));
             options.addOption(makeOptionRequired(sumfileOption));
-            options.addOption(makeOptionRequired(typeOption));
             options.addOption(makeOptionRequired(pillarOption));
             options.addOption((Option) localOption.clone());
             options.addOption((Option) remoteOption.clone());
