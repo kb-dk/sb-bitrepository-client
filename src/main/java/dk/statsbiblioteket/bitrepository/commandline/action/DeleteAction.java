@@ -17,6 +17,7 @@ import dk.statsbiblioteket.bitrepository.commandline.util.BitmagUtils;
 import dk.statsbiblioteket.bitrepository.commandline.util.FileIDTranslationUtil;
 import dk.statsbiblioteket.bitrepository.commandline.util.InvalidParameterException;
 import dk.statsbiblioteket.bitrepository.commandline.util.SkipFileException;
+import dk.statsbiblioteket.bitrepository.commandline.util.StatusReporter;
 
 public class DeleteAction extends RetryingConcurrentClientAction<DeleteJob> implements ClientAction {
 
@@ -25,11 +26,10 @@ public class DeleteAction extends RetryingConcurrentClientAction<DeleteJob> impl
     private DeleteFileClient deleteFileClient;
     
     public DeleteAction(CommandLine cmd, DeleteFileClient deleteFileClient) throws InvalidParameterException {
-        super(cmd);
+        super(cmd, new StatusReporter(System.err, Action.DELETE));
         this.deleteFileClient = deleteFileClient;
         pillarID = cmd.getOptionValue(CliOptions.PILLAR_OPT);
         eventHandler = new DeleteFilesEventHandler(runningJobs, super.failedJobsQueue, super.reporter);
-        clientAction = Action.DELETE;
         ArgumentValidationUtils.validatePillar(pillarID, collectionID);
     }
 

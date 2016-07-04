@@ -21,6 +21,7 @@ import dk.statsbiblioteket.bitrepository.commandline.util.BitmagUtils;
 import dk.statsbiblioteket.bitrepository.commandline.util.FileIDTranslationUtil;
 import dk.statsbiblioteket.bitrepository.commandline.util.InvalidParameterException;
 import dk.statsbiblioteket.bitrepository.commandline.util.SkipFileException;
+import dk.statsbiblioteket.bitrepository.commandline.util.StatusReporter;
 
 public class UploadAction extends RetryingConcurrentClientAction<PutJob> implements ClientAction {
 
@@ -30,10 +31,9 @@ public class UploadAction extends RetryingConcurrentClientAction<PutJob> impleme
     private EventHandler eventHandler;
     
     public UploadAction(CommandLine cmd, PutFileClient putFileClient, FileExchange fileExchange) throws InvalidParameterException {
-        super(cmd);
+        super(cmd, new StatusReporter(System.err, Action.UPLOAD));
         this.putFileClient = putFileClient;
         eventHandler = new PutFilesEventHandler(fileExchange, runningJobs, super.failedJobsQueue, super.reporter);
-        clientAction = Action.UPLOAD;
     }
     
     protected PutJob createJob(String originalFilename, String checksum) throws SkipFileException, MalformedURLException {

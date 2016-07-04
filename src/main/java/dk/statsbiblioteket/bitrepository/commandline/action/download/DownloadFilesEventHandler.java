@@ -12,7 +12,6 @@ import org.bitrepository.protocol.FileExchange;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import dk.statsbiblioteket.bitrepository.commandline.Commandline.Action;
 import dk.statsbiblioteket.bitrepository.commandline.action.job.RunningJobs;
 import dk.statsbiblioteket.bitrepository.commandline.util.StatusReporter;
 
@@ -43,7 +42,7 @@ public class DownloadFilesEventHandler implements EventHandler {
                 log.info("Finished get file for file '{}'", event.getFileID());
                 downloadFile(job);
                 removeFileFromFileExchange(job);
-                reporter.reportFinish(Action.DOWNLOAD, job.getLocalFile().toString());
+                reporter.reportFinish(job.getLocalFile().toString());
                 runningJobs.removeJob(job);
                 break;
             case FAILED:

@@ -20,6 +20,7 @@ import dk.statsbiblioteket.bitrepository.commandline.util.BitmagUtils;
 import dk.statsbiblioteket.bitrepository.commandline.util.FileIDTranslationUtil;
 import dk.statsbiblioteket.bitrepository.commandline.util.InvalidParameterException;
 import dk.statsbiblioteket.bitrepository.commandline.util.SkipFileException;
+import dk.statsbiblioteket.bitrepository.commandline.util.StatusReporter;
 
 public class DownloadAction extends RetryingConcurrentClientAction<DownloadJob> implements ClientAction {
 
@@ -27,10 +28,9 @@ public class DownloadAction extends RetryingConcurrentClientAction<DownloadJob> 
     private EventHandler eventHandler;
 
     public DownloadAction(CommandLine cmd, GetFileClient getFileClient, FileExchange fileExchange) throws InvalidParameterException {
-        super(cmd);
+        super(cmd, new StatusReporter(System.err, Action.DOWNLOAD));
         this.getFileClient = getFileClient;
         eventHandler = new DownloadFilesEventHandler(fileExchange, runningJobs, failedJobsQueue, reporter);
-        clientAction = Action.DOWNLOAD;
     }
     
     @Override

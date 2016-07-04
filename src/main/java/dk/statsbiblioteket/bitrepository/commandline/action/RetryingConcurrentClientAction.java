@@ -15,7 +15,6 @@ import java.util.concurrent.LinkedBlockingQueue;
 import org.apache.commons.cli.CommandLine;
 
 import dk.statsbiblioteket.bitrepository.commandline.CliOptions;
-import dk.statsbiblioteket.bitrepository.commandline.Commandline.Action;
 import dk.statsbiblioteket.bitrepository.commandline.action.job.Job;
 import dk.statsbiblioteket.bitrepository.commandline.action.job.RunningJobs;
 import dk.statsbiblioteket.bitrepository.commandline.util.ArgumentValidationUtils;
@@ -31,12 +30,11 @@ public abstract class RetryingConcurrentClientAction<T extends Job> implements C
     protected String remotePrefix = null;
     protected String collectionID;
     protected Path sumFile;
-    protected Action clientAction;
     protected RunningJobs<T> runningJobs;
     protected final BlockingQueue<T> failedJobsQueue = new LinkedBlockingQueue<>();
-    protected StatusReporter reporter = new StatusReporter(System.err);
+    protected StatusReporter reporter;
     
-    public RetryingConcurrentClientAction(CommandLine cmd) throws InvalidParameterException {
+    public RetryingConcurrentClientAction(CommandLine cmd, StatusReporter reporter) throws InvalidParameterException {
         collectionID = cmd.getOptionValue(CliOptions.COLLECTION_OPT);
         sumFile = Paths.get(cmd.getOptionValue(CliOptions.SUMFILE_OPT));
         localPrefix = cmd.hasOption(CliOptions.LOCAL_PREFIX_OPT) ? cmd.getOptionValue(CliOptions.LOCAL_PREFIX_OPT) : null;
@@ -44,6 +42,7 @@ public abstract class RetryingConcurrentClientAction<T extends Job> implements C
         maxRetries = cmd.hasOption(CliOptions.RETRY_OPT) ? Integer.parseInt(cmd.getOptionValue(CliOptions.RETRY_OPT)) : 1;
         asyncJobs = cmd.hasOption(CliOptions.ASYNC_OPT) ? Integer.parseInt(cmd.getOptionValue(CliOptions.ASYNC_OPT)) : 1;
         runningJobs = new RunningJobs<>(asyncJobs);
+        this.reporter = reporter;
         ArgumentValidationUtils.validateCollection(collectionID);
     }
     
@@ -60,17 +59,18 @@ public abstract class RetryingConcurrentClientAction<T extends Job> implements C
                 try {
                     job = createJob(origFilename, checksum);
                 } catch (SkipFileException e) {
-                    reporter.reportSkipFile(clientAction, origFilename);
+                    reporter.reportSkipFile(origFilename);
                     continue;
                 }
                 startJob(job);
-                reporter.reportStart(clientAction, origFilename);
+                reporter.reportStart(origFilename);
             }
             
             while(!finished()) {
                 retryFailedJobs();
                 Thread.sleep(1000);
             }
+            reporter.printStatistics();
         } catch (IOException e) {
             System.err.format("IOException: %s%n", e);
         } catch (InterruptedException e) {
@@ -86,7 +86,7 @@ public abstract class RetryingConcurrentClientAction<T extends Job> implements C
             if(job.getAttempts() < maxRetries) {
                 startJob(job);
             } else {
-                reporter.reportFailure(clientAction, job.getLocalFile().toString());
+                reporter.reportFailure(job.getLocalFile().toString());
             }
         }
     }

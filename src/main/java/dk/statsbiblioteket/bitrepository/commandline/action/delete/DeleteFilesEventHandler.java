@@ -32,7 +32,7 @@ public class DeleteFilesEventHandler implements EventHandler {
             switch(event.getEventType()) {
             case COMPLETE:
                 log.info("Finished delete file for file '{}'", event.getFileID());
-                reporter.reportFinish(Action.DELETE, job.getLocalFile().toString());
+                reporter.reportFinish(job.getLocalFile().toString());
                 runningJobs.removeJob(job);
                 break;
             case FAILED:

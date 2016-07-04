@@ -12,7 +12,6 @@ import org.bitrepository.protocol.FileExchange;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import dk.statsbiblioteket.bitrepository.commandline.Commandline.Action;
 import dk.statsbiblioteket.bitrepository.commandline.action.job.RunningJobs;
 import dk.statsbiblioteket.bitrepository.commandline.util.StatusReporter;
 
@@ -24,8 +23,8 @@ public class PutFilesEventHandler implements EventHandler {
     private final BlockingQueue<PutJob> failedJobsQueue;
     private final StatusReporter reporter;
     
-    public PutFilesEventHandler(FileExchange fileExchange, RunningJobs<PutJob> runningJobs, BlockingQueue<PutJob> failedJobsQueue,
-            StatusReporter reporter) {
+    public PutFilesEventHandler(FileExchange fileExchange, RunningJobs<PutJob> runningJobs, 
+            BlockingQueue<PutJob> failedJobsQueue, StatusReporter reporter) {
         this.fileExchange = fileExchange;
         this.runningJobs = runningJobs;
         this.failedJobsQueue = failedJobsQueue;
@@ -49,7 +48,7 @@ public class PutFilesEventHandler implements EventHandler {
                 break;
             case COMPLETE:
                 log.info("Finished put file for file '{}'", event.getFileID());
-                reporter.reportFinish(Action.UPLOAD, job.getLocalFile().toString());
+                reporter.reportFinish(job.getLocalFile().toString());
                 removeFileFromFileExchange(job);
                 runningJobs.removeJob(job);
                 break;
