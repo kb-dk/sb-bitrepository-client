@@ -22,6 +22,7 @@ import dk.statsbiblioteket.bitrepository.commandline.action.ListAction;
 import dk.statsbiblioteket.bitrepository.commandline.action.MakeChecksumsAction;
 import dk.statsbiblioteket.bitrepository.commandline.action.UploadAction;
 import dk.statsbiblioteket.bitrepository.commandline.util.BitmagUtils;
+import dk.statsbiblioteket.bitrepository.commandline.util.InvalidParameterException;
 
 public class Commandline {
 
@@ -113,13 +114,16 @@ public class Commandline {
         } catch (MissingArgumentException e) {
             CliOptions.printActionHelp(scriptName);
             System.exit(2);
+        } catch (InvalidParameterException e) {
+            System.err.println(e.getMessage());
+            System.exit(3);
         } catch (RuntimeException e) {
             Commandline.log.error("Caught RuntimeException", e);
             System.err.println(e.getMessage());
             System.exit(1);
         } catch (JMSException e) {
             Commandline.log.error("Caught an error shutting down bitrepository", e);
-        }
+        } 
     }
 
 }

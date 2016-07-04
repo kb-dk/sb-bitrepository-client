@@ -16,9 +16,9 @@ import org.bitrepository.protocol.FileExchange;
 import dk.statsbiblioteket.bitrepository.commandline.Commandline.Action;
 import dk.statsbiblioteket.bitrepository.commandline.action.download.DownloadFilesEventHandler;
 import dk.statsbiblioteket.bitrepository.commandline.action.download.DownloadJob;
-import dk.statsbiblioteket.bitrepository.commandline.action.job.RunningJobs;
 import dk.statsbiblioteket.bitrepository.commandline.util.BitmagUtils;
 import dk.statsbiblioteket.bitrepository.commandline.util.FileIDTranslationUtil;
+import dk.statsbiblioteket.bitrepository.commandline.util.InvalidParameterException;
 import dk.statsbiblioteket.bitrepository.commandline.util.SkipFileException;
 
 public class DownloadAction extends RetryingConcurrentClientAction<DownloadJob> implements ClientAction {
@@ -26,10 +26,9 @@ public class DownloadAction extends RetryingConcurrentClientAction<DownloadJob> 
     private GetFileClient getFileClient;
     private EventHandler eventHandler;
 
-    public DownloadAction(CommandLine cmd, GetFileClient getFileClient, FileExchange fileExchange) {
+    public DownloadAction(CommandLine cmd, GetFileClient getFileClient, FileExchange fileExchange) throws InvalidParameterException {
         super(cmd);
         this.getFileClient = getFileClient;
-        runningJobs = new RunningJobs<>(super.asyncJobs);
         eventHandler = new DownloadFilesEventHandler(fileExchange, runningJobs, failedJobsQueue, reporter);
         clientAction = Action.DOWNLOAD;
     }

@@ -12,9 +12,10 @@ import dk.statsbiblioteket.bitrepository.commandline.CliOptions;
 import dk.statsbiblioteket.bitrepository.commandline.Commandline.Action;
 import dk.statsbiblioteket.bitrepository.commandline.action.delete.DeleteFilesEventHandler;
 import dk.statsbiblioteket.bitrepository.commandline.action.delete.DeleteJob;
-import dk.statsbiblioteket.bitrepository.commandline.action.job.RunningJobs;
+import dk.statsbiblioteket.bitrepository.commandline.util.ArgumentValidationUtils;
 import dk.statsbiblioteket.bitrepository.commandline.util.BitmagUtils;
 import dk.statsbiblioteket.bitrepository.commandline.util.FileIDTranslationUtil;
+import dk.statsbiblioteket.bitrepository.commandline.util.InvalidParameterException;
 import dk.statsbiblioteket.bitrepository.commandline.util.SkipFileException;
 
 public class DeleteAction extends RetryingConcurrentClientAction<DeleteJob> implements ClientAction {
@@ -23,13 +24,13 @@ public class DeleteAction extends RetryingConcurrentClientAction<DeleteJob> impl
     private final EventHandler eventHandler;
     private DeleteFileClient deleteFileClient;
     
-    public DeleteAction(CommandLine cmd, DeleteFileClient deleteFileClient) {
+    public DeleteAction(CommandLine cmd, DeleteFileClient deleteFileClient) throws InvalidParameterException {
         super(cmd);
         this.deleteFileClient = deleteFileClient;
         pillarID = cmd.getOptionValue(CliOptions.PILLAR_OPT);
-        runningJobs = new RunningJobs<>(super.asyncJobs);
         eventHandler = new DeleteFilesEventHandler(runningJobs, super.failedJobsQueue, super.reporter);
         clientAction = Action.DELETE;
+        ArgumentValidationUtils.validatePillar(pillarID, collectionID);
     }
 
     @Override

@@ -20,7 +20,9 @@ import org.slf4j.LoggerFactory;
 
 import dk.statsbiblioteket.bitrepository.commandline.CliOptions;
 import dk.statsbiblioteket.bitrepository.commandline.action.list.ListFilesEventHandler;
+import dk.statsbiblioteket.bitrepository.commandline.util.ArgumentValidationUtils;
 import dk.statsbiblioteket.bitrepository.commandline.util.FileIDTranslationUtil;
+import dk.statsbiblioteket.bitrepository.commandline.util.InvalidParameterException;
 import dk.statsbiblioteket.bitrepository.commandline.util.MD5SumFileWriter;
 import dk.statsbiblioteket.bitrepository.commandline.util.SkipFileException;
 
@@ -38,7 +40,7 @@ public class ListAction implements ClientAction {
     private Path sumFile;
     private MD5SumFileWriter md5SumFileWriter;
     
-    public ListAction(CommandLine cmd, GetChecksumsClient getChecksumsClient) {
+    public ListAction(CommandLine cmd, GetChecksumsClient getChecksumsClient) throws InvalidParameterException {
         this.getChecksumsClient = getChecksumsClient;
         collectionID = cmd.getOptionValue(CliOptions.COLLECTION_OPT);
         pillarID = cmd.getOptionValue(CliOptions.PILLAR_OPT);
@@ -50,6 +52,8 @@ public class ListAction implements ClientAction {
         } catch (IOException e) {
            throw new RuntimeException(e);
         }
+        ArgumentValidationUtils.validateCollection(collectionID);
+        ArgumentValidationUtils.validatePillar(pillarID, collectionID);
     }
     
     public void performAction() {

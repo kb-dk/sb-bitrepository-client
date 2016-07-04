@@ -18,6 +18,8 @@ import dk.statsbiblioteket.bitrepository.commandline.CliOptions;
 import dk.statsbiblioteket.bitrepository.commandline.Commandline.Action;
 import dk.statsbiblioteket.bitrepository.commandline.action.job.Job;
 import dk.statsbiblioteket.bitrepository.commandline.action.job.RunningJobs;
+import dk.statsbiblioteket.bitrepository.commandline.util.ArgumentValidationUtils;
+import dk.statsbiblioteket.bitrepository.commandline.util.InvalidParameterException;
 import dk.statsbiblioteket.bitrepository.commandline.util.SkipFileException;
 import dk.statsbiblioteket.bitrepository.commandline.util.StatusReporter;
 
@@ -34,13 +36,15 @@ public abstract class RetryingConcurrentClientAction<T extends Job> implements C
     protected final BlockingQueue<T> failedJobsQueue = new LinkedBlockingQueue<>();
     protected StatusReporter reporter = new StatusReporter(System.err);
     
-    public RetryingConcurrentClientAction(CommandLine cmd) {
+    public RetryingConcurrentClientAction(CommandLine cmd) throws InvalidParameterException {
         collectionID = cmd.getOptionValue(CliOptions.COLLECTION_OPT);
         sumFile = Paths.get(cmd.getOptionValue(CliOptions.SUMFILE_OPT));
         localPrefix = cmd.hasOption(CliOptions.LOCAL_PREFIX_OPT) ? cmd.getOptionValue(CliOptions.LOCAL_PREFIX_OPT) : null;
         remotePrefix = cmd.hasOption(CliOptions.REMOTE_PREFIX_OPT) ? cmd.getOptionValue(CliOptions.REMOTE_PREFIX_OPT) : null;
         maxRetries = cmd.hasOption(CliOptions.RETRY_OPT) ? Integer.parseInt(cmd.getOptionValue(CliOptions.RETRY_OPT)) : 1;
         asyncJobs = cmd.hasOption(CliOptions.ASYNC_OPT) ? Integer.parseInt(cmd.getOptionValue(CliOptions.ASYNC_OPT)) : 1;
+        runningJobs = new RunningJobs<>(asyncJobs);
+        ArgumentValidationUtils.validateCollection(collectionID);
     }
     
     @Override

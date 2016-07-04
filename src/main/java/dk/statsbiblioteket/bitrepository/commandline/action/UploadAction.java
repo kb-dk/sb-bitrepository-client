@@ -15,11 +15,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import dk.statsbiblioteket.bitrepository.commandline.Commandline.Action;
-import dk.statsbiblioteket.bitrepository.commandline.action.job.RunningJobs;
 import dk.statsbiblioteket.bitrepository.commandline.action.upload.PutFilesEventHandler;
 import dk.statsbiblioteket.bitrepository.commandline.action.upload.PutJob;
 import dk.statsbiblioteket.bitrepository.commandline.util.BitmagUtils;
 import dk.statsbiblioteket.bitrepository.commandline.util.FileIDTranslationUtil;
+import dk.statsbiblioteket.bitrepository.commandline.util.InvalidParameterException;
 import dk.statsbiblioteket.bitrepository.commandline.util.SkipFileException;
 
 public class UploadAction extends RetryingConcurrentClientAction<PutJob> implements ClientAction {
@@ -29,10 +29,9 @@ public class UploadAction extends RetryingConcurrentClientAction<PutJob> impleme
     private PutFileClient putFileClient;
     private EventHandler eventHandler;
     
-    public UploadAction(CommandLine cmd, PutFileClient putFileClient, FileExchange fileExchange) {
+    public UploadAction(CommandLine cmd, PutFileClient putFileClient, FileExchange fileExchange) throws InvalidParameterException {
         super(cmd);
         this.putFileClient = putFileClient;
-        runningJobs = new RunningJobs<>(super.asyncJobs);
         eventHandler = new PutFilesEventHandler(fileExchange, runningJobs, super.failedJobsQueue, super.reporter);
         clientAction = Action.UPLOAD;
     }

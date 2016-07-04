@@ -3,6 +3,7 @@ package dk.statsbiblioteket.bitrepository.commandline.util;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.file.Path;
+import java.util.List;
 
 import javax.jms.JMSException;
 
@@ -82,6 +83,23 @@ public class BitmagUtils {
                 settings.getComponentID());
     }
 
+    /**
+     * Method to get the list of known pillars in a collection
+     * @param collectionID The ID of the collection to obtain pillars for
+     * @return the list of known pillarIDs 
+     */
+    public static List<String> getKnownPillars(String collectionID) {
+        return SettingsUtils.getPillarIDsForCollection(collectionID);
+    }
+    
+    /**
+     * Method to get the list of known collections
+     * @return the list of known collectionIDs 
+     */
+    public static List<String> getKnownCollections() {
+        return SettingsUtils.getAllCollectionsIDs();
+    }
+    
     /**
      * Method to get the base part of the URL to the file exchange server. 
      * @return {@link URL} URL with the base part of the file exchange server.  
