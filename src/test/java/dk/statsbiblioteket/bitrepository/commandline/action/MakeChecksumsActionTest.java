@@ -1,14 +1,7 @@
 package dk.statsbiblioteket.bitrepository.commandline.action;
 
-import org.apache.commons.cli.CommandLine;
-import org.testng.Assert;
-import org.testng.annotations.Test;
-
-import dk.statsbiblioteket.bitrepository.commandline.CliOptions;
-
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import static org.mockito.Matchers.eq;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -16,6 +9,12 @@ import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+
+import org.apache.commons.cli.CommandLine;
+import org.testng.Assert;
+import org.testng.annotations.Test;
+
+import dk.statsbiblioteket.bitrepository.commandline.CliOptions;
 
 
 public class MakeChecksumsActionTest {
