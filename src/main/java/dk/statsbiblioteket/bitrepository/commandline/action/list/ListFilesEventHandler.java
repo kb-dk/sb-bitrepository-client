@@ -16,6 +16,7 @@ public class ListFilesEventHandler implements EventHandler {
     private boolean partialResults = false;
     private final Object finishLock = new Object();
     private boolean finished = false;
+    private boolean failed = false;
     private List<ChecksumDataForChecksumSpecTYPE> checksumData;
     
     @Override
@@ -34,6 +35,7 @@ public class ListFilesEventHandler implements EventHandler {
                 break;
             case FAILED:
                 log.warn("Failed get file for file '{}'", event.getFileID());
+                failed = true;
                 finish();
                 break;
             default:
@@ -67,6 +69,10 @@ public class ListFilesEventHandler implements EventHandler {
     
     public boolean partialResults() {
         return partialResults;
+    }
+    
+    public boolean hasFailed() {
+        return failed;
     }
  
 }

@@ -62,6 +62,7 @@ public class Commandline {
     }
     
     public static void main(String[] args) throws ParseException {
+        int exitStatus = 0;
         Options options = CliOptions.getAllOptions();
         CommandLineParser parser = new DefaultParser();
         String scriptName = System.getProperty(SCRIPT_NAME_PROPERTY);
@@ -108,25 +109,29 @@ public class Commandline {
                 
                 ca.performAction();
             }
-            BitmagUtils.shutdown();
         } catch (MissingOptionException e) {
             CliOptions.printHelp(scriptName, CliOptions.getAllOptions());
-            System.exit(2);
+            exitStatus = 2;
         } catch (MissingArgumentException e) {
             CliOptions.printActionHelp(scriptName);
-            System.exit(2);
+            exitStatus = 2;
         } catch (InvalidParameterException e) {
             System.err.println(e.getMessage());
-            System.exit(3);
+            exitStatus = 3;
         } catch (RuntimeException e) {
             Commandline.log.error("Caught RuntimeException", e);
             System.err.println(e.getMessage());
-            System.exit(1);
-        } catch (JMSException e) {
-            Commandline.log.error("Caught an error shutting down bitrepository", e);
-            System.err.println(e.getMessage());
-            System.exit(1);
+            exitStatus = 1;
+        } finally {
+            try {
+                BitmagUtils.shutdown();
+            } catch (JMSException e) {
+                Commandline.log.error("Caught an error shutting down bitrepository", e);
+                System.err.println(e.getMessage());
+                exitStatus = 1;
+            }
         } 
+        System.exit(exitStatus);
     }
 
 }

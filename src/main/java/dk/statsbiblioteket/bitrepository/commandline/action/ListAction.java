@@ -67,17 +67,23 @@ public class ListAction implements ClientAction {
                 ContributorQuery[] query = makeQuery(latestResultDate);
                 getChecksumsClient.getChecksums(collectionID, query, null, checksumSpec, null, eventHandler, null);
                 eventHandler.waitForFinish();
-                latestResultDate = reportResults(eventHandler.getChecksumData());
-                notFinished = eventHandler.partialResults();
+                if(eventHandler.hasFailed()) {
+                    log.error("Failed collecting checksumdata");
+                    throw new RuntimeException("Error getting checksumdata from pillar: '" + pillarID + "'");
+                } else {
+                    latestResultDate = reportResults(eventHandler.getChecksumData());
+                    notFinished = eventHandler.partialResults();
+                }
             } while(notFinished);
         } catch (InterruptedException e) {
             log.error("Got interrupted while getting checksums", e);
             throw new RuntimeException(e);
-        }
-        try {
-            md5SumFileWriter.close();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+        } finally {
+            try {
+                md5SumFileWriter.close();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
         }
     }
 
