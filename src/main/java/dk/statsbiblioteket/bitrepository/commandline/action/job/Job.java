@@ -68,4 +68,50 @@ public class Job {
         attempts++;
     }
 
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + attempts;
+        result = prime * result + ((checksum == null) ? 0 : checksum.hashCode());
+        result = prime * result + ((localFile == null) ? 0 : localFile.hashCode());
+        result = prime * result + ((remoteFileID == null) ? 0 : remoteFileID.hashCode());
+        result = prime * result + ((url == null) ? 0 : url.hashCode());
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        Job other = (Job) obj;
+        if (attempts != other.attempts)
+            return false;
+        if (checksum == null) {
+            if (other.checksum != null)
+                return false;
+        } else if (!checksum.equals(other.checksum))
+            return false;
+        if (localFile == null) {
+            if (other.localFile != null)
+                return false;
+        } else if (!localFile.equals(other.localFile))
+            return false;
+        if (remoteFileID == null) {
+            if (other.remoteFileID != null)
+                return false;
+        } else if (!remoteFileID.equals(other.remoteFileID))
+            return false;
+        if (url == null) {
+            if (other.url != null)
+                return false;
+        } else if (!url.equals(other.url))
+            return false;
+        return true;
+    }
+
 }
