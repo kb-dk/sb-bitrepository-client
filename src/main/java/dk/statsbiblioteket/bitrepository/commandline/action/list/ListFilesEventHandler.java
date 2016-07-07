@@ -17,7 +17,7 @@ public class ListFilesEventHandler implements EventHandler {
     private final Object finishLock = new Object();
     private boolean finished = false;
     private boolean failed = false;
-    private List<ChecksumDataForChecksumSpecTYPE> checksumData;
+    private List<ChecksumDataForChecksumSpecTYPE> checksumData = null;
     
     @Override
     public void handleEvent(OperationEvent event) {
