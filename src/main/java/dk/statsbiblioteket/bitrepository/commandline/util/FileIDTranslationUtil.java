@@ -16,7 +16,7 @@ public class FileIDTranslationUtil {
         String stripped;
         if(localPrefix != null) {
             if(localFileID.startsWith(localPrefix)) {
-                stripped = localFileID.replaceFirst(localPrefix, "");
+                stripped = localFileID.substring(localPrefix.length());
             } else {
                 throw new SkipFileException("Local prefix provided, but not found in local file");
             }
@@ -47,7 +47,7 @@ public class FileIDTranslationUtil {
         remoteFileID = remoteFileID.replace("\\", "/"); // Temporary measure to ensure that files can handled on SB pillar
         if(remotePrefix != null) {
             if(remoteFileID.startsWith(remotePrefix)) {
-               stripped = remoteFileID.replaceFirst(remotePrefix, "");
+               stripped = remoteFileID.substring(remotePrefix.length());
             } else {
                 throw new SkipFileException("Remote prefix provided, but not found in remote file");
             }
