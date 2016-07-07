@@ -48,7 +48,7 @@ public class FileIDTranslationUtilTest {
     @Test(expectedExceptions = {SkipFileException.class})
     public void testLocalToRemoteSkipfile() throws SkipFileException {
         String localPrefix = "bar/";
-        String translatedFileID = FileIDTranslationUtil.localToRemote(TEST_FILEID, localPrefix, null);
+        FileIDTranslationUtil.localToRemote(TEST_FILEID, localPrefix, null);
     }
     
     @Test
@@ -90,7 +90,7 @@ public class FileIDTranslationUtilTest {
     @Test(expectedExceptions = {SkipFileException.class})
     public void testRemoteToLocalSkipfile() throws SkipFileException {
         String remotePrefix = "bar/";
-        String translatedFileID = FileIDTranslationUtil.remoteToLocal(TEST_FILEID, null, remotePrefix);
+        FileIDTranslationUtil.remoteToLocal(TEST_FILEID, null, remotePrefix);
     }
     
     
