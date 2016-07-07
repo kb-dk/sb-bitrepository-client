@@ -18,7 +18,7 @@ import dk.statsbiblioteket.bitrepository.commandline.util.StatusReporter;
 
 public class DownloadFilesEventHandler implements EventHandler {
     
-    private final static String TEMP_EXTENSION = ".tmp";
+    protected final static String TEMP_EXTENSION = ".tmp";
     
     private final Logger log = LoggerFactory.getLogger(getClass());
     private final FileExchange fileExchange;
@@ -41,10 +41,15 @@ public class DownloadFilesEventHandler implements EventHandler {
             switch(event.getEventType()) {
             case COMPLETE:
                 log.info("Finished get file for file '{}'", event.getFileID());
-                downloadFile(job);
+                boolean success = downloadFile(job);
+                if(success) {
+                    reporter.reportFinish(job.getLocalFile().toString());
+                    runningJobs.removeJob(job);
+                } else {
+                    failedJobsQueue.add(job);
+                    runningJobs.removeJob(job);
+                }
                 removeFileFromFileExchange(job);
-                reporter.reportFinish(job.getLocalFile().toString());
-                runningJobs.removeJob(job);
                 break;
             case FAILED:
                 log.warn("Failed get file for file '{}'", event.getFileID());
@@ -60,7 +65,12 @@ public class DownloadFilesEventHandler implements EventHandler {
         }
     }
     
-    private void downloadFile(Job job) {
+    /**
+     * Get the file from the file exchange
+     * @param Job The job to get the file for
+     * @return boolean, true if the file was succesfully obtained from the fileexchange, otherwise false.
+     */
+    private boolean downloadFile(Job job) {
         try {
             Path local = job.getLocalFile();
             Path temp = local.resolveSibling(local.getFileName() + TEMP_EXTENSION);
@@ -71,8 +81,10 @@ public class DownloadFilesEventHandler implements EventHandler {
             fileExchange.getFile(Files.newOutputStream(temp), job.getUrl());
             Files.move(temp, local);
             log.debug("Finished download of file {}.", job.getRemoteFileID());
+            return true;
         } catch (IOException e) {
             log.error("Failed to download file {}.", job.getRemoteFileID(), e);
+            return false;
         }
     }
     
