@@ -220,5 +220,5 @@ public class DeleteActionTest {
             }
             finished = true;
         }
-}
+    }
 }
