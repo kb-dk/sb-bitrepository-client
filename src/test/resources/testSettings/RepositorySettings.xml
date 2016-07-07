@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+<RepositorySettings xmlns="http://bitrepository.org/settings/RepositorySettings.xsd">
+  <Name>Test repository</Name>
+  <Collections>
+    <Collection>
+      <ID>collection1</ID>
+      <PillarIDs>
+        <PillarID>test-pillar</PillarID>
+      </PillarIDs>
+    </Collection>
+  </Collections>
+  <ProtocolSettings>
+    <DefaultChecksumType>MD5</DefaultChecksumType>
+    <AllowedFileIDPattern>[a-zA-Z\\_\.\-0-9]+</AllowedFileIDPattern>
+    <RequireMessageAuthentication>false</RequireMessageAuthentication>
+    <RequireOperationAuthorization>false</RequireOperationAuthorization>
+    <RequireChecksumForDestructiveRequests>true</RequireChecksumForDestructiveRequests>
+    <RequireChecksumForNewFileRequests>true</RequireChecksumForNewFileRequests>
+    <CollectionDestination>topic://collection-dest</CollectionDestination>
+    <AlarmDestination>queue://collection-dest.alarms</AlarmDestination>
+    <MessageBusConfiguration>
+      <Name>MyMessageBus</Name>
+      <URL>failover:(ssl://test-message-bus:47777?keepAlive=true)</URL>
+    </MessageBusConfiguration>
+  </ProtocolSettings>
+  <ClientSettings>
+    <IdentificationTimeout>10000</IdentificationTimeout>
+    <OperationTimeout>3600000</OperationTimeout>
+  </ClientSettings>
+</RepositorySettings>
