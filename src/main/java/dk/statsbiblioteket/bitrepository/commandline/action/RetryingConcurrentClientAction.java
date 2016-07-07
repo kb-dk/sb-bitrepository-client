@@ -33,7 +33,7 @@ public abstract class RetryingConcurrentClientAction implements ClientAction {
     protected String remotePrefix = null;
     protected String collectionID;
     protected Path sumFile;
-    protected RunningJobs<Job> runningJobs;
+    protected RunningJobs runningJobs;
     protected final BlockingQueue<Job> failedJobsQueue = new LinkedBlockingQueue<>();
     protected StatusReporter reporter;
     
@@ -44,7 +44,7 @@ public abstract class RetryingConcurrentClientAction implements ClientAction {
         remotePrefix = cmd.getOptionValue(CliOptions.REMOTE_PREFIX_OPT);
         maxRetries = Integer.parseInt(cmd.getOptionValue(CliOptions.RETRY_OPT, "1"));
         int asyncJobs = Integer.parseInt(cmd.getOptionValue(CliOptions.ASYNC_OPT, "1"));
-        runningJobs = new RunningJobs<>(asyncJobs);
+        runningJobs = new RunningJobs(asyncJobs);
         this.reporter = reporter;
         ArgumentValidationUtils.validateCollection(collectionID);
     }

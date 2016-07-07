@@ -14,11 +14,11 @@ import dk.statsbiblioteket.bitrepository.commandline.util.StatusReporter;
 public class DeleteFilesEventHandler implements EventHandler {
     
     private final Logger log = LoggerFactory.getLogger(getClass());
-    private final RunningJobs<Job> runningJobs;
+    private final RunningJobs runningJobs;
     private final BlockingQueue<Job> failedJobsQueue;
     private final StatusReporter reporter;
     
-    public DeleteFilesEventHandler(RunningJobs<Job> runningJobs, BlockingQueue<Job> failedJobsQueue,
+    public DeleteFilesEventHandler(RunningJobs runningJobs, BlockingQueue<Job> failedJobsQueue,
             StatusReporter reporter) {
         this.runningJobs = runningJobs;
         this.failedJobsQueue = failedJobsQueue;

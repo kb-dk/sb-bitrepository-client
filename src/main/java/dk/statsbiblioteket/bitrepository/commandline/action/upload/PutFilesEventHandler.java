@@ -20,11 +20,11 @@ public class PutFilesEventHandler implements EventHandler {
     
     private final Logger log = LoggerFactory.getLogger(getClass());
     private final FileExchange fileExchange;
-    private final RunningJobs<Job> runningJobs;
+    private final RunningJobs runningJobs;
     private final BlockingQueue<Job> failedJobsQueue;
     private final StatusReporter reporter;
     
-    public PutFilesEventHandler(FileExchange fileExchange, RunningJobs<Job> runningJobs, 
+    public PutFilesEventHandler(FileExchange fileExchange, RunningJobs runningJobs, 
             BlockingQueue<Job> failedJobsQueue, StatusReporter reporter) {
         this.fileExchange = fileExchange;
         this.runningJobs = runningJobs;
