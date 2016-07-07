@@ -20,25 +20,25 @@ public class ListFilesEventHandler implements EventHandler {
     
     @Override
     public void handleEvent(OperationEvent event) {
-    switch(event.getEventType()) {
-    case COMPONENT_COMPLETE:
-        log.debug("Got COMPONENT_COMPLETE event");
-        if(event instanceof ChecksumsCompletePillarEvent) {
-            ChecksumsCompletePillarEvent checksumsEvent = (ChecksumsCompletePillarEvent) event;
-            checksumData = checksumsEvent.getChecksums().getChecksumDataItems();
-            partialResults = checksumsEvent.isPartialResult();
-        }
-        case COMPLETE:
-            log.info("Finished get file for file '{}'", event.getFileID());
-            finish();
-            break;
-        case FAILED:
-            log.warn("Failed get file for file '{}'", event.getFileID());
-            finish();
-            break;
-        default:
-            break;
-        }    
+        switch(event.getEventType()) {
+        case COMPONENT_COMPLETE:
+            log.debug("Got COMPONENT_COMPLETE event");
+            if(event instanceof ChecksumsCompletePillarEvent) {
+                ChecksumsCompletePillarEvent checksumsEvent = (ChecksumsCompletePillarEvent) event;
+                checksumData = checksumsEvent.getChecksums().getChecksumDataItems();
+                partialResults = checksumsEvent.isPartialResult();
+            }
+            case COMPLETE:
+                log.info("Finished get file for file '{}'", event.getFileID());
+                finish();
+                break;
+            case FAILED:
+                log.warn("Failed get file for file '{}'", event.getFileID());
+                finish();
+                break;
+            default:
+                break;
+            }    
     }
     
     public List<ChecksumDataForChecksumSpecTYPE> getChecksumData() {

@@ -13,6 +13,8 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
 import org.apache.commons.cli.CommandLine;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import dk.statsbiblioteket.bitrepository.commandline.CliOptions;
 import dk.statsbiblioteket.bitrepository.commandline.action.job.Job;
@@ -24,7 +26,8 @@ import dk.statsbiblioteket.bitrepository.commandline.util.StatusReporter;
 
 public abstract class RetryingConcurrentClientAction<T extends Job> implements ClientAction {
 
-    protected int asyncJobs;
+    private final Logger log = LoggerFactory.getLogger(getClass());
+
     protected int maxRetries;
     protected String localPrefix = null;
     protected String remotePrefix = null;
@@ -37,10 +40,10 @@ public abstract class RetryingConcurrentClientAction<T extends Job> implements C
     public RetryingConcurrentClientAction(CommandLine cmd, StatusReporter reporter) throws InvalidParameterException {
         collectionID = cmd.getOptionValue(CliOptions.COLLECTION_OPT);
         sumFile = Paths.get(cmd.getOptionValue(CliOptions.SUMFILE_OPT));
-        localPrefix = cmd.hasOption(CliOptions.LOCAL_PREFIX_OPT) ? cmd.getOptionValue(CliOptions.LOCAL_PREFIX_OPT) : null;
-        remotePrefix = cmd.hasOption(CliOptions.REMOTE_PREFIX_OPT) ? cmd.getOptionValue(CliOptions.REMOTE_PREFIX_OPT) : null;
-        maxRetries = cmd.hasOption(CliOptions.RETRY_OPT) ? Integer.parseInt(cmd.getOptionValue(CliOptions.RETRY_OPT)) : 1;
-        asyncJobs = cmd.hasOption(CliOptions.ASYNC_OPT) ? Integer.parseInt(cmd.getOptionValue(CliOptions.ASYNC_OPT)) : 1;
+        localPrefix = cmd.getOptionValue(CliOptions.LOCAL_PREFIX_OPT);
+        remotePrefix = cmd.getOptionValue(CliOptions.REMOTE_PREFIX_OPT);
+        maxRetries = Integer.parseInt(cmd.getOptionValue(CliOptions.RETRY_OPT, "1"));
+        int asyncJobs = Integer.parseInt(cmd.getOptionValue(CliOptions.ASYNC_OPT, "1"));
         runningJobs = new RunningJobs<>(asyncJobs);
         this.reporter = reporter;
         ArgumentValidationUtils.validateCollection(collectionID);
@@ -72,9 +75,11 @@ public abstract class RetryingConcurrentClientAction<T extends Job> implements C
             }
             reporter.printStatistics();
         } catch (IOException e) {
-            System.err.format("IOException: %s%n", e);
+            log.error("Caught IOException while processing sumfile", e);
+            throw new RuntimeException(e);
         } catch (InterruptedException e) {
-            System.err.format("InterruptedException: %s%n", e);
+            log.error("Got interrupted while waiting for finish", e);
+            throw new RuntimeException(e);
         }
     }
     

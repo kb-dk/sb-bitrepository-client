@@ -80,6 +80,7 @@ public class Commandline {
 
                 ClientAction ca = null;
                 try {
+                    // Parsing a second time to get action specific options.
                     cmd = parser.parse(CliOptions.getActionOptions(action), args);    
                 } catch (MissingOptionException e) {
                     CliOptions.printHelp(scriptName, CliOptions.getActionOptions(action));
@@ -123,6 +124,8 @@ public class Commandline {
             System.exit(1);
         } catch (JMSException e) {
             Commandline.log.error("Caught an error shutting down bitrepository", e);
+            System.err.println(e.getMessage());
+            System.exit(1);
         } 
     }
 

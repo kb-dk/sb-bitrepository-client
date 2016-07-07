@@ -22,7 +22,7 @@ import dk.statsbiblioteket.bitrepository.commandline.util.InvalidParameterExcept
 import dk.statsbiblioteket.bitrepository.commandline.util.SkipFileException;
 import dk.statsbiblioteket.bitrepository.commandline.util.StatusReporter;
 
-public class DownloadAction extends RetryingConcurrentClientAction<DownloadJob> implements ClientAction {
+public class DownloadAction extends RetryingConcurrentClientAction<DownloadJob> {
 
     private GetFileClient getFileClient;
     private EventHandler eventHandler;
@@ -30,14 +30,16 @@ public class DownloadAction extends RetryingConcurrentClientAction<DownloadJob> 
     public DownloadAction(CommandLine cmd, GetFileClient getFileClient, FileExchange fileExchange) throws InvalidParameterException {
         super(cmd, new StatusReporter(System.err, Action.DOWNLOAD));
         this.getFileClient = getFileClient;
-        eventHandler = new DownloadFilesEventHandler(fileExchange, runningJobs, failedJobsQueue, reporter);
+        eventHandler = new DownloadFilesEventHandler(fileExchange, super.runningJobs, super.failedJobsQueue, 
+                super.reporter);
     }
     
     @Override
     protected void startJob(DownloadJob job) throws IOException {
-        runningJobs.addJob(job);
+        super.runningJobs.addJob(job);
         job.incrementAttempts();
-        getFileClient.getFileFromFastestPillar(collectionID, job.getRemoteFileID(), null, job.getUrl(), eventHandler, null);
+        getFileClient.getFileFromFastestPillar(super.collectionID, job.getRemoteFileID(), null, job.getUrl(), 
+                eventHandler, null);
     }
 
     @Override
@@ -47,7 +49,8 @@ public class DownloadAction extends RetryingConcurrentClientAction<DownloadJob> 
         if(Files.exists(localFile)) {
             throw new SkipFileException("Skipping file as it already exists");
         }
-        String remoteFilename = FileIDTranslationUtil.localToRemote(originalFilename, localPrefix, remotePrefix);
+        String remoteFilename = FileIDTranslationUtil.localToRemote(originalFilename, super.localPrefix, 
+                super.remotePrefix);
         DownloadJob job = new DownloadJob(localFile, remoteFilename, BitmagUtils.getChecksum(checksum), 
                 getUrl(remoteFilename));
         
@@ -56,7 +59,7 @@ public class DownloadAction extends RetryingConcurrentClientAction<DownloadJob> 
     
     private URL getUrl(String filename) throws MalformedURLException {
         URL baseurl = BitmagUtils.getFileExchangeBaseURL();
-        String path = DigestUtils.md5Hex(collectionID + filename);
+        String path = DigestUtils.md5Hex(super.collectionID + filename);
         return new URL(baseurl.toString() + path);
     }
 

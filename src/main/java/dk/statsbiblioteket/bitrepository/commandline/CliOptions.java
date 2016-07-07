@@ -9,20 +9,6 @@ import org.apache.commons.cli.Options;
 import dk.statsbiblioteket.bitrepository.commandline.Commandline.Action;
 
 public class CliOptions {
-    private final static Option actionOption;
-    private final static Option actionDetailedOption;
-    private final static Option collectionOption;
-    private final static Option sourceOption;
-    private final static Option sumfileOption;
-    private final static Option localOption;
-    private final static Option remoteOption;
-    private final static Option pillarOption;
-    private final static Option destinationOption;
-    private final static Option typeOption;
-    private final static Option retryOption;
-    private final static Option parallelOption;
-    private final static Option helpOption;
-    
     public final static String ACTION_OPT = "a";
     public final static String COLLECTION_OPT = "c";
     public final static String SOURCE_OPT = "s";
@@ -36,23 +22,37 @@ public class CliOptions {
     public final static String RETRY_OPT = "x";
     public final static String ASYNC_OPT = "n";
     
+    private final static Option actionOption;
+    private final static Option actionDetailedOption;
+    private final static Option collectionOption 
+        = new Option(COLLECTION_OPT, "collection", true, "Collection to work on");
+    private final static Option sourceOption 
+        = new Option(SOURCE_OPT, "source", true, "Source directory to get files from");
+    private final static Option sumfileOption 
+        = new Option(SUMFILE_OPT, "sumfile", true, "Sumfile containing list of files to work on");
+    private final static Option localOption 
+        = new Option(LOCAL_PREFIX_OPT, "local-prefix", true, "Local prefix for operations");
+    private final static Option remoteOption 
+        = new Option(REMOTE_PREFIX_OPT, "remote-prefix", true, "Remote prefix for operations");
+    private final static Option pillarOption 
+        = new Option(PILLAR_OPT, "pillar", true, "Pillar to perform delete on");
+    private final static Option destinationOption 
+        = new Option(DESTINATION_OPT, "destination", true, "Destination directory to place files in");
+    private final static Option typeOption 
+        = new Option(TYPE_OPT, "type", true, "Type of listing");
+    private final static Option retryOption 
+        = new Option(RETRY_OPT, "retrys", true, "Number of retries before failing a file (Default: no retries)");
+    private final static Option parallelOption 
+        = new Option(ASYNC_OPT, "parallel", true, "Number of parallel operations (Default: 1)");
+    private final static Option helpOption = new Option(HELP_OPT, "help", false, "Prints help and usage information");
+    
+    
     
     static {
         actionOption = new Option(ACTION_OPT, "action", true, "Action to perform");
         actionOption.setRequired(true);
         actionDetailedOption = new Option(ACTION_OPT, "action", true, "Possible actions: " + Arrays.asList(Action.values()));
         actionDetailedOption.setRequired(true);
-        collectionOption = new Option(COLLECTION_OPT, "collection", true, "Collection to work on");
-        sourceOption = new Option(SOURCE_OPT, "source", true, "Source directory to get files from");
-        sumfileOption = new Option(SUMFILE_OPT, "sumfile", true, "Sumfile containing list of files to work on");
-        localOption = new Option(LOCAL_PREFIX_OPT, "local-prefix", true, "Local prefix for operations");
-        remoteOption = new Option(REMOTE_PREFIX_OPT, "remote-prefix", true, "Remote prefix for operations");
-        pillarOption = new Option(PILLAR_OPT, "pillar", true, "Pillar to perform delete on");
-        destinationOption = new Option(DESTINATION_OPT, "destination", true, "Destination directory to place files in");
-        typeOption = new Option(TYPE_OPT, "type", true, "Type of listing");
-        retryOption = new Option(RETRY_OPT, "retrys", true, "Number of retries before failing a file (Default: no retries)");
-        parallelOption = new Option(ASYNC_OPT, "parallel", true, "Number of parallel operations (Default: 1)");
-        helpOption = new Option(HELP_OPT, "help", false, "Prints help and usage information");
     }
     
     public static void printHelp(String scriptName, Options options) {

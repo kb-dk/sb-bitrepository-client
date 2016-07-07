@@ -23,7 +23,7 @@ import dk.statsbiblioteket.bitrepository.commandline.util.InvalidParameterExcept
 import dk.statsbiblioteket.bitrepository.commandline.util.SkipFileException;
 import dk.statsbiblioteket.bitrepository.commandline.util.StatusReporter;
 
-public class UploadAction extends RetryingConcurrentClientAction<PutJob> implements ClientAction {
+public class UploadAction extends RetryingConcurrentClientAction<PutJob> {
 
     private final Logger log = LoggerFactory.getLogger(getClass());
         
@@ -33,26 +33,27 @@ public class UploadAction extends RetryingConcurrentClientAction<PutJob> impleme
     public UploadAction(CommandLine cmd, PutFileClient putFileClient, FileExchange fileExchange) throws InvalidParameterException {
         super(cmd, new StatusReporter(System.err, Action.UPLOAD));
         this.putFileClient = putFileClient;
-        eventHandler = new PutFilesEventHandler(fileExchange, runningJobs, super.failedJobsQueue, super.reporter);
+        eventHandler = new PutFilesEventHandler(fileExchange, super.runningJobs, super.failedJobsQueue, super.reporter);
     }
     
     protected PutJob createJob(String originalFilename, String checksum) throws SkipFileException, MalformedURLException {
-        String remoteFilename = FileIDTranslationUtil.localToRemote(originalFilename, localPrefix, remotePrefix);
+        String remoteFilename = FileIDTranslationUtil.localToRemote(originalFilename, super.localPrefix, 
+                super.remotePrefix);
         PutJob job = new PutJob(Paths.get(originalFilename), remoteFilename, BitmagUtils.getChecksum(checksum), 
                 getUrl(remoteFilename));
         return job;
     }
     
     protected void startJob(PutJob job) throws IOException {
-        runningJobs.addJob(job);
+        super.runningJobs.addJob(job);
         job.incrementAttempts();
-        putFileClient.putFile(collectionID, job.getUrl(), job.getRemoteFileID(), Files.size(job.getLocalFile()), 
+        putFileClient.putFile(super.collectionID, job.getUrl(), job.getRemoteFileID(), Files.size(job.getLocalFile()), 
                 job.getChecksum(), null, eventHandler, null);
     }
     
     private URL getUrl(String filename) throws MalformedURLException {
         URL baseurl = BitmagUtils.getFileExchangeBaseURL();
-        String path = DigestUtils.md5Hex(collectionID + filename);
+        String path = DigestUtils.md5Hex(super.collectionID + filename);
         return new URL(baseurl.toString() + path);
     }
 

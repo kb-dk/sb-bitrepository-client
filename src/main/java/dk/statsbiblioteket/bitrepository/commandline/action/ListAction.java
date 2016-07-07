@@ -45,8 +45,8 @@ public class ListAction implements ClientAction {
         collectionID = cmd.getOptionValue(CliOptions.COLLECTION_OPT);
         pillarID = cmd.getOptionValue(CliOptions.PILLAR_OPT);
         sumFile = Paths.get(cmd.getOptionValue(CliOptions.SUMFILE_OPT));
-        localPrefix = cmd.hasOption(CliOptions.LOCAL_PREFIX_OPT) ? cmd.getOptionValue(CliOptions.LOCAL_PREFIX_OPT) : null;
-        remotePrefix = cmd.hasOption(CliOptions.REMOTE_PREFIX_OPT) ? cmd.getOptionValue(CliOptions.REMOTE_PREFIX_OPT) : null;
+        localPrefix =cmd.getOptionValue(CliOptions.LOCAL_PREFIX_OPT);
+        remotePrefix = cmd.getOptionValue(CliOptions.REMOTE_PREFIX_OPT);
         try {
             md5SumFileWriter = new MD5SumFileWriter(sumFile);
         } catch (IOException e) {
