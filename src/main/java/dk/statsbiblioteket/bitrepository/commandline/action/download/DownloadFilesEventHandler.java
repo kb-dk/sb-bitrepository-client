@@ -12,6 +12,7 @@ import org.bitrepository.protocol.FileExchange;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import dk.statsbiblioteket.bitrepository.commandline.action.job.Job;
 import dk.statsbiblioteket.bitrepository.commandline.action.job.RunningJobs;
 import dk.statsbiblioteket.bitrepository.commandline.util.StatusReporter;
 
@@ -21,12 +22,12 @@ public class DownloadFilesEventHandler implements EventHandler {
     
     private final Logger log = LoggerFactory.getLogger(getClass());
     private final FileExchange fileExchange;
-    private final RunningJobs<DownloadJob> runningJobs;
-    private final BlockingQueue<DownloadJob> failedJobsQueue;
+    private final RunningJobs<Job> runningJobs;
+    private final BlockingQueue<Job> failedJobsQueue;
     private final StatusReporter reporter;
     
-    public DownloadFilesEventHandler(FileExchange fileExchange, RunningJobs<DownloadJob> runningJobs, 
-            BlockingQueue<DownloadJob> failedJobsQueue, StatusReporter reporter) {
+    public DownloadFilesEventHandler(FileExchange fileExchange, RunningJobs<Job> runningJobs, 
+            BlockingQueue<Job> failedJobsQueue, StatusReporter reporter) {
         this.fileExchange = fileExchange;
         this.runningJobs = runningJobs;
         this.failedJobsQueue = failedJobsQueue;
@@ -35,7 +36,7 @@ public class DownloadFilesEventHandler implements EventHandler {
 
     @Override
     public void handleEvent(OperationEvent event) {
-        DownloadJob job = runningJobs.getJob(event.getFileID());
+        Job job = runningJobs.getJob(event.getFileID());
         if(job != null) {
             switch(event.getEventType()) {
             case COMPLETE:
@@ -59,7 +60,7 @@ public class DownloadFilesEventHandler implements EventHandler {
         }
     }
     
-    private void downloadFile(DownloadJob job) {
+    private void downloadFile(Job job) {
         try {
             Path local = job.getLocalFile();
             Path temp = local.resolveSibling(local.getFileName() + TEMP_EXTENSION);
@@ -75,7 +76,7 @@ public class DownloadFilesEventHandler implements EventHandler {
         }
     }
     
-    private void removeFileFromFileExchange(DownloadJob job) {
+    private void removeFileFromFileExchange(Job job) {
         try {
             fileExchange.deleteFile(job.getUrl());
             log.debug("Finished removing file {} from file exchange.", job.getUrl());

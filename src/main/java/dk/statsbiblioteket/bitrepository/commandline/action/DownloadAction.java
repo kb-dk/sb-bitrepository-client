@@ -15,14 +15,14 @@ import org.bitrepository.protocol.FileExchange;
 
 import dk.statsbiblioteket.bitrepository.commandline.Commandline.Action;
 import dk.statsbiblioteket.bitrepository.commandline.action.download.DownloadFilesEventHandler;
-import dk.statsbiblioteket.bitrepository.commandline.action.download.DownloadJob;
+import dk.statsbiblioteket.bitrepository.commandline.action.job.Job;
 import dk.statsbiblioteket.bitrepository.commandline.util.BitmagUtils;
 import dk.statsbiblioteket.bitrepository.commandline.util.FileIDTranslationUtil;
 import dk.statsbiblioteket.bitrepository.commandline.util.InvalidParameterException;
 import dk.statsbiblioteket.bitrepository.commandline.util.SkipFileException;
 import dk.statsbiblioteket.bitrepository.commandline.util.StatusReporter;
 
-public class DownloadAction extends RetryingConcurrentClientAction<DownloadJob> {
+public class DownloadAction extends RetryingConcurrentClientAction {
 
     private GetFileClient getFileClient;
     private EventHandler eventHandler;
@@ -35,7 +35,7 @@ public class DownloadAction extends RetryingConcurrentClientAction<DownloadJob> 
     }
     
     @Override
-    protected void startJob(DownloadJob job) throws IOException {
+    protected void startJob(Job job) throws IOException {
         super.runningJobs.addJob(job);
         job.incrementAttempts();
         getFileClient.getFileFromFastestPillar(super.collectionID, job.getRemoteFileID(), null, job.getUrl(), 
@@ -43,7 +43,7 @@ public class DownloadAction extends RetryingConcurrentClientAction<DownloadJob> 
     }
 
     @Override
-    protected DownloadJob createJob(String originalFilename, String checksum) throws SkipFileException, MalformedURLException {
+    protected Job createJob(String originalFilename, String checksum) throws SkipFileException, MalformedURLException {
         Path localFile = Paths.get(originalFilename);
         // Figure out how to handle file with prefixes when downloading..
         if(Files.exists(localFile)) {
@@ -51,7 +51,7 @@ public class DownloadAction extends RetryingConcurrentClientAction<DownloadJob> 
         }
         String remoteFilename = FileIDTranslationUtil.localToRemote(originalFilename, super.localPrefix, 
                 super.remotePrefix);
-        DownloadJob job = new DownloadJob(localFile, remoteFilename, BitmagUtils.getChecksum(checksum), 
+        Job job = new Job(localFile, remoteFilename, BitmagUtils.getChecksum(checksum), 
                 getUrl(remoteFilename));
         
         return job;

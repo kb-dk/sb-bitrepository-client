@@ -11,7 +11,7 @@ import org.bitrepository.modify.deletefile.DeleteFileClient;
 import dk.statsbiblioteket.bitrepository.commandline.CliOptions;
 import dk.statsbiblioteket.bitrepository.commandline.Commandline.Action;
 import dk.statsbiblioteket.bitrepository.commandline.action.delete.DeleteFilesEventHandler;
-import dk.statsbiblioteket.bitrepository.commandline.action.delete.DeleteJob;
+import dk.statsbiblioteket.bitrepository.commandline.action.job.Job;
 import dk.statsbiblioteket.bitrepository.commandline.util.ArgumentValidationUtils;
 import dk.statsbiblioteket.bitrepository.commandline.util.BitmagUtils;
 import dk.statsbiblioteket.bitrepository.commandline.util.FileIDTranslationUtil;
@@ -19,7 +19,7 @@ import dk.statsbiblioteket.bitrepository.commandline.util.InvalidParameterExcept
 import dk.statsbiblioteket.bitrepository.commandline.util.SkipFileException;
 import dk.statsbiblioteket.bitrepository.commandline.util.StatusReporter;
 
-public class DeleteAction extends RetryingConcurrentClientAction<DeleteJob> {
+public class DeleteAction extends RetryingConcurrentClientAction {
 
     private final String pillarID;
     private final EventHandler eventHandler;
@@ -34,7 +34,7 @@ public class DeleteAction extends RetryingConcurrentClientAction<DeleteJob> {
     }
 
     @Override
-    protected void startJob(DeleteJob job) throws IOException {
+    protected void startJob(Job job) throws IOException {
         super.runningJobs.addJob(job);
         job.incrementAttempts();
         deleteFileClient.deleteFile(super.collectionID, job.getRemoteFileID(), pillarID, job.getChecksum(), 
@@ -42,11 +42,11 @@ public class DeleteAction extends RetryingConcurrentClientAction<DeleteJob> {
     }
 
     @Override
-    protected DeleteJob createJob(String originalFilename, String checksum) throws SkipFileException, 
+    protected Job createJob(String originalFilename, String checksum) throws SkipFileException, 
             MalformedURLException {
         String remoteFilename = FileIDTranslationUtil.localToRemote(originalFilename, super.localPrefix, 
                 super.remotePrefix);
-        DeleteJob job = new DeleteJob(Paths.get(originalFilename), remoteFilename, BitmagUtils.getChecksum(checksum));
+        Job job = new Job(Paths.get(originalFilename), remoteFilename, BitmagUtils.getChecksum(checksum), null);
         
         return job;
     }

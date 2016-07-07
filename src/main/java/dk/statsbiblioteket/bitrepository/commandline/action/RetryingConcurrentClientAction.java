@@ -24,7 +24,7 @@ import dk.statsbiblioteket.bitrepository.commandline.util.InvalidParameterExcept
 import dk.statsbiblioteket.bitrepository.commandline.util.SkipFileException;
 import dk.statsbiblioteket.bitrepository.commandline.util.StatusReporter;
 
-public abstract class RetryingConcurrentClientAction<T extends Job> implements ClientAction {
+public abstract class RetryingConcurrentClientAction implements ClientAction {
 
     private final Logger log = LoggerFactory.getLogger(getClass());
 
@@ -33,8 +33,8 @@ public abstract class RetryingConcurrentClientAction<T extends Job> implements C
     protected String remotePrefix = null;
     protected String collectionID;
     protected Path sumFile;
-    protected RunningJobs<T> runningJobs;
-    protected final BlockingQueue<T> failedJobsQueue = new LinkedBlockingQueue<>();
+    protected RunningJobs<Job> runningJobs;
+    protected final BlockingQueue<Job> failedJobsQueue = new LinkedBlockingQueue<>();
     protected StatusReporter reporter;
     
     public RetryingConcurrentClientAction(CommandLine cmd, StatusReporter reporter) throws InvalidParameterException {
@@ -58,7 +58,7 @@ public abstract class RetryingConcurrentClientAction<T extends Job> implements C
                 String[] parts = line.split("  ");
                 String origFilename = parts[1];
                 String checksum = parts[0];
-                T job;
+                Job job;
                 try {
                     job = createJob(origFilename, checksum);
                 } catch (SkipFileException e) {
@@ -85,9 +85,9 @@ public abstract class RetryingConcurrentClientAction<T extends Job> implements C
     
     
     protected void retryFailedJobs() throws IOException {
-        Set<T> jobs = new HashSet<>();
+        Set<Job> jobs = new HashSet<>();
         failedJobsQueue.drainTo(jobs);
-        for(T job : jobs) {
+        for(Job job : jobs) {
             if(job.getAttempts() < maxRetries) {
                 startJob(job);
             } else {
@@ -101,8 +101,8 @@ public abstract class RetryingConcurrentClientAction<T extends Job> implements C
         return (runningJobs.isEmpty() && failedJobsQueue.isEmpty());
     }
     
-    protected abstract void startJob(T job) throws IOException;
+    protected abstract void startJob(Job job) throws IOException;
     
-    protected abstract T createJob(String originalFilename, String checksum) throws SkipFileException, MalformedURLException;
+    protected abstract Job createJob(String originalFilename, String checksum) throws SkipFileException, MalformedURLException;
 
 }

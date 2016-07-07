@@ -15,15 +15,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import dk.statsbiblioteket.bitrepository.commandline.Commandline.Action;
+import dk.statsbiblioteket.bitrepository.commandline.action.job.Job;
 import dk.statsbiblioteket.bitrepository.commandline.action.upload.PutFilesEventHandler;
-import dk.statsbiblioteket.bitrepository.commandline.action.upload.PutJob;
 import dk.statsbiblioteket.bitrepository.commandline.util.BitmagUtils;
 import dk.statsbiblioteket.bitrepository.commandline.util.FileIDTranslationUtil;
 import dk.statsbiblioteket.bitrepository.commandline.util.InvalidParameterException;
 import dk.statsbiblioteket.bitrepository.commandline.util.SkipFileException;
 import dk.statsbiblioteket.bitrepository.commandline.util.StatusReporter;
 
-public class UploadAction extends RetryingConcurrentClientAction<PutJob> {
+public class UploadAction extends RetryingConcurrentClientAction {
 
     private final Logger log = LoggerFactory.getLogger(getClass());
         
@@ -36,15 +36,15 @@ public class UploadAction extends RetryingConcurrentClientAction<PutJob> {
         eventHandler = new PutFilesEventHandler(fileExchange, super.runningJobs, super.failedJobsQueue, super.reporter);
     }
     
-    protected PutJob createJob(String originalFilename, String checksum) throws SkipFileException, MalformedURLException {
+    protected Job createJob(String originalFilename, String checksum) throws SkipFileException, MalformedURLException {
         String remoteFilename = FileIDTranslationUtil.localToRemote(originalFilename, super.localPrefix, 
                 super.remotePrefix);
-        PutJob job = new PutJob(Paths.get(originalFilename), remoteFilename, BitmagUtils.getChecksum(checksum), 
+        Job job = new Job(Paths.get(originalFilename), remoteFilename, BitmagUtils.getChecksum(checksum), 
                 getUrl(remoteFilename));
         return job;
     }
     
-    protected void startJob(PutJob job) throws IOException {
+    protected void startJob(Job job) throws IOException {
         super.runningJobs.addJob(job);
         job.incrementAttempts();
         putFileClient.putFile(super.collectionID, job.getUrl(), job.getRemoteFileID(), Files.size(job.getLocalFile()), 
