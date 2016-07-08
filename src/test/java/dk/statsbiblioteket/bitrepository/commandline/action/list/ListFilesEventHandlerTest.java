@@ -14,8 +14,6 @@ import org.bitrepository.common.utils.CalendarUtils;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
-import dk.statsbiblioteket.bitrepository.commandline.action.list.ListFilesEventHandler;
-
 public class ListFilesEventHandlerTest {
 
     public final static String TEST_COLLECTION = "collection1";
@@ -52,7 +50,7 @@ public class ListFilesEventHandlerTest {
         
         eventHandler.handleEvent(completeEvent);
         
-        Thread.sleep(1000);
+        waiter.waitForFinish(1000);
         Assert.assertTrue(waiter.getFinished());
         Assert.assertFalse(eventHandler.partialResults());
         Assert.assertFalse(eventHandler.hasFailed());
@@ -73,7 +71,7 @@ public class ListFilesEventHandlerTest {
         OperationFailedEvent failedEvent = new OperationFailedEvent(TEST_COLLECTION, null, null);
         eventHandler.handleEvent(failedEvent);
         
-        Thread.sleep(1000);
+        waiter.waitForFinish(1000);
         Assert.assertTrue(waiter.getFinished());
         Assert.assertTrue(eventHandler.hasFailed());
         Assert.assertFalse(eventHandler.partialResults());
@@ -81,6 +79,7 @@ public class ListFilesEventHandlerTest {
     }
     
     private class FinishWaiter implements Runnable {
+        private final Object finishLock = new Object();
         boolean finished = false;
         ListFilesEventHandler handler;
         
@@ -92,13 +91,28 @@ public class ListFilesEventHandlerTest {
             return finished;
         }
         
+        private void finish() {
+            synchronized (finishLock) {
+                finished = true;
+                finishLock.notifyAll();
+            }
+        }
+        
+        public void waitForFinish(long timeout) throws InterruptedException {
+            synchronized (finishLock) {
+                if(finished == false) {
+                    finishLock.wait(timeout);
+                }
+            }
+        }
+        
         public void run() {
             try {
                 handler.waitForFinish();
             } catch (Exception e) {
                 // Err, not sure if we want to do anything?
             }
-            finished = true;
+            finish();
         }
     }
 }

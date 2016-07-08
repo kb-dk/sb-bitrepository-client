@@ -1,23 +1,24 @@
 package dk.statsbiblioteket.bitrepository.commandline.action;
 
-import static org.testng.AssertJUnit.assertTrue;
-import static org.testng.AssertJUnit.assertFalse;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-import static org.mockito.Matchers.eq;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
+import static org.mockito.Matchers.eq;
 import static org.mockito.Matchers.isNull;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.timeout;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
-
+import static org.mockito.Mockito.when;
+import static org.testng.AssertJUnit.assertFalse;
+import static org.testng.AssertJUnit.assertTrue;
 
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
 import org.apache.commons.cli.CommandLine;
+import org.bitrepository.bitrepositoryelements.ChecksumDataForFileTYPE;
+import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.client.eventhandler.CompleteEvent;
 import org.bitrepository.client.eventhandler.EventHandler;
 import org.bitrepository.client.eventhandler.OperationFailedEvent;
@@ -27,13 +28,10 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
 import dk.statsbiblioteket.bitrepository.commandline.CliOptions;
-import dk.statsbiblioteket.bitrepository.commandline.action.ClientAction;
+import dk.statsbiblioteket.bitrepository.commandline.testutil.ActionRunner;
 import dk.statsbiblioteket.bitrepository.commandline.util.BitmagUtils;
 import dk.statsbiblioteket.bitrepository.commandline.util.InvalidParameterException;
 import dk.statsbiblioteket.bitrepository.commandline.util.MD5SumFileWriter;
-
-import org.bitrepository.bitrepositoryelements.ChecksumDataForFileTYPE;
-import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 
 
 public class DeleteActionTest {
@@ -85,7 +83,7 @@ public class DeleteActionTest {
         secondFileComplete.setFileID(fileID2);
         eventHandlerCaptor.getValue().handleEvent(secondFileComplete);
         
-        Thread.sleep(2000);
+        runner.waitForFinish(3000);
         assertTrue(runner.getFinished());
         
         verifyNoMoreInteractions(client);
@@ -140,7 +138,7 @@ public class DeleteActionTest {
         firstFileComplete.setFileID(fileID1);
         eventHandlerCaptor.getValue().handleEvent(firstFileComplete);
         
-        Thread.sleep(2000);
+        runner.waitForFinish(3000);
         assertTrue(runner.getFinished());
         
         verifyNoMoreInteractions(client);
@@ -185,7 +183,7 @@ public class DeleteActionTest {
         secondFileComplete.setFileID(fileID2);
         eventHandlerCaptor.getValue().handleEvent(secondFileComplete);
         
-        Thread.sleep(2000);
+        runner.waitForFinish(3000);
         assertTrue(runner.getFinished());
         
         verifyNoMoreInteractions(client);
@@ -199,26 +197,5 @@ public class DeleteActionTest {
         }
         
     }
-    
-    private class ActionRunner implements Runnable {
-        boolean finished = false;
-        ClientAction action;
-        
-        public ActionRunner(ClientAction action) {
-            this.action = action;
-        }
-        
-        public boolean getFinished() {
-            return finished;
-        }
-        
-        public void run() {
-            try {
-                action.performAction();
-            } catch (Exception e) {
-                // Err, not sure if we want to do anything?
-            }
-            finished = true;
-        }
-    }
+
 }
