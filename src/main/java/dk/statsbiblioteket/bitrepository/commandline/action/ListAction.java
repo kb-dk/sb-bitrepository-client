@@ -30,7 +30,7 @@ public class ListAction implements ClientAction {
 
     private final Logger log = LoggerFactory.getLogger(getClass());
 
-    private final static int PAGE_SIZE = 10000;
+    protected final static int PAGE_SIZE = 10000;
     private GetChecksumsClient getChecksumsClient;
     
     private final String collectionID;
