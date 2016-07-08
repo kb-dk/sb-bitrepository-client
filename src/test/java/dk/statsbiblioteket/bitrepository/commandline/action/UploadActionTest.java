@@ -25,7 +25,6 @@ import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.client.eventhandler.CompleteEvent;
 import org.bitrepository.client.eventhandler.EventHandler;
 import org.bitrepository.client.eventhandler.OperationFailedEvent;
-import org.bitrepository.modify.deletefile.DeleteFileClient;
 import org.bitrepository.modify.putfile.PutFileClient;
 import org.bitrepository.protocol.FileExchange;
 import org.mockito.ArgumentCaptor;
@@ -171,7 +170,7 @@ public class UploadActionTest {
     }
     
     @Test
-    public void testNoRetryRetryFiles() throws InvalidParameterException, IOException, InterruptedException, SkipFileException {
+    public void testNoRetryUploadFiles() throws InvalidParameterException, IOException, InterruptedException, SkipFileException {
         String outputSumFile = "target/UploadActionTest-testNoRetryRetryFiles";
         String fileID1 = "target/UploadActionTest-testNoRetryRetryFiles-file1";
         String fileID2 = "target/UploadActionTest-testNoRetryRetryFiles-file2";
