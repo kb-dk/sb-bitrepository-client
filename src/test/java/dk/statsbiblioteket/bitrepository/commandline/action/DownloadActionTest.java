@@ -1,7 +1,6 @@
 package dk.statsbiblioteket.bitrepository.commandline.action;
 
 import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyLong;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Matchers.isNull;
@@ -21,14 +20,10 @@ import java.nio.file.Paths;
 
 import org.apache.commons.cli.CommandLine;
 import org.bitrepository.access.getfile.GetFileClient;
-import org.bitrepository.bitrepositoryelements.ChecksumDataForFileTYPE;
-import org.bitrepository.bitrepositoryelements.ChecksumSpecTYPE;
 import org.bitrepository.bitrepositoryelements.FilePart;
 import org.bitrepository.client.eventhandler.CompleteEvent;
 import org.bitrepository.client.eventhandler.EventHandler;
 import org.bitrepository.client.eventhandler.OperationFailedEvent;
-import org.bitrepository.modify.deletefile.DeleteFileClient;
-import org.bitrepository.modify.putfile.PutFileClient;
 import org.bitrepository.protocol.FileExchange;
 import org.mockito.ArgumentCaptor;
 import org.testng.annotations.BeforeClass;
