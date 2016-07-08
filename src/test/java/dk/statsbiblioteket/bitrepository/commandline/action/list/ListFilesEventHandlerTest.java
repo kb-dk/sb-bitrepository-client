@@ -1,4 +1,4 @@
-package dk.statsbiblioteket.bitrepository.commandline.action.upload;
+package dk.statsbiblioteket.bitrepository.commandline.action.list;
 
 import java.util.List;
 

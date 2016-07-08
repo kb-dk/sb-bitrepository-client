@@ -55,9 +55,7 @@ public class PutFilesEventHandler implements EventHandler {
                 break;
             case FAILED:
                 log.warn("Failed put file for file '{}'", event.getFileID());
-                removeFileFromFileExchange(job);
-                failedJobsQueue.add(job);
-                runningJobs.removeJob(job);
+                failJob(job);
                 break;
             default:
                 break;
@@ -67,12 +65,19 @@ public class PutFilesEventHandler implements EventHandler {
         }
     }
     
+    private void failJob(Job job) {
+        removeFileFromFileExchange(job);
+        failedJobsQueue.add(job);
+        runningJobs.removeJob(job);
+    }
+    
     private void uploadFile(Job job) {
         try {
             fileExchange.putFile(Files.newInputStream(job.getLocalFile()), job.getUrl());
             log.debug("Finished upload of file {}.", job.getRemoteFileID());
         } catch (IOException e) {
             log.error("Failed to upload file {}.", job.getRemoteFileID(), e);
+            failJob(job);
         }
     }
     
