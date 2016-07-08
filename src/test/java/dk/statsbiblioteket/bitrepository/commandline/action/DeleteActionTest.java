@@ -195,7 +195,6 @@ public class DeleteActionTest {
                 writer.writeChecksumLine(Paths.get(fileID), "abab");
             }
         }
-        
     }
 
 }
