@@ -23,6 +23,7 @@ import dk.statsbiblioteket.bitrepository.commandline.action.MakeChecksumsAction;
 import dk.statsbiblioteket.bitrepository.commandline.action.UploadAction;
 import dk.statsbiblioteket.bitrepository.commandline.util.BitmagUtils;
 import dk.statsbiblioteket.bitrepository.commandline.util.InvalidParameterException;
+import dk.statsbiblioteket.bitrepository.commandline.util.StatusReporter;
 
 /**
  * Main class for running the SB-bitrepository client 
@@ -98,16 +99,19 @@ public class Commandline {
                     ca = new MakeChecksumsAction(cmd);
                     break;
                 case UPLOAD:
-                    ca = new UploadAction(cmd, BitmagUtils.getPutFileClient(), BitmagUtils.getFileExchange());
+                    ca = new UploadAction(cmd, BitmagUtils.getPutFileClient(), BitmagUtils.getFileExchange(),
+                            new StatusReporter(System.err, Action.UPLOAD));
                     break;
                 case LIST: 
                     ca = new ListAction(cmd, BitmagUtils.getChecksumsClient());
                     break;
                 case DOWNLOAD:
-                    ca = new DownloadAction(cmd, BitmagUtils.getFileClient(), BitmagUtils.getFileExchange());
+                    ca = new DownloadAction(cmd, BitmagUtils.getFileClient(), BitmagUtils.getFileExchange(),
+                            new StatusReporter(System.err, Action.DOWNLOAD));
                     break;
                 case DELETE:
-                    ca = new DeleteAction(cmd, BitmagUtils.getDeleteFileClient());
+                    ca = new DeleteAction(cmd, BitmagUtils.getDeleteFileClient(), 
+                            new StatusReporter(System.err, Action.DELETE));
                     break;
                 default:
                     throw new RuntimeException("Unknown action: '" + action + "'");

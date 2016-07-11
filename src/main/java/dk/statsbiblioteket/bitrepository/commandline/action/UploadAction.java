@@ -15,7 +15,6 @@ import org.bitrepository.protocol.FileExchange;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import dk.statsbiblioteket.bitrepository.commandline.Commandline.Action;
 import dk.statsbiblioteket.bitrepository.commandline.action.job.Job;
 import dk.statsbiblioteket.bitrepository.commandline.action.upload.PutFilesEventHandler;
 import dk.statsbiblioteket.bitrepository.commandline.util.BitmagUtils;
@@ -42,10 +41,12 @@ public class UploadAction extends RetryingConcurrentClientAction {
      * @param cmd The {@link CommandLine} with parsed arguments
      * @param putFileClient The {@link PutFileClient} to put the files in the repository
      * @param fileExchange The {@link FileExchange} used to transfer files between client and repository
+     * @param reporter The {@link StatusReporter} to report status for processed files 
      * @throws InvalidParameterException if input fails validation
      */
-    public UploadAction(CommandLine cmd, PutFileClient putFileClient, FileExchange fileExchange) throws InvalidParameterException {
-        super(cmd, new StatusReporter(System.err, Action.UPLOAD));
+    public UploadAction(CommandLine cmd, PutFileClient putFileClient, FileExchange fileExchange, StatusReporter reporter) 
+            throws InvalidParameterException {
+        super(cmd, reporter);
         this.putFileClient = putFileClient;
         eventHandler = new PutFilesEventHandler(fileExchange, super.runningJobs, super.failedJobsQueue, super.reporter);
     }

@@ -7,6 +7,7 @@ import static org.mockito.Matchers.isNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.timeout;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 import static org.testng.AssertJUnit.assertFalse;
@@ -32,6 +33,7 @@ import dk.statsbiblioteket.bitrepository.commandline.testutil.ActionRunner;
 import dk.statsbiblioteket.bitrepository.commandline.util.BitmagUtils;
 import dk.statsbiblioteket.bitrepository.commandline.util.InvalidParameterException;
 import dk.statsbiblioteket.bitrepository.commandline.util.MD5SumFileWriter;
+import dk.statsbiblioteket.bitrepository.commandline.util.StatusReporter;
 
 
 public class DeleteActionTest {
@@ -61,8 +63,9 @@ public class DeleteActionTest {
         when(cmd.getOptionValue(anyString(), anyString())).thenCallRealMethod();
         
         DeleteFileClient client = mock(DeleteFileClient.class);
-        
-        ActionRunner runner = new ActionRunner(new DeleteAction(cmd, client));
+        StatusReporter reporter = mock(StatusReporter.class);
+                
+        ActionRunner runner = new ActionRunner(new DeleteAction(cmd, client, reporter));
         Thread t = new Thread(runner);
         t.start();
 
@@ -86,6 +89,13 @@ public class DeleteActionTest {
         runner.waitForFinish(3000);
         assertTrue(runner.getFinished());
         
+        verify(reporter, times(1)).reportStart(eq(fileID1));
+        verify(reporter, times(1)).reportFinish(eq(fileID1));
+        verify(reporter, times(1)).reportStart(eq(fileID2));
+        verify(reporter, times(1)).reportFinish(eq(fileID2));
+        verify(reporter, times(1)).printStatistics();
+        verifyNoMoreInteractions(reporter);
+        
         verifyNoMoreInteractions(client);
     }
     
@@ -107,8 +117,9 @@ public class DeleteActionTest {
         when(cmd.getOptionValue(eq(CliOptions.ASYNC_OPT), anyString())).thenCallRealMethod();
         
         DeleteFileClient client = mock(DeleteFileClient.class);
+        StatusReporter reporter = mock(StatusReporter.class);
         
-        ActionRunner runner = new ActionRunner(new DeleteAction(cmd, client));
+        ActionRunner runner = new ActionRunner(new DeleteAction(cmd, client, reporter));
         Thread t = new Thread(runner);
         t.start();
 
@@ -141,6 +152,13 @@ public class DeleteActionTest {
         runner.waitForFinish(3000);
         assertTrue(runner.getFinished());
         
+        verify(reporter, times(1)).reportStart(eq(fileID1));
+        verify(reporter, times(1)).reportStart(eq(fileID2));
+        verify(reporter, times(1)).reportFinish(eq(fileID2));
+        verify(reporter, times(1)).reportFinish(eq(fileID1));
+        verify(reporter, times(1)).printStatistics();
+        verifyNoMoreInteractions(reporter);
+        
         verifyNoMoreInteractions(client);
     }
     
@@ -161,8 +179,9 @@ public class DeleteActionTest {
         when(cmd.getOptionValue(anyString(), anyString())).thenCallRealMethod();
         
         DeleteFileClient client = mock(DeleteFileClient.class);
+        StatusReporter reporter = mock(StatusReporter.class);
         
-        ActionRunner runner = new ActionRunner(new DeleteAction(cmd, client));
+        ActionRunner runner = new ActionRunner(new DeleteAction(cmd, client, reporter));
         Thread t = new Thread(runner);
         t.start();
 
@@ -185,6 +204,13 @@ public class DeleteActionTest {
         
         runner.waitForFinish(3000);
         assertTrue(runner.getFinished());
+        
+        verify(reporter, times(1)).reportStart(eq(fileID1));
+        verify(reporter, times(1)).reportFailure(eq(fileID1));
+        verify(reporter, times(1)).reportStart(eq(fileID2));
+        verify(reporter, times(1)).reportFinish(eq(fileID2));
+        verify(reporter, times(1)).printStatistics();
+        verifyNoMoreInteractions(reporter);
         
         verifyNoMoreInteractions(client);
     }

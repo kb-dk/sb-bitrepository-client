@@ -12,7 +12,6 @@ import org.bitrepository.access.getfile.GetFileClient;
 import org.bitrepository.client.eventhandler.EventHandler;
 import org.bitrepository.protocol.FileExchange;
 
-import dk.statsbiblioteket.bitrepository.commandline.Commandline.Action;
 import dk.statsbiblioteket.bitrepository.commandline.action.download.DownloadFilesEventHandler;
 import dk.statsbiblioteket.bitrepository.commandline.action.job.Job;
 import dk.statsbiblioteket.bitrepository.commandline.util.BitmagUtils;
@@ -38,10 +37,12 @@ public class DownloadAction extends RetryingConcurrentClientAction {
      * @param cmd The {@link CommandLine} with parsed arguments
      * @param getFileClient The {@link GetFileClient} to get files from the repository
      * @param fileExchange The {@link FileExchange} used to transfer files between repository and client
+     * @param reporter The {@link StatusReporter} to report status for processed files 
      * @throws InvalidParameterException if input fails validation
      */
-    public DownloadAction(CommandLine cmd, GetFileClient getFileClient, FileExchange fileExchange) throws InvalidParameterException {
-        super(cmd, new StatusReporter(System.err, Action.DOWNLOAD));
+    public DownloadAction(CommandLine cmd, GetFileClient getFileClient, FileExchange fileExchange, 
+            StatusReporter reporter) throws InvalidParameterException {
+        super(cmd, reporter);
         this.getFileClient = getFileClient;
         eventHandler = new DownloadFilesEventHandler(fileExchange, super.runningJobs, super.failedJobsQueue, 
                 super.reporter);

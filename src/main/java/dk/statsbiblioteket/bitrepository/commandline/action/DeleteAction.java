@@ -8,7 +8,6 @@ import org.bitrepository.client.eventhandler.EventHandler;
 import org.bitrepository.modify.deletefile.DeleteFileClient;
 
 import dk.statsbiblioteket.bitrepository.commandline.CliOptions;
-import dk.statsbiblioteket.bitrepository.commandline.Commandline.Action;
 import dk.statsbiblioteket.bitrepository.commandline.action.delete.DeleteFilesEventHandler;
 import dk.statsbiblioteket.bitrepository.commandline.action.job.Job;
 import dk.statsbiblioteket.bitrepository.commandline.util.ArgumentValidationUtils;
@@ -33,10 +32,12 @@ public class DeleteAction extends RetryingConcurrentClientAction {
      * Constructor for the action
      * @param cmd The {@link CommandLine} with parsed arguments
      * @param deleteFileClient The {@link DeleteFileClient} to be used to delete files with 
+     * @param reporter The {@link StatusReporter} to report status for processed files
      * @throws InvalidParameterException if input fails validation
      */
-    public DeleteAction(CommandLine cmd, DeleteFileClient deleteFileClient) throws InvalidParameterException {
-        super(cmd, new StatusReporter(System.err, Action.DELETE));
+    public DeleteAction(CommandLine cmd, DeleteFileClient deleteFileClient, StatusReporter reporter) 
+            throws InvalidParameterException {
+        super(cmd, reporter);
         this.deleteFileClient = deleteFileClient;
         pillarID = cmd.getOptionValue(CliOptions.PILLAR_OPT);
         eventHandler = new DeleteFilesEventHandler(super.runningJobs, super.failedJobsQueue, super.reporter);

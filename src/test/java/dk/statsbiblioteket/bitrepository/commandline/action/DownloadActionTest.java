@@ -6,6 +6,7 @@ import static org.mockito.Matchers.eq;
 import static org.mockito.Matchers.isNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.timeout;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
@@ -36,6 +37,7 @@ import dk.statsbiblioteket.bitrepository.commandline.util.FileIDTranslationUtil;
 import dk.statsbiblioteket.bitrepository.commandline.util.InvalidParameterException;
 import dk.statsbiblioteket.bitrepository.commandline.util.MD5SumFileWriter;
 import dk.statsbiblioteket.bitrepository.commandline.util.SkipFileException;
+import dk.statsbiblioteket.bitrepository.commandline.util.StatusReporter;
 
 public class DownloadActionTest {
     
@@ -70,8 +72,9 @@ public class DownloadActionTest {
         
         GetFileClient client = mock(GetFileClient.class);
         FileExchange fileExchange = mock(FileExchange.class);
+        StatusReporter reporter = mock(StatusReporter.class);
         
-        ActionRunner runner = new ActionRunner(new DownloadAction(cmd, client, fileExchange));
+        ActionRunner runner = new ActionRunner(new DownloadAction(cmd, client, fileExchange, reporter));
         Thread t = new Thread(runner);
         t.start();
         
@@ -92,6 +95,13 @@ public class DownloadActionTest {
         
         runner.waitForFinish(3000);
         assertTrue(runner.getFinished());
+        
+        verify(reporter, times(1)).reportStart(eq(fileID1));
+        verify(reporter, times(1)).reportFinish(eq(fileID1));
+        verify(reporter, times(1)).reportStart(eq(fileID2));
+        verify(reporter, times(1)).reportFinish(eq(fileID2));
+        verify(reporter, times(1)).printStatistics();
+        verifyNoMoreInteractions(reporter);
         
         verifyNoMoreInteractions(client);
     }
@@ -120,8 +130,9 @@ public class DownloadActionTest {
         
         GetFileClient client = mock(GetFileClient.class);
         FileExchange fileExchange = mock(FileExchange.class);
+        StatusReporter reporter = mock(StatusReporter.class);
         
-        ActionRunner runner = new ActionRunner(new DownloadAction(cmd, client, fileExchange));
+        ActionRunner runner = new ActionRunner(new DownloadAction(cmd, client, fileExchange, reporter));
         Thread t = new Thread(runner);
         t.start();
         
@@ -135,6 +146,12 @@ public class DownloadActionTest {
         
         runner.waitForFinish(3000);
         assertTrue(runner.getFinished());
+        
+        verify(reporter, times(1)).reportSkipFile(eq(fileID1));
+        verify(reporter, times(1)).reportStart(eq(fileID2));
+        verify(reporter, times(1)).reportFinish(eq(fileID2));
+        verify(reporter, times(1)).printStatistics();
+        verifyNoMoreInteractions(reporter);
         
         verifyNoMoreInteractions(client);
     }
@@ -163,8 +180,9 @@ public class DownloadActionTest {
         
         GetFileClient client = mock(GetFileClient.class);
         FileExchange fileExchange = mock(FileExchange.class);
-
-        ActionRunner runner = new ActionRunner(new DownloadAction(cmd, client, fileExchange));
+        StatusReporter reporter = mock(StatusReporter.class);
+        
+        ActionRunner runner = new ActionRunner(new DownloadAction(cmd, client, fileExchange, reporter));
         Thread t = new Thread(runner);
         t.start();
 
@@ -195,6 +213,13 @@ public class DownloadActionTest {
         runner.waitForFinish(3000);
         assertTrue(runner.getFinished());
         
+        verify(reporter, times(1)).reportStart(eq(fileID1));
+        verify(reporter, times(1)).reportStart(eq(fileID2));
+        verify(reporter, times(1)).reportFinish(eq(fileID2));
+        verify(reporter, times(1)).reportFinish(eq(fileID1));
+        verify(reporter, times(1)).printStatistics();
+        verifyNoMoreInteractions(reporter);
+        
         verifyNoMoreInteractions(client);
     }
     
@@ -221,8 +246,9 @@ public class DownloadActionTest {
         
         GetFileClient client = mock(GetFileClient.class);
         FileExchange fileExchange = mock(FileExchange.class);
-
-        ActionRunner runner = new ActionRunner(new DownloadAction(cmd, client, fileExchange));
+        StatusReporter reporter = mock(StatusReporter.class);
+        
+        ActionRunner runner = new ActionRunner(new DownloadAction(cmd, client, fileExchange, reporter));
         Thread t = new Thread(runner);
         t.start();
 
@@ -243,6 +269,13 @@ public class DownloadActionTest {
         
         runner.waitForFinish(3000);
         assertTrue(runner.getFinished());
+        
+        verify(reporter, times(1)).reportStart(eq(fileID1));
+        verify(reporter, times(1)).reportFailure(eq(fileID1));
+        verify(reporter, times(1)).reportStart(eq(fileID2));
+        verify(reporter, times(1)).reportFinish(eq(fileID2));
+        verify(reporter, times(1)).printStatistics();
+        verifyNoMoreInteractions(reporter);
         
         verifyNoMoreInteractions(client);
     }
