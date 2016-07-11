@@ -24,6 +24,13 @@ import dk.statsbiblioteket.bitrepository.commandline.util.InvalidParameterExcept
 import dk.statsbiblioteket.bitrepository.commandline.util.SkipFileException;
 import dk.statsbiblioteket.bitrepository.commandline.util.StatusReporter;
 
+/**
+ * Abstract class to gather the common parts for actions that:
+ * - Reads a sumfile and performs an action each file. 
+ * - Needs filtering capability to ommit or translate files between local and remote
+ * - Needs support for retrying operations/jobs
+ * - Needs support for running concurrent operations/jobs
+ */
 public abstract class RetryingConcurrentClientAction implements ClientAction {
 
     private final Logger log = LoggerFactory.getLogger(getClass());
@@ -37,6 +44,12 @@ public abstract class RetryingConcurrentClientAction implements ClientAction {
     protected final BlockingQueue<Job> failedJobsQueue = new LinkedBlockingQueue<>();
     protected StatusReporter reporter;
     
+    /**
+     * Constructor 
+     * @param cmd The {@link CommandLine} with parsed arguments
+     * @param reporter The {@link StatusReporter} to report status for processed files 
+     * @throws InvalidParameterException if input fails validation
+     */
     public RetryingConcurrentClientAction(CommandLine cmd, StatusReporter reporter) throws InvalidParameterException {
         collectionID = cmd.getOptionValue(CliOptions.COLLECTION_OPT);
         sumFile = Paths.get(cmd.getOptionValue(CliOptions.SUMFILE_OPT));
@@ -83,8 +96,11 @@ public abstract class RetryingConcurrentClientAction implements ClientAction {
         }
     }
     
-    
-    protected void retryFailedJobs() throws IOException {
+    /**
+     * Method to handle the re-scheduling of failed jobs, or to report them as failed
+     * if the maximum number of attempts have been tried.  
+     */
+    protected void retryFailedJobs(){
         Set<Job> jobs = new HashSet<>();
         failedJobsQueue.drainTo(jobs);
         for(Job job : jobs) {
@@ -96,12 +112,18 @@ public abstract class RetryingConcurrentClientAction implements ClientAction {
         }
     }
     
+    /**
+     * Method to determine if processing is finished. I.e. there is no more running jobs
+     * and no jobs potentially needs to be retried. 
+     * @return true if there are no running jobs an the queue with failed jobs is empty, 
+     *          otherwise false
+     */
     protected boolean finished() {
         /* Ye be warned, the sequence of the '&&' matters.*/
         return (runningJobs.isEmpty() && failedJobsQueue.isEmpty());
     }
     
-    protected abstract void startJob(Job job) throws IOException;
+    protected abstract void startJob(Job job);
     
     protected abstract Job createJob(String originalFilename, String checksum) throws SkipFileException, MalformedURLException;
 

@@ -6,11 +6,14 @@ package dk.statsbiblioteket.bitrepository.commandline.util;
 public class FileIDTranslationUtil {
 
     /**
-     * Translate local FileID to remote fileID
+     * Translate local FileID to remote fileID. 
+     * If a localPrefix is supplied and the local filename does not start with that
+     * a {@link SkipFileException} is thrown to indicate that the file should not be processed further 
      * @param localFileID The id of the file locally
      * @param localPrefix The local prefix, may be null
      * @param remotePrefix The remote prefix, may be null
-     * @return remoteFileID The file ID as it should be remotely.  
+     * @return remoteFileID The file ID as it should be remotely.
+     * @throws SkipFileException if a file should not be processed  
      */
     public static String localToRemote(String localFileID, String localPrefix, String remotePrefix) throws SkipFileException {
         String stripped;
@@ -37,10 +40,13 @@ public class FileIDTranslationUtil {
     
     /**
      * Translate remote FileID to local fileID
+     * If a remotePrefix is supplied and the remote filename does not start with that
+     * a {@link SkipFileException} is thrown to indicate that the file should not be processed further
      * @param remoteFileID The id of the file remotely
      * @param localPrefix The local prefix, may be null
      * @param remotePrefix The remote prefix, may be null
-     * @return localFileID The file ID as it should be locally.  
+     * @return localFileID The file ID as it should be locally.
+     * @throws SkipFileException if a file should not be processed  
      */    
     public static String remoteToLocal(String remoteFileID, String localPrefix, String remotePrefix) throws SkipFileException {
         String stripped;

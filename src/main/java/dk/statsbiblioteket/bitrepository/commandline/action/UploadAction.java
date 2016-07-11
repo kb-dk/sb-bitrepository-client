@@ -8,6 +8,7 @@ import java.nio.file.Paths;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.codec.digest.DigestUtils;
+import org.bitrepository.access.getfile.GetFileClient;
 import org.bitrepository.client.eventhandler.EventHandler;
 import org.bitrepository.modify.putfile.PutFileClient;
 import org.bitrepository.protocol.FileExchange;
@@ -23,19 +24,33 @@ import dk.statsbiblioteket.bitrepository.commandline.util.InvalidParameterExcept
 import dk.statsbiblioteket.bitrepository.commandline.util.SkipFileException;
 import dk.statsbiblioteket.bitrepository.commandline.util.StatusReporter;
 
+/**
+ * Action for handling upload of files to the repository. 
+ * The class uses the functionality of {@link RetryingConcurrentClientAction} to handle 
+ * reading sumfile containing which files to process, concurrency and retry logic.
+ * Files that are already uploaded are omitted by utilizing the bitrepository clients build in idempotence. 
+ * The action class chooses the fasted pillar which is deemed fastest by the {@link GetFileClient}
+ */
 public class UploadAction extends RetryingConcurrentClientAction {
-
     private final Logger log = LoggerFactory.getLogger(getClass());
-        
+    
     private PutFileClient putFileClient;
     private EventHandler eventHandler;
     
+    /**
+     * Constructor for the action
+     * @param cmd The {@link CommandLine} with parsed arguments
+     * @param putFileClient The {@link PutFileClient} to put the files in the repository
+     * @param fileExchange The {@link FileExchange} used to transfer files between client and repository
+     * @throws InvalidParameterException if input fails validation
+     */
     public UploadAction(CommandLine cmd, PutFileClient putFileClient, FileExchange fileExchange) throws InvalidParameterException {
         super(cmd, new StatusReporter(System.err, Action.UPLOAD));
         this.putFileClient = putFileClient;
         eventHandler = new PutFilesEventHandler(fileExchange, super.runningJobs, super.failedJobsQueue, super.reporter);
     }
     
+    @Override
     protected Job createJob(String originalFilename, String checksum) throws SkipFileException, MalformedURLException {
         String remoteFilename = FileIDTranslationUtil.localToRemote(originalFilename, super.localPrefix, 
                 super.remotePrefix);
@@ -44,13 +59,23 @@ public class UploadAction extends RetryingConcurrentClientAction {
         return job;
     }
     
-    protected void startJob(Job job) throws IOException {
-        super.runningJobs.addJob(job);
-        job.incrementAttempts();
-        putFileClient.putFile(super.collectionID, job.getUrl(), job.getRemoteFileID(), Files.size(job.getLocalFile()), 
-                job.getChecksum(), null, eventHandler, null);
+    @Override
+    protected void startJob(Job job) {
+        try {
+            super.runningJobs.addJob(job);
+            job.incrementAttempts();
+            putFileClient.putFile(super.collectionID, job.getUrl(), job.getRemoteFileID(), Files.size(job.getLocalFile()), 
+                    job.getChecksum(), null, eventHandler, null);
+        } catch (IOException e) {
+            log.error("Could not get filesize for file '{}'", job.getLocalFile(), e);
+            throw new RuntimeException(e);
+        }
     }
     
+    /**
+     * Method to create the URL to where the file should be placed on the {@link FileExchange}. 
+     * The URL's should be unique, but reproducible so as to help keep the {@link FileExchange} clean.   
+     */
     private URL getUrl(String filename) throws MalformedURLException {
         URL baseurl = BitmagUtils.getFileExchangeBaseURL();
         String path = DigestUtils.md5Hex(super.collectionID + filename);

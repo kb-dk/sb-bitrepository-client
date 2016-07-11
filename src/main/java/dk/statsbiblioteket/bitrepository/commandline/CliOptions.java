@@ -55,6 +55,11 @@ public class CliOptions {
         actionDetailedOption.setRequired(true);
     }
     
+    /**
+     * Method to print the help message
+     * @param scriptName The name of the program as it was invoked
+     * @param options The options to include in the help message 
+     */
     public static void printHelp(String scriptName, Options options) {
         String header = "Batch client to work with bitrepository.org bitrepository\n\n";
         String footer = "\nPlease report issues at https://github.com/statsbiblioteket/sb-bitrepository-client";
@@ -63,6 +68,10 @@ public class CliOptions {
         formatter.printHelp(scriptName, header, options, footer, true);
     }
     
+    /**
+     * Method to print the help information when no action is specified.  
+     * @param scriptName The name of the program as it was invoked
+     */
     public static void printActionHelp(String scriptName) {
         Options opts = new Options();
         opts.addOption(actionDetailedOption);
@@ -70,6 +79,10 @@ public class CliOptions {
         
     }
     
+    /**
+     * Method to retrieve all the various options available for usage
+     * @return The options for use in the client.  
+     */
     public static Options getAllOptions() {
         Options options = new Options();
         options.addOption((Option) actionOption.clone());
@@ -87,6 +100,11 @@ public class CliOptions {
         return options;
     }
     
+    /**
+     * Method to retrieve the options that are relevant for a specific Action
+     * @param action The {@link Action} to obtain options for
+     * @return The options relevant for the given Action 
+     */
     public static Options getActionOptions(Action action) {
         Options options = new Options();
         options.addOption((Option) helpOption.clone());
@@ -134,6 +152,11 @@ public class CliOptions {
         return options;
     }
     
+    /**
+     * Helper method to clone and make an option required for the specific use.
+     * @param opt The option to deliver a clone marked as required
+     * @return clone of the inputtet option marked as required  
+     */
     private static Option makeOptionRequired(Option opt) {
         Option optClone = (Option) opt.clone();
         optClone.setRequired(true);

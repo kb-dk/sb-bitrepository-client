@@ -27,7 +27,8 @@ public class MD5SumFileWriter implements AutoCloseable {
      * Each line follows the format of coreutils md5sum in text mode and is terminated
      * with the operatingsystem specific newline.
      * @param file The file that the line is about
-     * @param checksum The checksum for the file.    
+     * @param checksum The checksum for the file. 
+     * @throws IOException if there is trouble writing the output   
      */
     public void writeChecksumLine(Path file, String checksum) throws IOException {
         String line = checksum + "  " + file.toString();

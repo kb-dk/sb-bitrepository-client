@@ -24,6 +24,9 @@ import dk.statsbiblioteket.bitrepository.commandline.action.UploadAction;
 import dk.statsbiblioteket.bitrepository.commandline.util.BitmagUtils;
 import dk.statsbiblioteket.bitrepository.commandline.util.InvalidParameterException;
 
+/**
+ * Main class for running the SB-bitrepository client 
+ */
 public class Commandline {
 
     final static Logger log = LoggerFactory.getLogger(Commandline.class);
@@ -31,6 +34,9 @@ public class Commandline {
     private final static String CONFIG_DIR_PROPERTY = "sbclient.config.dir";
     private final static String CLIENT_CERTIFICATE_FILE = "client-certificate.pem";
     
+    /**
+     * Action types for the available actions.  
+     */
     public static enum Action {
         MAKECHECKUSMS("makechecksums"), 
         UPLOAD("upload"),

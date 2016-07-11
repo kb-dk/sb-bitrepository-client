@@ -25,13 +25,15 @@ public class Job {
 
     /**
      * Gets the path to the local file 
+     * @return {@link Path} to the local file
      */
     public Path getLocalFile() {
         return localFile;
     }
 
     /**
-     * Gets the id of the file on the remote side.  
+     * Gets the id of the file on the remote side.
+     * @return ID of the file as it will be on the remote  
      */
     public String getRemoteFileID() {
         return remoteFileID;

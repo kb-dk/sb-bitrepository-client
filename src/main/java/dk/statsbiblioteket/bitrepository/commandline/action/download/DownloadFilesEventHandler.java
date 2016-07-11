@@ -88,6 +88,10 @@ public class DownloadFilesEventHandler implements EventHandler {
         }
     }
     
+    /**
+     * Method to remove the file from the file exchange
+     * @param job The job to remove the file for.  
+     */
     private void removeFileFromFileExchange(Job job) {
         try {
             fileExchange.deleteFile(job.getUrl());

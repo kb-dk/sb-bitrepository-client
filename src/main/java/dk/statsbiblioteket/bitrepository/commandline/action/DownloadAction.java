@@ -1,6 +1,5 @@
 package dk.statsbiblioteket.bitrepository.commandline.action;
 
-import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.file.Files;
@@ -22,11 +21,25 @@ import dk.statsbiblioteket.bitrepository.commandline.util.InvalidParameterExcept
 import dk.statsbiblioteket.bitrepository.commandline.util.SkipFileException;
 import dk.statsbiblioteket.bitrepository.commandline.util.StatusReporter;
 
+/**
+ * Action for handling download of files from the repository. 
+ * The class uses the functionality of {@link RetryingConcurrentClientAction} to handle 
+ * reading sumfile containing which files to process, concurrency and retry logic.
+ * Files that are already downloaded (or have naming collisions) are explicitly omitted from download. 
+ * The action class chooses the fasted pillar which is deemed fastest by the {@link GetFileClient}
+ */
 public class DownloadAction extends RetryingConcurrentClientAction {
 
     private GetFileClient getFileClient;
     private EventHandler eventHandler;
 
+    /**
+     * Constructor for the action
+     * @param cmd The {@link CommandLine} with parsed arguments
+     * @param getFileClient The {@link GetFileClient} to get files from the repository
+     * @param fileExchange The {@link FileExchange} used to transfer files between repository and client
+     * @throws InvalidParameterException if input fails validation
+     */
     public DownloadAction(CommandLine cmd, GetFileClient getFileClient, FileExchange fileExchange) throws InvalidParameterException {
         super(cmd, new StatusReporter(System.err, Action.DOWNLOAD));
         this.getFileClient = getFileClient;
@@ -35,7 +48,7 @@ public class DownloadAction extends RetryingConcurrentClientAction {
     }
     
     @Override
-    protected void startJob(Job job) throws IOException {
+    protected void startJob(Job job) {
         super.runningJobs.addJob(job);
         job.incrementAttempts();
         getFileClient.getFileFromFastestPillar(super.collectionID, job.getRemoteFileID(), null, job.getUrl(), 
@@ -57,6 +70,10 @@ public class DownloadAction extends RetryingConcurrentClientAction {
         return job;
     }
     
+    /**
+     * Method to create the URL to where the file should be placed on the {@link FileExchange}. 
+     * The URL's should be unique, but reproducible so as to help keep the {@link FileExchange} clean.   
+     */
     private URL getUrl(String filename) throws MalformedURLException {
         URL baseurl = BitmagUtils.getFileExchangeBaseURL();
         String path = DigestUtils.md5Hex(super.collectionID + filename);

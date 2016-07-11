@@ -12,6 +12,10 @@ public class RunningJobs {
     private Map<String, Job> jobs = new ConcurrentHashMap<>(); 
     private Semaphore jobLimiter;
 
+    /**
+     * Constructor
+     * @param limit The maximum number of concurrent jobs.  
+     */
     public RunningJobs(int limit) {
         jobLimiter = new Semaphore(limit);
     }
@@ -48,6 +52,7 @@ public class RunningJobs {
     
     /**
      * Determine if there are no more jobs in the queue 
+     * @return true if there are no more jobs, otherwise false
      */
      public boolean isEmpty() {
         return jobs.isEmpty();

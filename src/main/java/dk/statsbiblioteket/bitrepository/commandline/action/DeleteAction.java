@@ -1,6 +1,5 @@
 package dk.statsbiblioteket.bitrepository.commandline.action;
 
-import java.io.IOException;
 import java.net.MalformedURLException;
 import java.nio.file.Paths;
 
@@ -19,12 +18,23 @@ import dk.statsbiblioteket.bitrepository.commandline.util.InvalidParameterExcept
 import dk.statsbiblioteket.bitrepository.commandline.util.SkipFileException;
 import dk.statsbiblioteket.bitrepository.commandline.util.StatusReporter;
 
+/**
+ * Action handling deletion of files on a specific pillar. 
+ * The class uses the functionality of {@link RetryingConcurrentClientAction} to handle 
+ * reading sumfile containing which files to process, concurrency and retry logic.  
+ */
 public class DeleteAction extends RetryingConcurrentClientAction {
 
     private final String pillarID;
     private final EventHandler eventHandler;
     private DeleteFileClient deleteFileClient;
     
+    /**
+     * Constructor for the action
+     * @param cmd The {@link CommandLine} with parsed arguments
+     * @param deleteFileClient The {@link DeleteFileClient} to be used to delete files with 
+     * @throws InvalidParameterException if input fails validation
+     */
     public DeleteAction(CommandLine cmd, DeleteFileClient deleteFileClient) throws InvalidParameterException {
         super(cmd, new StatusReporter(System.err, Action.DELETE));
         this.deleteFileClient = deleteFileClient;
@@ -34,7 +44,7 @@ public class DeleteAction extends RetryingConcurrentClientAction {
     }
 
     @Override
-    protected void startJob(Job job) throws IOException {
+    protected void startJob(Job job) {
         super.runningJobs.addJob(job);
         job.incrementAttempts();
         deleteFileClient.deleteFile(super.collectionID, job.getRemoteFileID(), pillarID, job.getChecksum(), 

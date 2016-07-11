@@ -5,6 +5,10 @@ package dk.statsbiblioteket.bitrepository.commandline.util;
  */
 public class InvalidParameterException extends Exception {
 
+    /**
+     * Constructor
+     * @param message The message detailing why the parameter validation failed.  
+     */
     InvalidParameterException(String message) {
         super(message);
     }

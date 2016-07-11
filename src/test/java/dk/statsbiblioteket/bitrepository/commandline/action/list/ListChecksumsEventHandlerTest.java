@@ -14,14 +14,14 @@ import org.bitrepository.common.utils.CalendarUtils;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
-public class ListFilesEventHandlerTest {
+public class ListChecksumsEventHandlerTest {
 
     public final static String TEST_COLLECTION = "collection1";
     public final static String TEST_PILLAR = "test-pillar";
     
     @Test
     public void testSuccess() throws InterruptedException {
-        ListFilesEventHandler eventHandler = new ListFilesEventHandler();
+        ListChecksumsEventHandler eventHandler = new ListChecksumsEventHandler(TEST_PILLAR);
         
         FinishWaiter waiter = new FinishWaiter(eventHandler);
         Thread t = new Thread(waiter);
@@ -60,7 +60,7 @@ public class ListFilesEventHandlerTest {
     
     @Test
     public void testFailure() throws InterruptedException {
-        ListFilesEventHandler eventHandler = new ListFilesEventHandler();
+        ListChecksumsEventHandler eventHandler = new ListChecksumsEventHandler(TEST_PILLAR);
         
         FinishWaiter waiter = new FinishWaiter(eventHandler);
         Thread t = new Thread(waiter);
@@ -81,9 +81,9 @@ public class ListFilesEventHandlerTest {
     private class FinishWaiter implements Runnable {
         private final Object finishLock = new Object();
         boolean finished = false;
-        ListFilesEventHandler handler;
+        ListChecksumsEventHandler handler;
         
-        public FinishWaiter(ListFilesEventHandler handler) {
+        public FinishWaiter(ListChecksumsEventHandler handler) {
             this.handler = handler;
         }
         

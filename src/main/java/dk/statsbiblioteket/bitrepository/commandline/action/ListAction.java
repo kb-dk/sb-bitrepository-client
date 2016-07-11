@@ -19,13 +19,18 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import dk.statsbiblioteket.bitrepository.commandline.CliOptions;
-import dk.statsbiblioteket.bitrepository.commandline.action.list.ListFilesEventHandler;
+import dk.statsbiblioteket.bitrepository.commandline.action.list.ListChecksumsEventHandler;
 import dk.statsbiblioteket.bitrepository.commandline.util.ArgumentValidationUtils;
 import dk.statsbiblioteket.bitrepository.commandline.util.FileIDTranslationUtil;
 import dk.statsbiblioteket.bitrepository.commandline.util.InvalidParameterException;
 import dk.statsbiblioteket.bitrepository.commandline.util.MD5SumFileWriter;
 import dk.statsbiblioteket.bitrepository.commandline.util.SkipFileException;
 
+/**
+ * Action to produce a sumfile from a local directory tree.
+ * The class uses the functionality of {@link RetryingConcurrentClientAction} to handle 
+ * concurrency and retry logic.  
+ */
 public class ListAction implements ClientAction {
 
     private final Logger log = LoggerFactory.getLogger(getClass());
@@ -39,7 +44,13 @@ public class ListAction implements ClientAction {
     private String remotePrefix = null;
     private Path sumFile;
     private MD5SumFileWriter md5SumFileWriter;
-    
+
+    /**
+     * Constructor for the action
+     * @param cmd The {@link CommandLine} with parsed arguments
+     * @param getChecksumsClient The {@link GetChecksumsClient} to retrieve FileIDs and checksums with 
+     * @throws InvalidParameterException if input fails validation
+     */
     public ListAction(CommandLine cmd, GetChecksumsClient getChecksumsClient) throws InvalidParameterException {
         this.getChecksumsClient = getChecksumsClient;
         collectionID = cmd.getOptionValue(CliOptions.COLLECTION_OPT);
@@ -56,6 +67,7 @@ public class ListAction implements ClientAction {
         ArgumentValidationUtils.validatePillar(pillarID, collectionID);
     }
     
+    @Override
     public void performAction() {
         ChecksumSpecTYPE checksumSpec = new ChecksumSpecTYPE();
         checksumSpec.setChecksumType(ChecksumType.MD5);
@@ -63,7 +75,7 @@ public class ListAction implements ClientAction {
         boolean notFinished = true;
         try {
             do {
-                ListFilesEventHandler eventHandler = new ListFilesEventHandler();
+                ListChecksumsEventHandler eventHandler = new ListChecksumsEventHandler(pillarID);
                 ContributorQuery[] query = makeQuery(latestResultDate);
                 getChecksumsClient.getChecksums(collectionID, query, null, checksumSpec, null, eventHandler, null);
                 eventHandler.waitForFinish();
@@ -87,6 +99,11 @@ public class ListAction implements ClientAction {
         }
     }
 
+    /**
+     * Method to report a set of received data. 
+     * Results are filtered using the optional local and remote prefixes. The results that is not filtered away
+     * are written to the sumfile.  
+     */
     private Date reportResults(List<ChecksumDataForChecksumSpecTYPE> results) {
         Date latestDate = new Date(0);
         for (ChecksumDataForChecksumSpecTYPE checksumData : results) {
@@ -111,6 +128,11 @@ public class ListAction implements ClientAction {
         return latestDate;
     }
     
+    /**
+     * Method to build the ContributorQuery for the pillar asked to deliver the filelist
+     * @param latestResult The first point in time to deliver results from.
+     * @return array of {@link ContributorQuery} for a pillar for the next page of results  
+     */
     private ContributorQuery[] makeQuery(Date latestResult) {
         List<ContributorQuery> res = new ArrayList<ContributorQuery>();
         res.add(new ContributorQuery(pillarID, latestResult, null, PAGE_SIZE));

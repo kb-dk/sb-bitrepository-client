@@ -11,6 +11,10 @@ import dk.statsbiblioteket.bitrepository.commandline.action.job.Job;
 import dk.statsbiblioteket.bitrepository.commandline.action.job.RunningJobs;
 import dk.statsbiblioteket.bitrepository.commandline.util.StatusReporter;
 
+/**
+ * EventHandler to handle events related to DeleteFile operations.
+ * Jobs that are failed are queued. Completed jobs reported completed.  
+ */
 public class DeleteFilesEventHandler implements EventHandler {
     
     private final Logger log = LoggerFactory.getLogger(getClass());
@@ -18,6 +22,12 @@ public class DeleteFilesEventHandler implements EventHandler {
     private final BlockingQueue<Job> failedJobsQueue;
     private final StatusReporter reporter;
     
+    /**
+     * Constructor
+     * @param runningJobs {@link RunningJobs} object for containing active jobs
+     * @param failedJobsQueue {@link BlockingQueue} for jobs that have failed
+     * @param reporter {@link StatusReporter} to report succeded jobs. 
+     */
     public DeleteFilesEventHandler(RunningJobs runningJobs, BlockingQueue<Job> failedJobsQueue,
             StatusReporter reporter) {
         this.runningJobs = runningJobs;

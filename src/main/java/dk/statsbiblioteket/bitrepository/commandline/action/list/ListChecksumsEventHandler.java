@@ -9,7 +9,10 @@ import org.bitrepository.client.eventhandler.OperationEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class ListFilesEventHandler implements EventHandler {
+/**
+ * Event handler to handle results from a GetChecksums request made to a single pillar. 
+ */
+public class ListChecksumsEventHandler implements EventHandler {
     
     private final Logger log = LoggerFactory.getLogger(getClass());
 
@@ -18,6 +21,16 @@ public class ListFilesEventHandler implements EventHandler {
     private boolean finished = false;
     private boolean failed = false;
     private List<ChecksumDataForChecksumSpecTYPE> checksumData = null;
+
+    private String pillarID;
+    
+    /**
+     * Constructor
+     * @param pillarID The pillar which is expected to deliver the results.  
+     */
+    public ListChecksumsEventHandler(String pillarID) {
+        this.pillarID = pillarID;
+    }
     
     @Override
     public void handleEvent(OperationEvent event) {
@@ -26,8 +39,12 @@ public class ListFilesEventHandler implements EventHandler {
             log.debug("Got COMPONENT_COMPLETE event");
             if(event instanceof ChecksumsCompletePillarEvent) {
                 ChecksumsCompletePillarEvent checksumsEvent = (ChecksumsCompletePillarEvent) event;
-                checksumData = checksumsEvent.getChecksums().getChecksumDataItems();
-                partialResults = checksumsEvent.isPartialResult();
+                if(checksumsEvent.getContributorID().equals(pillarID)) {
+                    checksumData = checksumsEvent.getChecksums().getChecksumDataItems();
+                    partialResults = checksumsEvent.isPartialResult();
+                } else {
+                    log.warn("Got an event from an unexpected contributor");
+                }
             }
             case COMPLETE:
                 log.info("Finished get file for file '{}'", event.getFileID());
@@ -43,10 +60,18 @@ public class ListFilesEventHandler implements EventHandler {
             }    
     }
     
+    /**
+     * Method to obtain the received checksum data. 
+     * The method should not be called prior to a call to {@link #waitForFinish()} have returned. 
+     * @return The checksum data if it have been returned by the pillar, otherwise null.   
+     */
     public List<ChecksumDataForChecksumSpecTYPE> getChecksumData() {
         return checksumData;
     }
     
+    /**
+     * Method to indicate the operation have finished (regardless if is successful or not). 
+     */
     private void finish() {
         log.trace("Finish method invoked");
         synchronized (finishLock) {
@@ -57,6 +82,10 @@ public class ListFilesEventHandler implements EventHandler {
         }
     }
 
+    /**
+     * Method to wait for the operation to complete. The method is blocking.  
+     * @throws InterruptedException if the thread is interrupted
+     */
     public void waitForFinish() throws InterruptedException {
         synchronized (finishLock) {
             log.trace("Thread waiting for put client to finish");
@@ -67,10 +96,21 @@ public class ListFilesEventHandler implements EventHandler {
         }
     }
     
+    /**
+     * Method to determine if the received results is a partial result set. I.e. should
+     * the client send a new request to get more results. 
+     * The method should not be called prior to a call to {@link #waitForFinish()} have returned.
+     * @return true if the results are partial   
+     */
     public boolean partialResults() {
         return partialResults;
     }
     
+    /**
+     * Method to determine if the operation was successful.
+     * The method should not be called prior to a call to {@link #waitForFinish()} have returned. 
+     * @return true if the operation succeded, otherwise false. 
+     */
     public boolean hasFailed() {
         return failed;
     }

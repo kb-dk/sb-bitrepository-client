@@ -16,6 +16,13 @@ import dk.statsbiblioteket.bitrepository.commandline.action.job.Job;
 import dk.statsbiblioteket.bitrepository.commandline.action.job.RunningJobs;
 import dk.statsbiblioteket.bitrepository.commandline.util.StatusReporter;
 
+/**
+ * Event handler class to handle uploads of files. 
+ * The class processes incoming events and.
+ * - Uploads files to the {@link FileExchange} when a PutFile operation requires it
+ * - Deletes files from the {@link FileExchange} when they are no longer needed
+ * - Reports the operation status for the {@link Job}'s, i.e. successful or failed. 
+ */
 public class PutFilesEventHandler implements EventHandler {
     
     private final Logger log = LoggerFactory.getLogger(getClass());
@@ -24,6 +31,13 @@ public class PutFilesEventHandler implements EventHandler {
     private final BlockingQueue<Job> failedJobsQueue;
     private final StatusReporter reporter;
     
+    /**
+     * Constructor for the handler
+     * @param fileExchange The {@link FileExchange} used in the operations
+     * @param runningJobs The {@link RunningJobs} object with active operations
+     * @param failedJobsQueue {@link BlockingQueue} for communicating failed jobs
+     * @param reporter {@link StatusReporter} for reporting succeeded jobs 
+     */
     public PutFilesEventHandler(FileExchange fileExchange, RunningJobs runningJobs, 
             BlockingQueue<Job> failedJobsQueue, StatusReporter reporter) {
         this.fileExchange = fileExchange;
@@ -65,12 +79,20 @@ public class PutFilesEventHandler implements EventHandler {
         }
     }
     
+    /**
+     * Method to handle a bookeeping and clean-up of a failed job. 
+     * @param job The job that is to be marked as failed.  
+     */
     private void failJob(Job job) {
         removeFileFromFileExchange(job);
         failedJobsQueue.add(job);
         runningJobs.removeJob(job);
     }
     
+    /**
+     * Method to handle the upload of a file in a job to the {@link FileExchange}
+     * @param job The job to upload the file for 
+     */
     private void uploadFile(Job job) {
         try {
             fileExchange.putFile(Files.newInputStream(job.getLocalFile()), job.getUrl());
@@ -81,6 +103,10 @@ public class PutFilesEventHandler implements EventHandler {
         }
     }
     
+    /**
+     * Method to remove the file for a job from the {@link FileExchange}
+     * @param job The job to remove the file for
+     */
     private void removeFileFromFileExchange(Job job) {
         try {
             fileExchange.deleteFile(job.getUrl());

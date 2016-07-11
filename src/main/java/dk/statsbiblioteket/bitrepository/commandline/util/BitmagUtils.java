@@ -103,6 +103,7 @@ public class BitmagUtils {
     /**
      * Method to get the base part of the URL to the file exchange server. 
      * @return {@link URL} URL with the base part of the file exchange server.  
+     * @throws MalformedURLException if the file exchange configuration results in an invalid url
      */
     public static URL getFileExchangeBaseURL() throws MalformedURLException {
         FileExchangeSettings feSettings = settings.getReferenceSettings().getFileExchangeSettings();
@@ -182,6 +183,7 @@ public class BitmagUtils {
     
     /**
      * Method to shutdown the bitrepository connections if such exists 
+     * @throws JMSException if there is trouble shutting down the messagebus connection
      */
     public static void shutdown() throws JMSException {
         MessageBus messageBus = MessageBusManager.getMessageBus();
