@@ -5,6 +5,7 @@ import static org.mockito.Matchers.anyLong;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Matchers.isNull;
+import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.timeout;
 import static org.mockito.Mockito.times;
@@ -29,6 +30,7 @@ import org.bitrepository.client.eventhandler.OperationFailedEvent;
 import org.bitrepository.modify.putfile.PutFileClient;
 import org.bitrepository.protocol.FileExchange;
 import org.mockito.ArgumentCaptor;
+import org.mockito.InOrder;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
@@ -87,7 +89,7 @@ public class UploadActionTest {
         ArgumentCaptor<EventHandler> eventHandlerCaptor = ArgumentCaptor.forClass(EventHandler.class);
         verify(client, timeout(3000).times(1)).putFile(eq(TEST_COLLECTION), any(URL.class), 
                 eq(remoteFileID1), anyLong(), any(ChecksumDataForFileTYPE.class), 
-                (ChecksumSpecTYPE) isNull(), eventHandlerCaptor.capture(), (String) isNull());
+                isNull(ChecksumSpecTYPE.class), eventHandlerCaptor.capture(), isNull(String.class));
         CompleteEvent firstFileComplete = new CompleteEvent(TEST_COLLECTION, null);
         firstFileComplete.setFileID(remoteFileID1);
         eventHandlerCaptor.getValue().handleEvent(firstFileComplete);
@@ -96,20 +98,21 @@ public class UploadActionTest {
         
         verify(client, timeout(3000).times(1)).putFile(eq(TEST_COLLECTION), any(URL.class), 
                 eq(remoteFileID2), anyLong(), any(ChecksumDataForFileTYPE.class), 
-                (ChecksumSpecTYPE) isNull(), eventHandlerCaptor.capture(), (String) isNull());
+                isNull(ChecksumSpecTYPE.class), eventHandlerCaptor.capture(), isNull(String.class));
         CompleteEvent secondFileComplete = new CompleteEvent(TEST_COLLECTION, null);
         secondFileComplete.setFileID(remoteFileID2);
         eventHandlerCaptor.getValue().handleEvent(secondFileComplete);
         
         runner.waitForFinish(3000);
         assertTrue(runner.getFinished());
-        
-        verify(reporter, times(1)).reportStart(eq(fileID1));
-        verify(reporter, times(1)).reportFinish(eq(fileID1));
-        verify(reporter, times(1)).reportStart(eq(fileID2));
-        verify(reporter, times(1)).reportFinish(eq(fileID2));
-        verify(reporter, times(1)).printStatistics();
-        verifyNoMoreInteractions(reporter);
+
+        InOrder order = inOrder(reporter);
+        order.verify(reporter, times(1)).reportStart(eq(fileID1));
+        order.verify(reporter, times(1)).reportFinish(eq(fileID1));
+        order.verify(reporter, times(1)).reportStart(eq(fileID2));
+        order.verify(reporter, times(1)).reportFinish(eq(fileID2));
+        order.verify(reporter, times(1)).printStatistics();
+        order.verifyNoMoreInteractions();
         
         verifyNoMoreInteractions(client);
     }
@@ -151,7 +154,7 @@ public class UploadActionTest {
         ArgumentCaptor<EventHandler> eventHandlerCaptor = ArgumentCaptor.forClass(EventHandler.class);
         verify(client, timeout(3000).times(1)).putFile(eq(TEST_COLLECTION), any(URL.class), 
                 eq(remoteFileID1), anyLong(), any(ChecksumDataForFileTYPE.class), 
-                (ChecksumSpecTYPE) isNull(), eventHandlerCaptor.capture(), (String) isNull());
+                isNull(ChecksumSpecTYPE.class), eventHandlerCaptor.capture(), isNull(String.class));
         OperationFailedEvent firstFileFail = new OperationFailedEvent(TEST_COLLECTION, null, null);
         firstFileFail.setFileID(remoteFileID1);
         eventHandlerCaptor.getValue().handleEvent(firstFileFail);
@@ -160,7 +163,7 @@ public class UploadActionTest {
         
         verify(client, timeout(3000).times(1)).putFile(eq(TEST_COLLECTION), any(URL.class), 
                 eq(remoteFileID2), anyLong(), any(ChecksumDataForFileTYPE.class), 
-                (ChecksumSpecTYPE) isNull(), eventHandlerCaptor.capture(), (String) isNull());
+                isNull(ChecksumSpecTYPE.class), eventHandlerCaptor.capture(), isNull(String.class));
         CompleteEvent secondFileComplete = new CompleteEvent(TEST_COLLECTION, null);
         secondFileComplete.setFileID(remoteFileID2);
         eventHandlerCaptor.getValue().handleEvent(secondFileComplete);
@@ -169,7 +172,7 @@ public class UploadActionTest {
         
         verify(client, timeout(3000).times(2)).putFile(eq(TEST_COLLECTION), any(URL.class), 
                 eq(remoteFileID1), anyLong(), any(ChecksumDataForFileTYPE.class), 
-                (ChecksumSpecTYPE) isNull(), eventHandlerCaptor.capture(), (String) isNull());
+                isNull(ChecksumSpecTYPE.class), eventHandlerCaptor.capture(), isNull(String.class));
         CompleteEvent firstFileComplete = new CompleteEvent(TEST_COLLECTION, null);
         firstFileComplete.setFileID(remoteFileID1);
         eventHandlerCaptor.getValue().handleEvent(firstFileComplete);
@@ -177,12 +180,13 @@ public class UploadActionTest {
         runner.waitForFinish(3000);
         assertTrue(runner.getFinished());
         
-        verify(reporter, times(1)).reportStart(eq(fileID1));
-        verify(reporter, times(1)).reportStart(eq(fileID2));
-        verify(reporter, times(1)).reportFinish(eq(fileID2));
-        verify(reporter, times(1)).reportFinish(eq(fileID1));
-        verify(reporter, times(1)).printStatistics();
-        verifyNoMoreInteractions(reporter);
+        InOrder order = inOrder(reporter);
+        order.verify(reporter, times(1)).reportStart(eq(fileID1));
+        order.verify(reporter, times(1)).reportStart(eq(fileID2));
+        order.verify(reporter, times(1)).reportFinish(eq(fileID2));
+        order.verify(reporter, times(1)).reportFinish(eq(fileID1));
+        order.verify(reporter, times(1)).printStatistics();
+        order.verifyNoMoreInteractions();
         
         verifyNoMoreInteractions(client);
     }
@@ -223,7 +227,7 @@ public class UploadActionTest {
         ArgumentCaptor<EventHandler> eventHandlerCaptor = ArgumentCaptor.forClass(EventHandler.class);
         verify(client, timeout(3000).times(1)).putFile(eq(TEST_COLLECTION), any(URL.class), 
                 eq(remoteFileID1), anyLong(), any(ChecksumDataForFileTYPE.class), 
-                (ChecksumSpecTYPE) isNull(), eventHandlerCaptor.capture(), (String) isNull());
+                isNull(ChecksumSpecTYPE.class), eventHandlerCaptor.capture(), isNull(String.class));
         OperationFailedEvent firstFileFail = new OperationFailedEvent(TEST_COLLECTION, null, null);
         firstFileFail.setFileID(remoteFileID1);
         eventHandlerCaptor.getValue().handleEvent(firstFileFail);
@@ -232,7 +236,7 @@ public class UploadActionTest {
 
         verify(client, timeout(3000).times(1)).putFile(eq(TEST_COLLECTION), any(URL.class), 
                 eq(remoteFileID2), anyLong(), any(ChecksumDataForFileTYPE.class), 
-                (ChecksumSpecTYPE) isNull(), eventHandlerCaptor.capture(), (String) isNull());
+                isNull(ChecksumSpecTYPE.class), eventHandlerCaptor.capture(), isNull(String.class));
         CompleteEvent secondFileComplete = new CompleteEvent(TEST_COLLECTION, null);
         secondFileComplete.setFileID(remoteFileID2);
         eventHandlerCaptor.getValue().handleEvent(secondFileComplete);
@@ -240,6 +244,7 @@ public class UploadActionTest {
         runner.waitForFinish(3000);
         assertTrue(runner.getFinished());
         
+        // Not checking order, since threading makes this unstable
         verify(reporter, times(1)).reportStart(eq(fileID1));
         verify(reporter, times(1)).reportFailure(eq(fileID1));
         verify(reporter, times(1)).reportStart(eq(fileID2));

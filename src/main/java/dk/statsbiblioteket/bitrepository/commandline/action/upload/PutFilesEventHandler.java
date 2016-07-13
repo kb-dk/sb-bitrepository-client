@@ -18,7 +18,7 @@ import dk.statsbiblioteket.bitrepository.commandline.util.StatusReporter;
 
 /**
  * Event handler class to handle uploads of files. 
- * The class processes incoming events and.
+ * The class processes incoming events and:
  * - Uploads files to the {@link FileExchange} when a PutFile operation requires it
  * - Deletes files from the {@link FileExchange} when they are no longer needed
  * - Reports the operation status for the {@link Job}'s, i.e. successful or failed. 
@@ -80,7 +80,7 @@ public class PutFilesEventHandler implements EventHandler {
     }
     
     /**
-     * Method to handle a bookeeping and clean-up of a failed job. 
+     * Method to handle a bookkeeping and clean-up of a failed job. 
      * @param job The job that is to be marked as failed.  
      */
     private void failJob(Job job) {

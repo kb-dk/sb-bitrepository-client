@@ -36,14 +36,15 @@ public class ListChecksumsEventHandler implements EventHandler {
     public void handleEvent(OperationEvent event) {
         switch(event.getEventType()) {
         case COMPONENT_COMPLETE:
-            log.debug("Got COMPONENT_COMPLETE event");
+            log.debug("Got COMPONENT_COMPLETE event {}", event);
             if(event instanceof ChecksumsCompletePillarEvent) {
                 ChecksumsCompletePillarEvent checksumsEvent = (ChecksumsCompletePillarEvent) event;
                 if(checksumsEvent.getContributorID().equals(pillarID)) {
                     checksumData = checksumsEvent.getChecksums().getChecksumDataItems();
                     partialResults = checksumsEvent.isPartialResult();
                 } else {
-                    log.warn("Got an event from an unexpected contributor");
+                    log.warn("Got an event from an unexpected contributor '{}' expected '{}'", 
+                            checksumsEvent.getContributorID(), pillarID);
                 }
             }
             case COMPLETE:
@@ -75,8 +76,8 @@ public class ListChecksumsEventHandler implements EventHandler {
     private void finish() {
         log.trace("Finish method invoked");
         synchronized (finishLock) {
-            finished = true;
             log.trace("Finish method entered synchronized block");
+            finished = true;
             finishLock.notifyAll();
             log.trace("Finish method notified All");            
         }
@@ -88,11 +89,11 @@ public class ListChecksumsEventHandler implements EventHandler {
      */
     public void waitForFinish() throws InterruptedException {
         synchronized (finishLock) {
-            log.trace("Thread waiting for put client to finish");
             if(finished == false) {
+                log.trace("Thread waiting for put client to finish");
                 finishLock.wait();
             }
-            log.trace("Put client have indicated it's finished.");
+            log.trace("Client have indicated it's finished.");
         }
     }
     

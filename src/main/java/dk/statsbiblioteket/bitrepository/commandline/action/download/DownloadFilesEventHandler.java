@@ -16,6 +16,12 @@ import dk.statsbiblioteket.bitrepository.commandline.action.job.Job;
 import dk.statsbiblioteket.bitrepository.commandline.action.job.RunningJobs;
 import dk.statsbiblioteket.bitrepository.commandline.util.StatusReporter;
 
+/**
+ * EventHandler to handle events related to GetFile operations.
+ * Jobs that fail are queued for retried. When a download job finishes, 
+ * the downloaded file will be reported to the status reporter as completed, 
+ * and removed from the file exchange.  
+ */
 public class DownloadFilesEventHandler implements EventHandler {
     
     protected final static String TEMP_EXTENSION = ".tmp";
@@ -67,8 +73,8 @@ public class DownloadFilesEventHandler implements EventHandler {
     
     /**
      * Get the file from the file exchange
-     * @param Job The job to get the file for
-     * @return boolean, true if the file was succesfully obtained from the fileexchange, otherwise false.
+     * @param job The job to get the file for
+     * @return boolean, true if the file was successfully obtained from the fileexchange, otherwise false.
      */
     private boolean downloadFile(Job job) {
         try {

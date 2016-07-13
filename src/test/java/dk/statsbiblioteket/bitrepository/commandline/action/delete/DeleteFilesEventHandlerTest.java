@@ -6,6 +6,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.inOrder;
 
 import java.nio.file.Paths;
 import java.util.Arrays;
@@ -14,6 +15,7 @@ import java.util.concurrent.BlockingQueue;
 import org.bitrepository.client.eventhandler.CompleteEvent;
 import org.bitrepository.client.eventhandler.IdentificationCompleteEvent;
 import org.bitrepository.client.eventhandler.OperationFailedEvent;
+import org.mockito.InOrder;
 import org.testng.annotations.Test;
 
 import dk.statsbiblioteket.bitrepository.commandline.action.job.Job;
@@ -42,14 +44,11 @@ public class DeleteFilesEventHandlerTest {
         completeEvent.setFileID(TEST_FILEID);
         handler.handleEvent(completeEvent);
         
-        verify(runningJobs, times(1)).getJob(eq(TEST_FILEID));
-        verify(runningJobs, times(1)).removeJob(eq(testJob));
-        
-        verify(reporter, times(1)).reportFinish(eq(TEST_FILEID));
-        
-        verifyNoMoreInteractions(runningJobs);
-        verifyNoMoreInteractions(reporter);
-        verifyNoMoreInteractions(failedQueue);
+        InOrder order = inOrder(runningJobs, reporter, failedQueue);        
+        order.verify(runningJobs, times(1)).getJob(eq(TEST_FILEID));
+        order.verify(reporter, times(1)).reportFinish(eq(TEST_FILEID));
+        order.verify(runningJobs, times(1)).removeJob(eq(testJob));
+        order.verifyNoMoreInteractions(); 
     }
     
     @Test
@@ -67,13 +66,11 @@ public class DeleteFilesEventHandlerTest {
         failedEvent.setFileID(TEST_FILEID);
         handler.handleEvent(failedEvent);
         
-        verify(runningJobs, times(1)).getJob(eq(TEST_FILEID));
-        verify(failedQueue, times(1)).add(eq(testJob));
-        verify(runningJobs, times(1)).removeJob(eq(testJob));
-        
-        verifyNoMoreInteractions(runningJobs);
-        verifyNoMoreInteractions(reporter);
-        verifyNoMoreInteractions(failedQueue);
+        InOrder order = inOrder(runningJobs, reporter, failedQueue);
+        order.verify(runningJobs, times(1)).getJob(eq(TEST_FILEID));
+        order.verify(failedQueue, times(1)).add(eq(testJob));
+        order.verify(runningJobs, times(1)).removeJob(eq(testJob));
+        order.verifyNoMoreInteractions();
     }
     
     @Test
@@ -92,10 +89,9 @@ public class DeleteFilesEventHandlerTest {
         identificationEvent.setFileID(TEST_FILEID);
         handler.handleEvent(identificationEvent);
         
-        verify(runningJobs, times(1)).getJob(eq(TEST_FILEID));
+        InOrder order = inOrder(runningJobs, reporter, failedQueue);
         
-        verifyNoMoreInteractions(runningJobs);
-        verifyNoMoreInteractions(reporter);
-        verifyNoMoreInteractions(failedQueue);
+        order.verify(runningJobs, times(1)).getJob(eq(TEST_FILEID));
+        order.verifyNoMoreInteractions();
     }
 }

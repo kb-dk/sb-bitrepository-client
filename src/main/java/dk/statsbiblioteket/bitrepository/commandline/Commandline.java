@@ -70,30 +70,33 @@ public class Commandline {
     
     public static void main(String[] args) throws ParseException {
         int exitStatus = 0;
-        Options options = CliOptions.getAllOptions();
-        CommandLineParser parser = new DefaultParser();
         String scriptName = System.getProperty(SCRIPT_NAME_PROPERTY);
         Path configDir = Paths.get(System.getProperty(CONFIG_DIR_PROPERTY));
         Path clientCertificate = configDir.resolve(CLIENT_CERTIFICATE_FILE);
         BitmagUtils.initialize(configDir, clientCertificate);
         try {
-            
+            Options options = CliOptions.getAllOptions();
+            CommandLineParser parser = new DefaultParser();
             CommandLine cmd = parser.parse(options, args);
             Action action = Action.fromString(cmd.getOptionValue(CliOptions.ACTION_OPT));
-            if(action != null) {
-                if(cmd.hasOption(CliOptions.HELP_OPT)) {
-                    CliOptions.printHelp(scriptName, CliOptions.getActionOptions(action));
-                    System.exit(0);
-                }
+            if(action == null) {
+                CliOptions.printActionHelp(scriptName);
+                System.exit(2);
+            }
+            if(cmd.hasOption(CliOptions.HELP_OPT)) {
+                CliOptions.printHelp(scriptName, CliOptions.getActionOptions(action));
+                System.exit(0);
+            }
 
-                ClientAction ca = null;
-                try {
-                    // Parsing a second time to get action specific options.
-                    cmd = parser.parse(CliOptions.getActionOptions(action), args);    
-                } catch (MissingOptionException e) {
-                    CliOptions.printHelp(scriptName, CliOptions.getActionOptions(action));
-                    System.exit(2);
-                } 
+            ClientAction ca = null;
+            try {
+                // Parsing a second time to get action specific options.
+                cmd = parser.parse(CliOptions.getActionOptions(action), args);    
+            } catch (MissingOptionException e) {
+                CliOptions.printHelp(scriptName, CliOptions.getActionOptions(action));
+                System.exit(2);
+            } 
+            try {
                 switch(action) {
                 case MAKECHECKUSMS:
                     ca = new MakeChecksumsAction(cmd);
@@ -118,6 +121,14 @@ public class Commandline {
                 }
                 
                 ca.performAction();
+            } finally {
+                try {
+                    BitmagUtils.shutdown();
+                } catch (JMSException e) {
+                    Commandline.log.error("Caught an error shutting down bitrepository", e);
+                    System.err.println(e.getMessage());
+                    exitStatus = 1;
+                }
             }
         } catch (MissingOptionException e) {
             CliOptions.printHelp(scriptName, CliOptions.getAllOptions());
@@ -132,15 +143,8 @@ public class Commandline {
             Commandline.log.error("Caught RuntimeException", e);
             System.err.println(e.getMessage());
             exitStatus = 1;
-        } finally {
-            try {
-                BitmagUtils.shutdown();
-            } catch (JMSException e) {
-                Commandline.log.error("Caught an error shutting down bitrepository", e);
-                System.err.println(e.getMessage());
-                exitStatus = 1;
-            }
-        } 
+        }
+        
         System.exit(exitStatus);
     }
 

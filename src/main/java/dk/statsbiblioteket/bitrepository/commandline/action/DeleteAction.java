@@ -46,8 +46,6 @@ public class DeleteAction extends RetryingConcurrentClientAction {
 
     @Override
     protected void startJob(Job job) {
-        super.runningJobs.addJob(job);
-        job.incrementAttempts();
         deleteFileClient.deleteFile(super.collectionID, job.getRemoteFileID(), pillarID, job.getChecksum(), 
                 null, eventHandler, null);
     }

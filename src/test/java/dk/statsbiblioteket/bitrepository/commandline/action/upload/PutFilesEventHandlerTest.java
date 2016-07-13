@@ -2,7 +2,8 @@ package dk.statsbiblioteket.bitrepository.commandline.action.upload;
 
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -23,8 +24,7 @@ import org.bitrepository.client.eventhandler.CompleteEvent;
 import org.bitrepository.client.eventhandler.IdentificationCompleteEvent;
 import org.bitrepository.client.eventhandler.OperationFailedEvent;
 import org.bitrepository.protocol.FileExchange;
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
+import org.mockito.InOrder;
 import org.testng.annotations.Test;
 
 import dk.statsbiblioteket.bitrepository.commandline.action.job.Job;
@@ -59,13 +59,10 @@ public class PutFilesEventHandlerTest {
         idCompleteEvent.setFileID(testFileID);
         handler.handleEvent(idCompleteEvent);
         
-        verify(runningJobs, times(1)).getJob(eq(testFileID));
-        verify(fileExchange, times(1)).putFile(any(InputStream.class), eq(testJob.getUrl()));
-        
-        verifyNoMoreInteractions(runningJobs);
-        verifyNoMoreInteractions(reporter);
-        verifyNoMoreInteractions(fileExchange);
-        verifyNoMoreInteractions(failedQueue);
+        InOrder order = inOrder(runningJobs, reporter, fileExchange, failedQueue);
+        order.verify(runningJobs, times(1)).getJob(eq(testFileID));
+        order.verify(fileExchange, times(1)).putFile(any(InputStream.class), eq(testJob.getUrl()));
+        order.verifyNoMoreInteractions();
     }
     
     @Test
@@ -88,16 +85,12 @@ public class PutFilesEventHandlerTest {
         completeEvent.setFileID(testFileID);
         handler.handleEvent(completeEvent);
         
-        verify(runningJobs, times(1)).getJob(eq(testFileID));
-        verify(fileExchange, times(1)).deleteFile(eq(testJob.getUrl()));
-        
-        verify(runningJobs, times(1)).removeJob(eq(testJob));
-        verify(reporter, times(1)).reportFinish(eq(testFileID));
-        
-        verifyNoMoreInteractions(runningJobs);
-        verifyNoMoreInteractions(reporter);
-        verifyNoMoreInteractions(fileExchange);
-        verifyNoMoreInteractions(failedQueue);
+        InOrder order = inOrder(runningJobs, reporter, fileExchange, failedQueue);
+        order.verify(runningJobs, times(1)).getJob(eq(testFileID));
+        order.verify(reporter, times(1)).reportFinish(eq(testFileID));
+        order.verify(fileExchange, times(1)).deleteFile(eq(testJob.getUrl()));
+        order.verify(runningJobs, times(1)).removeJob(eq(testJob));
+        order.verifyNoMoreInteractions();
     }
     
     @Test
@@ -119,16 +112,12 @@ public class PutFilesEventHandlerTest {
         completeEvent.setFileID(testFileID);
         handler.handleEvent(completeEvent);
         
-        verify(runningJobs, times(1)).getJob(eq(testFileID));
-        verify(fileExchange, times(1)).deleteFile(eq(testJob.getUrl()));
-        
-        verify(runningJobs, times(1)).removeJob(eq(testJob));
-        verify(failedQueue, times(1)).add(eq(testJob));
-        
-        verifyNoMoreInteractions(runningJobs);
-        verifyNoMoreInteractions(reporter);
-        verifyNoMoreInteractions(fileExchange);
-        verifyNoMoreInteractions(failedQueue);
+        InOrder order = inOrder(runningJobs, reporter, fileExchange, failedQueue);
+        order.verify(runningJobs, times(1)).getJob(eq(testFileID));
+        order.verify(fileExchange, times(1)).deleteFile(eq(testJob.getUrl()));
+        order.verify(failedQueue, times(1)).add(eq(testJob));
+        order.verify(runningJobs, times(1)).removeJob(eq(testJob));
+        order.verifyNoMoreInteractions();
     }
     
     @Test
@@ -143,13 +132,8 @@ public class PutFilesEventHandlerTest {
         StatusReporter reporter = mock(StatusReporter.class);
         FileExchange fileExchange = mock(FileExchange.class);
         
-        doAnswer(new Answer<Object>() {
-            @Override 
-            public Object answer(InvocationOnMock invocationOnMock) throws IOException {
-                Object[] args = invocationOnMock.getArguments();
-                throw new IOException("Bogus IOException testing fileexchange failure");
-            }
-        }).when(fileExchange).putFile(any(InputStream.class), any(URL.class));
+        doThrow(new IOException("Bogus IOException testing fileexchange failure"))
+            .when(fileExchange).putFile(any(InputStream.class), any(URL.class));
         
         Job testJob = new Job(testFile, testFileID, null, fileExchangeUrl);
         when(runningJobs.getJob(testFileID)).thenReturn(testJob);
@@ -162,17 +146,13 @@ public class PutFilesEventHandlerTest {
         completeEvent.setFileID(testFileID);
         handler.handleEvent(completeEvent);
         
-        verify(runningJobs, times(1)).getJob(eq(testFileID));
-        verify(fileExchange, times(1)).putFile(any(InputStream.class), eq(testJob.getUrl()));
-        
-        verify(runningJobs, times(1)).removeJob(eq(testJob));
-        verify(failedQueue, times(1)).add(eq(testJob));
-        verify(fileExchange, times(1)).deleteFile(eq(testJob.getUrl()));
-        
-        verifyNoMoreInteractions(runningJobs);
-        verifyNoMoreInteractions(reporter);
-        verifyNoMoreInteractions(fileExchange);
-        verifyNoMoreInteractions(failedQueue);
+        InOrder order = inOrder(runningJobs, reporter, fileExchange, failedQueue);
+        order.verify(runningJobs, times(1)).getJob(eq(testFileID));
+        order.verify(fileExchange, times(1)).putFile(any(InputStream.class), eq(testJob.getUrl()));
+        order.verify(fileExchange, times(1)).deleteFile(eq(testJob.getUrl()));
+        order.verify(failedQueue, times(1)).add(eq(testJob));
+        order.verify(runningJobs, times(1)).removeJob(eq(testJob));
+        order.verifyNoMoreInteractions();
     }
     
 }

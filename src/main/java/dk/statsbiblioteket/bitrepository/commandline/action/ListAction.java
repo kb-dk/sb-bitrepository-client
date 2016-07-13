@@ -40,10 +40,9 @@ public class ListAction implements ClientAction {
     
     private final String collectionID;
     private final String pillarID;
-    private String localPrefix = null;
-    private String remotePrefix = null;
-    private Path sumFile;
-    private MD5SumFileWriter md5SumFileWriter;
+    private final String localPrefix;
+    private final String remotePrefix;
+    private final Path sumFile;
 
     /**
      * Constructor for the action
@@ -58,11 +57,7 @@ public class ListAction implements ClientAction {
         sumFile = Paths.get(cmd.getOptionValue(CliOptions.SUMFILE_OPT));
         localPrefix =cmd.getOptionValue(CliOptions.LOCAL_PREFIX_OPT);
         remotePrefix = cmd.getOptionValue(CliOptions.REMOTE_PREFIX_OPT);
-        try {
-            md5SumFileWriter = new MD5SumFileWriter(sumFile);
-        } catch (IOException e) {
-           throw new RuntimeException(e);
-        }
+
         ArgumentValidationUtils.validateCollection(collectionID);
         ArgumentValidationUtils.validatePillar(pillarID, collectionID);
     }
@@ -73,7 +68,8 @@ public class ListAction implements ClientAction {
         checksumSpec.setChecksumType(ChecksumType.MD5);
         Date latestResultDate = new Date(0);
         boolean notFinished = true;
-        try {
+        
+        try (MD5SumFileWriter md5SumFileWriter = new MD5SumFileWriter(sumFile)) {
             do {
                 ListChecksumsEventHandler eventHandler = new ListChecksumsEventHandler(pillarID);
                 ContributorQuery[] query = makeQuery(latestResultDate);
@@ -83,28 +79,27 @@ public class ListAction implements ClientAction {
                     log.error("Failed collecting checksumdata");
                     throw new RuntimeException("Error getting checksumdata from pillar: '" + pillarID + "'");
                 } else {
-                    latestResultDate = reportResults(eventHandler.getChecksumData());
+                    latestResultDate = reportResults(eventHandler.getChecksumData(), md5SumFileWriter);
                     notFinished = eventHandler.partialResults();
                 }
             } while(notFinished);
         } catch (InterruptedException e) {
             log.error("Got interrupted while getting checksums", e);
             throw new RuntimeException(e);
-        } finally {
-            try {
-                md5SumFileWriter.close();
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        }
+        } catch (IOException e) {
+            log.error("Caught IOException while listing files", e);
+            throw new RuntimeException(e); 
+        } 
     }
 
     /**
      * Method to report a set of received data. 
      * Results are filtered using the optional local and remote prefixes. The results that is not filtered away
      * are written to the sumfile.  
+     * @throws IOException if writing to the sum file fails
      */
-    private Date reportResults(List<ChecksumDataForChecksumSpecTYPE> results) {
+    private Date reportResults(List<ChecksumDataForChecksumSpecTYPE> results, MD5SumFileWriter md5SumFileWriter) 
+            throws IOException {
         Date latestDate = new Date(0);
         for (ChecksumDataForChecksumSpecTYPE checksumData : results) {
             Date calculationDate = CalendarUtils.convertFromXMLGregorianCalendar(checksumData.getCalculationTimestamp());
@@ -119,11 +114,8 @@ public class ListAction implements ClientAction {
                 continue;
             }
             String checksum = Base16Utils.decodeBase16(checksumData.getChecksumValue());
-            try {
-                md5SumFileWriter.writeChecksumLine(file, checksum);
-            } catch (IOException e) {
-                log.error("Failed to report checksum for file {}", file.toString(), e);
-            }
+            md5SumFileWriter.writeChecksumLine(file, checksum);
+            
         }    
         return latestDate;
     }

@@ -85,18 +85,18 @@ public class CliOptions {
      */
     public static Options getAllOptions() {
         Options options = new Options();
-        options.addOption((Option) actionOption.clone());
-        options.addOption((Option) collectionOption.clone());
-        options.addOption((Option) sourceOption.clone());
-        options.addOption((Option) sumfileOption.clone());
-        options.addOption((Option) localOption.clone());
-        options.addOption((Option) remoteOption.clone());
-        options.addOption((Option) pillarOption.clone());
-        options.addOption((Option) destinationOption.clone());
-        options.addOption((Option) typeOption.clone());
-        options.addOption((Option) retryOption.clone());
-        options.addOption((Option) parallelOption.clone());
-        options.addOption((Option) helpOption.clone());
+        options.addOption(actionOption);
+        options.addOption(collectionOption);
+        options.addOption(sourceOption);
+        options.addOption(sumfileOption);
+        options.addOption(localOption);
+        options.addOption(remoteOption);
+        options.addOption(pillarOption);
+        options.addOption(destinationOption);
+        options.addOption(typeOption);
+        options.addOption(retryOption);
+        options.addOption(parallelOption);
+        options.addOption(helpOption);
         return options;
     }
     
@@ -107,8 +107,8 @@ public class CliOptions {
      */
     public static Options getActionOptions(Action action) {
         Options options = new Options();
-        options.addOption((Option) helpOption.clone());
-        options.addOption((Option) actionOption.clone());
+        options.addOption(helpOption);
+        options.addOption(actionOption);
         
         switch(action) {
         case MAKECHECKUSMS:
@@ -118,34 +118,34 @@ public class CliOptions {
         case UPLOAD: 
             options.addOption(makeOptionRequired(collectionOption));
             options.addOption(makeOptionRequired(sumfileOption));
-            options.addOption((Option) localOption.clone());
-            options.addOption((Option) remoteOption.clone());
-            options.addOption((Option) retryOption.clone());
-            options.addOption((Option) parallelOption.clone());
+            options.addOption(localOption);
+            options.addOption(remoteOption);
+            options.addOption(retryOption);
+            options.addOption(parallelOption);
             break;
         case LIST: 
             options.addOption(makeOptionRequired(collectionOption));
             options.addOption(makeOptionRequired(sumfileOption));
             options.addOption(makeOptionRequired(pillarOption));
-            options.addOption((Option) localOption.clone());
-            options.addOption((Option) remoteOption.clone());
+            options.addOption(localOption);
+            options.addOption(remoteOption);
             break;
         case DOWNLOAD: 
             options.addOption(makeOptionRequired(collectionOption));
             options.addOption(makeOptionRequired(sumfileOption));
-            options.addOption((Option) localOption.clone());
-            options.addOption((Option) remoteOption.clone());
-            options.addOption((Option) retryOption.clone());
-            options.addOption((Option) parallelOption.clone());
+            options.addOption(localOption);
+            options.addOption(remoteOption);
+            options.addOption(retryOption);
+            options.addOption(parallelOption);
             break; 
         case DELETE:
             options.addOption(makeOptionRequired(collectionOption));
             options.addOption(makeOptionRequired(pillarOption));
             options.addOption(makeOptionRequired(sumfileOption));
-            options.addOption((Option) localOption.clone());
-            options.addOption((Option) remoteOption.clone());
-            options.addOption((Option) retryOption.clone());
-            options.addOption((Option) parallelOption.clone());
+            options.addOption(localOption);
+            options.addOption(remoteOption);
+            options.addOption(retryOption);
+            options.addOption(parallelOption);
             break;
         }
         
@@ -158,8 +158,7 @@ public class CliOptions {
      * @return clone of the inputtet option marked as required  
      */
     private static Option makeOptionRequired(Option opt) {
-        Option optClone = (Option) opt.clone();
-        optClone.setRequired(true);
-        return optClone;
+        opt.setRequired(true);
+        return opt;
     }
 }

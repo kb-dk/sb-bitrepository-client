@@ -33,6 +33,7 @@ import org.bitrepository.client.eventhandler.OperationFailedEvent;
 import org.bitrepository.common.utils.Base16Utils;
 import org.bitrepository.common.utils.CalendarUtils;
 import org.mockito.ArgumentCaptor;
+import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
@@ -77,8 +78,8 @@ public class ListActionTest {
         
         ContributorQuery[] firstQuery = makeQuery(TEST_PILLAR, new Date(0));
         ArgumentCaptor<EventHandler> eventHandlerCaptor = ArgumentCaptor.forClass(EventHandler.class);
-        verify(client, timeout(3000).times(1)).getChecksums(eq(TEST_COLLECTION), eq(firstQuery), (String) isNull(),
-                any(ChecksumSpecTYPE.class), (URL) isNull(), eventHandlerCaptor.capture(), (String) isNull());
+        verify(client, timeout(3000).times(1)).getChecksums(eq(TEST_COLLECTION), eq(firstQuery), isNull(String.class),
+                any(ChecksumSpecTYPE.class), isNull(URL.class), eventHandlerCaptor.capture(), isNull(String.class));
         
         Date checksumTime = new Date();
         ChecksumsCompletePillarEvent completePillarEvent = createPillarCompleteEvent(checksumTime, remoteFileID1, 
@@ -91,8 +92,8 @@ public class ListActionTest {
         
         assertFalse(runner.getFinished());
         ContributorQuery[] secondQuery = makeQuery(TEST_PILLAR, checksumTime);
-        verify(client, timeout(3000).times(1)).getChecksums(eq(TEST_COLLECTION), eq(secondQuery), (String) isNull(),
-                any(ChecksumSpecTYPE.class), (URL) isNull(), eventHandlerCaptor.capture(), (String) isNull());
+        verify(client, timeout(3000).times(1)).getChecksums(eq(TEST_COLLECTION), eq(secondQuery), isNull(String.class),
+                any(ChecksumSpecTYPE.class), isNull(URL.class), eventHandlerCaptor.capture(), isNull(String.class));
         
         checksumTime = new Date();
         ChecksumsCompletePillarEvent secondCompletePillarEvent = createPillarCompleteEvent(checksumTime, remoteFileID2, 
@@ -128,8 +129,8 @@ public class ListActionTest {
         
         ContributorQuery[] firstQuery = makeQuery(TEST_PILLAR, new Date(0));
         ArgumentCaptor<EventHandler> eventHandlerCaptor = ArgumentCaptor.forClass(EventHandler.class);
-        verify(client, timeout(3000).times(1)).getChecksums(eq(TEST_COLLECTION), eq(firstQuery), (String) isNull(),
-                any(ChecksumSpecTYPE.class), (URL) isNull(), eventHandlerCaptor.capture(), (String) isNull());
+        verify(client, timeout(3000).times(1)).getChecksums(eq(TEST_COLLECTION), eq(firstQuery), isNull(String.class),
+                any(ChecksumSpecTYPE.class), isNull(URL.class), eventHandlerCaptor.capture(), isNull(String.class));
         
         OperationFailedEvent failureEvent = new OperationFailedEvent(TEST_COLLECTION, null, null);
         eventHandlerCaptor.getValue().handleEvent(failureEvent);
@@ -138,6 +139,8 @@ public class ListActionTest {
         assertTrue(runner.getFinished());
         
         verifyNoMoreInteractions(client);
+        
+        Assert.assertTrue(runner.getException() instanceof RuntimeException);
     }
         
     private ChecksumsCompletePillarEvent createPillarCompleteEvent(Date checksumTime, String fileID, 

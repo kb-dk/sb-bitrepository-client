@@ -25,7 +25,7 @@ import dk.statsbiblioteket.bitrepository.commandline.util.StatusReporter;
  * The class uses the functionality of {@link RetryingConcurrentClientAction} to handle 
  * reading sumfile containing which files to process, concurrency and retry logic.
  * Files that are already downloaded (or have naming collisions) are explicitly omitted from download. 
- * The action class chooses the fasted pillar which is deemed fastest by the {@link GetFileClient}
+ * The action class chooses the pillar which is deemed fastest by the {@link GetFileClient}
  */
 public class DownloadAction extends RetryingConcurrentClientAction {
 
@@ -50,8 +50,6 @@ public class DownloadAction extends RetryingConcurrentClientAction {
     
     @Override
     protected void startJob(Job job) {
-        super.runningJobs.addJob(job);
-        job.incrementAttempts();
         getFileClient.getFileFromFastestPillar(super.collectionID, job.getRemoteFileID(), null, job.getUrl(), 
                 eventHandler, null);
     }

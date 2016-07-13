@@ -2,6 +2,9 @@ package dk.statsbiblioteket.bitrepository.commandline.util;
 
 import java.io.PrintStream;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import dk.statsbiblioteket.bitrepository.commandline.Commandline.Action;
 
 /**
@@ -9,6 +12,8 @@ import dk.statsbiblioteket.bitrepository.commandline.Commandline.Action;
  */
 public class StatusReporter {
 
+    private final Logger log = LoggerFactory.getLogger(getClass());
+    
     private final static String START = "[STARTING]:";
     private final static String FINISH = "[FINISHED]:";
     private final static String FAIL = "[FAILED]:";
@@ -38,6 +43,7 @@ public class StatusReporter {
      * @param file The ID of the file
      */
     public void reportStart(String file) {
+        log.debug("Starting {} operation for '{}'", operation, file);
         started++;
         writer.format("%s %s of %s%n", START, operation, file);
         writer.flush();
@@ -48,6 +54,7 @@ public class StatusReporter {
      * @param file The ID of the file
      */
     public void reportFinish(String file) {
+        log.debug("Finished {} operation for '{}'", operation, file);
         finished++;
         writer.format("%s %s of %s%n", FINISH, operation, file);
         writer.flush();
@@ -58,6 +65,7 @@ public class StatusReporter {
      * @param file The ID of the file
      */
     public void reportFailure(String file) {
+        log.debug("Failed {} operation for '{}'", operation, file);
         failed++;
         writer.format("%s %s of %s%n", FAIL, operation, file);
         writer.flush();
@@ -68,6 +76,7 @@ public class StatusReporter {
      * @param file The ID of the file
      */
     public void reportSkipFile(String file) {
+        log.debug("Skipped {} operation for '{}'", operation, file);
         skipped++;
         writer.format("%s %s of %s%n", SKIP, operation, file);
         writer.flush();

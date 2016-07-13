@@ -4,6 +4,7 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Matchers.isNull;
+import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.timeout;
 import static org.mockito.Mockito.times;
@@ -27,6 +28,7 @@ import org.bitrepository.client.eventhandler.EventHandler;
 import org.bitrepository.client.eventhandler.OperationFailedEvent;
 import org.bitrepository.protocol.FileExchange;
 import org.mockito.ArgumentCaptor;
+import org.mockito.InOrder;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
@@ -80,7 +82,7 @@ public class DownloadActionTest {
         
         ArgumentCaptor<EventHandler> eventHandlerCaptor = ArgumentCaptor.forClass(EventHandler.class);
         verify(client, timeout(3000).times(1)).getFileFromFastestPillar(eq(TEST_COLLECTION), eq(remoteFileID1), 
-                (FilePart) isNull(), any(URL.class), eventHandlerCaptor.capture(), (String) isNull());
+                isNull(FilePart.class), any(URL.class), eventHandlerCaptor.capture(), isNull(String.class));
         CompleteEvent firstFileComplete = new CompleteEvent(TEST_COLLECTION, null);
         firstFileComplete.setFileID(remoteFileID1);
         eventHandlerCaptor.getValue().handleEvent(firstFileComplete);
@@ -88,7 +90,7 @@ public class DownloadActionTest {
         assertFalse(runner.getFinished());
         
         verify(client, timeout(3000).times(1)).getFileFromFastestPillar(eq(TEST_COLLECTION), eq(remoteFileID2), 
-                (FilePart) isNull(), any(URL.class), eventHandlerCaptor.capture(), (String) isNull());
+                isNull(FilePart.class), any(URL.class), eventHandlerCaptor.capture(), isNull(String.class));
         CompleteEvent secondFileComplete = new CompleteEvent(TEST_COLLECTION, null);
         secondFileComplete.setFileID(remoteFileID2);
         eventHandlerCaptor.getValue().handleEvent(secondFileComplete);
@@ -96,12 +98,13 @@ public class DownloadActionTest {
         runner.waitForFinish(3000);
         assertTrue(runner.getFinished());
         
-        verify(reporter, times(1)).reportStart(eq(fileID1));
-        verify(reporter, times(1)).reportFinish(eq(fileID1));
-        verify(reporter, times(1)).reportStart(eq(fileID2));
-        verify(reporter, times(1)).reportFinish(eq(fileID2));
-        verify(reporter, times(1)).printStatistics();
-        verifyNoMoreInteractions(reporter);
+        InOrder order = inOrder(reporter);
+        order.verify(reporter, times(1)).reportStart(eq(fileID1));
+        order.verify(reporter, times(1)).reportFinish(eq(fileID1));
+        order.verify(reporter, times(1)).reportStart(eq(fileID2));
+        order.verify(reporter, times(1)).reportFinish(eq(fileID2));
+        order.verify(reporter, times(1)).printStatistics();
+        order.verifyNoMoreInteractions();
         
         verifyNoMoreInteractions(client);
     }
@@ -139,7 +142,7 @@ public class DownloadActionTest {
         ArgumentCaptor<EventHandler> eventHandlerCaptor = ArgumentCaptor.forClass(EventHandler.class);
         
         verify(client, timeout(3000).times(1)).getFileFromFastestPillar(eq(TEST_COLLECTION), eq(remoteFileID2), 
-                (FilePart) isNull(), any(URL.class), eventHandlerCaptor.capture(), (String) isNull());
+                isNull(FilePart.class), any(URL.class), eventHandlerCaptor.capture(), isNull(String.class));
         CompleteEvent secondFileComplete = new CompleteEvent(TEST_COLLECTION, null);
         secondFileComplete.setFileID(remoteFileID2);
         eventHandlerCaptor.getValue().handleEvent(secondFileComplete);
@@ -147,11 +150,12 @@ public class DownloadActionTest {
         runner.waitForFinish(3000);
         assertTrue(runner.getFinished());
         
-        verify(reporter, times(1)).reportSkipFile(eq(fileID1));
-        verify(reporter, times(1)).reportStart(eq(fileID2));
-        verify(reporter, times(1)).reportFinish(eq(fileID2));
-        verify(reporter, times(1)).printStatistics();
-        verifyNoMoreInteractions(reporter);
+        InOrder order = inOrder(reporter);
+        order.verify(reporter, times(1)).reportSkipFile(eq(fileID1));
+        order.verify(reporter, times(1)).reportStart(eq(fileID2));
+        order.verify(reporter, times(1)).reportFinish(eq(fileID2));
+        order.verify(reporter, times(1)).printStatistics();
+        order.verifyNoMoreInteractions();
         
         verifyNoMoreInteractions(client);
     }
@@ -188,7 +192,7 @@ public class DownloadActionTest {
 
         ArgumentCaptor<EventHandler> eventHandlerCaptor = ArgumentCaptor.forClass(EventHandler.class);
         verify(client, timeout(3000).times(1)).getFileFromFastestPillar(eq(TEST_COLLECTION), eq(remoteFileID1), 
-                (FilePart) isNull(), any(URL.class), eventHandlerCaptor.capture(), (String) isNull());
+                isNull(FilePart.class), any(URL.class), eventHandlerCaptor.capture(), isNull(String.class));
         OperationFailedEvent firstFileFail = new OperationFailedEvent(TEST_COLLECTION, null, null);
         firstFileFail.setFileID(remoteFileID1);
         eventHandlerCaptor.getValue().handleEvent(firstFileFail);
@@ -196,7 +200,7 @@ public class DownloadActionTest {
         assertFalse(runner.getFinished());
         
         verify(client, timeout(3000).times(1)).getFileFromFastestPillar(eq(TEST_COLLECTION), eq(remoteFileID2), 
-                (FilePart) isNull(), any(URL.class), eventHandlerCaptor.capture(), (String) isNull());
+                isNull(FilePart.class), any(URL.class), eventHandlerCaptor.capture(), isNull(String.class));
         
         CompleteEvent secondFileComplete = new CompleteEvent(TEST_COLLECTION, null);
         secondFileComplete.setFileID(remoteFileID2);
@@ -205,7 +209,7 @@ public class DownloadActionTest {
         assertFalse(runner.getFinished());
         
         verify(client, timeout(3000).times(2)).getFileFromFastestPillar(eq(TEST_COLLECTION), eq(remoteFileID1), 
-                (FilePart) isNull(), any(URL.class), eventHandlerCaptor.capture(), (String) isNull());
+                isNull(FilePart.class), any(URL.class), eventHandlerCaptor.capture(), isNull(String.class));
         CompleteEvent firstFileComplete = new CompleteEvent(TEST_COLLECTION, null);
         firstFileComplete.setFileID(remoteFileID1);
         eventHandlerCaptor.getValue().handleEvent(firstFileComplete);
@@ -213,12 +217,13 @@ public class DownloadActionTest {
         runner.waitForFinish(3000);
         assertTrue(runner.getFinished());
         
-        verify(reporter, times(1)).reportStart(eq(fileID1));
-        verify(reporter, times(1)).reportStart(eq(fileID2));
-        verify(reporter, times(1)).reportFinish(eq(fileID2));
-        verify(reporter, times(1)).reportFinish(eq(fileID1));
-        verify(reporter, times(1)).printStatistics();
-        verifyNoMoreInteractions(reporter);
+        InOrder order = inOrder(reporter);
+        order.verify(reporter, times(1)).reportStart(eq(fileID1));
+        order.verify(reporter, times(1)).reportStart(eq(fileID2));
+        order.verify(reporter, times(1)).reportFinish(eq(fileID2));
+        order.verify(reporter, times(1)).reportFinish(eq(fileID1));
+        order.verify(reporter, times(1)).printStatistics();
+        order.verifyNoMoreInteractions();
         
         verifyNoMoreInteractions(client);
     }
@@ -254,7 +259,7 @@ public class DownloadActionTest {
 
         ArgumentCaptor<EventHandler> eventHandlerCaptor = ArgumentCaptor.forClass(EventHandler.class);
         verify(client, timeout(3000).times(1)).getFileFromFastestPillar(eq(TEST_COLLECTION), eq(remoteFileID1), 
-                (FilePart) isNull(), any(URL.class), eventHandlerCaptor.capture(), (String) isNull());
+                isNull(FilePart.class), any(URL.class), eventHandlerCaptor.capture(), isNull(String.class));
         OperationFailedEvent firstFileFail = new OperationFailedEvent(TEST_COLLECTION, null, null);
         firstFileFail.setFileID(remoteFileID1);
         eventHandlerCaptor.getValue().handleEvent(firstFileFail);
@@ -262,7 +267,7 @@ public class DownloadActionTest {
         assertFalse(runner.getFinished());
 
         verify(client, timeout(3000).times(1)).getFileFromFastestPillar(eq(TEST_COLLECTION), eq(remoteFileID2), 
-                (FilePart) isNull(), any(URL.class), eventHandlerCaptor.capture(), (String) isNull());
+                isNull(FilePart.class), any(URL.class), eventHandlerCaptor.capture(), isNull(String.class));
         CompleteEvent secondFileComplete = new CompleteEvent(TEST_COLLECTION, null);
         secondFileComplete.setFileID(remoteFileID2);
         eventHandlerCaptor.getValue().handleEvent(secondFileComplete);
@@ -270,6 +275,7 @@ public class DownloadActionTest {
         runner.waitForFinish(3000);
         assertTrue(runner.getFinished());
         
+        // Not checking order, since threading makes this unstable
         verify(reporter, times(1)).reportStart(eq(fileID1));
         verify(reporter, times(1)).reportFailure(eq(fileID1));
         verify(reporter, times(1)).reportStart(eq(fileID2));

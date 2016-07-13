@@ -1,20 +1,19 @@
 package dk.statsbiblioteket.bitrepository.commandline.action.download;
 
-import static org.mockito.Matchers.eq;
 import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
-import static org.mockito.Mockito.doAnswer;
 
 import java.io.IOException;
 import java.io.OutputStream;
-import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.concurrent.BlockingQueue;
@@ -23,8 +22,7 @@ import org.bitrepository.client.eventhandler.CompleteEvent;
 import org.bitrepository.client.eventhandler.IdentificationCompleteEvent;
 import org.bitrepository.client.eventhandler.OperationFailedEvent;
 import org.bitrepository.protocol.FileExchange;
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
+import org.mockito.InOrder;
 import org.testng.annotations.Test;
 
 import dk.statsbiblioteket.bitrepository.commandline.action.job.Job;
@@ -55,18 +53,15 @@ public class DownloadFilesEventHandlerTest {
         CompleteEvent completeEvent = new CompleteEvent(TEST_COLLECTION, null);
         completeEvent.setFileID(testFileID);
         handler.handleEvent(completeEvent);
+
+        InOrder order = inOrder(runningJobs, reporter, fileExchange, failedQueue);
         
-        verify(runningJobs, times(1)).getJob(eq(testFileID));
-        verify(fileExchange, times(1)).getFile(any(OutputStream.class), eq(testJob.getUrl()));
-        verify(fileExchange, times(1)).deleteFile(eq(testJob.getUrl()));
-        
-        verify(runningJobs, times(1)).removeJob(eq(testJob));
-        verify(reporter, times(1)).reportFinish(eq(testFileID));
-        
-        verifyNoMoreInteractions(runningJobs);
-        verifyNoMoreInteractions(reporter);
-        verifyNoMoreInteractions(fileExchange);
-        verifyNoMoreInteractions(failedQueue);
+        order.verify(runningJobs, times(1)).getJob(eq(testFileID));
+        order.verify(fileExchange, times(1)).getFile(any(OutputStream.class), eq(testJob.getUrl()));
+        order.verify(reporter, times(1)).reportFinish(eq(testFileID));
+        order.verify(runningJobs, times(1)).removeJob(eq(testJob));
+        order.verify(fileExchange, times(1)).deleteFile(eq(testJob.getUrl()));
+        order.verifyNoMoreInteractions();
     }
     
     @Test
@@ -88,16 +83,13 @@ public class DownloadFilesEventHandlerTest {
         completeEvent.setFileID(testFileID);
         handler.handleEvent(completeEvent);
         
-        verify(runningJobs, times(1)).getJob(eq(testFileID));
-        verify(fileExchange, times(1)).deleteFile(eq(testJob.getUrl()));
+        InOrder order = inOrder(runningJobs, reporter, fileExchange, failedQueue);
         
-        verify(runningJobs, times(1)).removeJob(eq(testJob));
-        verify(failedQueue, times(1)).add(eq(testJob));
-        
-        verifyNoMoreInteractions(runningJobs);
-        verifyNoMoreInteractions(reporter);
-        verifyNoMoreInteractions(fileExchange);
-        verifyNoMoreInteractions(failedQueue);
+        order.verify(runningJobs, times(1)).getJob(eq(testFileID));
+        order.verify(fileExchange, times(1)).deleteFile(eq(testJob.getUrl()));
+        order.verify(failedQueue, times(1)).add(eq(testJob));
+        order.verify(runningJobs, times(1)).removeJob(eq(testJob));
+        order.verifyNoMoreInteractions();
     }
     
     @Test
@@ -120,12 +112,9 @@ public class DownloadFilesEventHandlerTest {
         identificationEvent.setFileID(testFileID);
         handler.handleEvent(identificationEvent);
         
-        verify(runningJobs, times(1)).getJob(eq(testFileID));
-
-        verifyNoMoreInteractions(runningJobs);
-        verifyNoMoreInteractions(reporter);
-        verifyNoMoreInteractions(fileExchange);
-        verifyNoMoreInteractions(failedQueue);
+        InOrder order = inOrder(runningJobs, reporter, fileExchange, failedQueue);
+        order.verify(runningJobs, times(1)).getJob(eq(testFileID));
+        order.verifyNoMoreInteractions();
     }
     
     @Test
@@ -138,13 +127,8 @@ public class DownloadFilesEventHandlerTest {
         StatusReporter reporter = mock(StatusReporter.class);
         FileExchange fileExchange = mock(FileExchange.class);
         
-        doAnswer(new Answer<Object>() {
-            @Override 
-            public Object answer(InvocationOnMock invocationOnMock) throws IOException {
-                Object[] args = invocationOnMock.getArguments();
-                throw new IOException("Bogus IOException testing fileexchange failure");
-            }
-        }).when(fileExchange).getFile(any(OutputStream.class), any(URL.class));
+        doThrow(new IOException("Bogus IOException testing fileexchange failure"))
+            .when(fileExchange).getFile(any(OutputStream.class), any(URL.class));
         
         Job testJob = new Job(Paths.get(testFileID), testFileID, null, fileExchangeUrl);
         when(runningJobs.getJob(testFileID)).thenReturn(testJob);
@@ -156,17 +140,13 @@ public class DownloadFilesEventHandlerTest {
         completeEvent.setFileID(testFileID);
         handler.handleEvent(completeEvent);
         
-        verify(runningJobs, times(1)).getJob(eq(testFileID));
-        verify(fileExchange, times(1)).getFile(any(OutputStream.class), eq(testJob.getUrl()));
-        
-        verify(runningJobs, times(1)).removeJob(eq(testJob));
-        verify(failedQueue, times(1)).add(eq(testJob));
-        verify(fileExchange, times(1)).deleteFile(eq(testJob.getUrl()));
-        
-        verifyNoMoreInteractions(runningJobs);
-        verifyNoMoreInteractions(reporter);
-        verifyNoMoreInteractions(fileExchange);
-        verifyNoMoreInteractions(failedQueue);
+        InOrder order = inOrder(runningJobs, reporter, fileExchange, failedQueue);
+        order.verify(runningJobs, times(1)).getJob(eq(testFileID));
+        order.verify(fileExchange, times(1)).getFile(any(OutputStream.class), eq(testJob.getUrl()));
+        order.verify(failedQueue, times(1)).add(eq(testJob));
+        order.verify(runningJobs, times(1)).removeJob(eq(testJob));
+        order.verify(fileExchange, times(1)).deleteFile(eq(testJob.getUrl()));
+        order.verifyNoMoreInteractions();
     }
     
 }

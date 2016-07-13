@@ -4,6 +4,7 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Matchers.isNull;
+import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.timeout;
 import static org.mockito.Mockito.verify;
@@ -25,6 +26,7 @@ import org.bitrepository.client.eventhandler.EventHandler;
 import org.bitrepository.client.eventhandler.OperationFailedEvent;
 import org.bitrepository.modify.deletefile.DeleteFileClient;
 import org.mockito.ArgumentCaptor;
+import org.mockito.InOrder;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
@@ -71,8 +73,8 @@ public class DeleteActionTest {
 
         ArgumentCaptor<EventHandler> eventHandlerCaptor = ArgumentCaptor.forClass(EventHandler.class);
         verify(client, timeout(3000).times(1)).deleteFile(eq(TEST_COLLECTION), eq(fileID1), eq(TEST_PILLAR), 
-                any(ChecksumDataForFileTYPE.class), (ChecksumSpecTYPE) isNull(), eventHandlerCaptor.capture(), 
-                (String) isNull());
+                any(ChecksumDataForFileTYPE.class), isNull(ChecksumSpecTYPE.class), eventHandlerCaptor.capture(), 
+                isNull(String.class));
         CompleteEvent firstFileComplete = new CompleteEvent(TEST_COLLECTION, null);
         firstFileComplete.setFileID(fileID1);
         eventHandlerCaptor.getValue().handleEvent(firstFileComplete);
@@ -80,8 +82,8 @@ public class DeleteActionTest {
         assertFalse(runner.getFinished());
         
         verify(client, timeout(3000).times(1)).deleteFile(eq(TEST_COLLECTION), eq(fileID2), eq(TEST_PILLAR), 
-                any(ChecksumDataForFileTYPE.class), (ChecksumSpecTYPE) isNull(), eventHandlerCaptor.capture(), 
-                (String) isNull());
+                any(ChecksumDataForFileTYPE.class), isNull(ChecksumSpecTYPE.class), eventHandlerCaptor.capture(), 
+                isNull(String.class));
         CompleteEvent secondFileComplete = new CompleteEvent(TEST_COLLECTION, null);
         secondFileComplete.setFileID(fileID2);
         eventHandlerCaptor.getValue().handleEvent(secondFileComplete);
@@ -89,12 +91,13 @@ public class DeleteActionTest {
         runner.waitForFinish(3000);
         assertTrue(runner.getFinished());
         
-        verify(reporter, times(1)).reportStart(eq(fileID1));
-        verify(reporter, times(1)).reportFinish(eq(fileID1));
-        verify(reporter, times(1)).reportStart(eq(fileID2));
-        verify(reporter, times(1)).reportFinish(eq(fileID2));
-        verify(reporter, times(1)).printStatistics();
-        verifyNoMoreInteractions(reporter);
+        InOrder order = inOrder(reporter);
+        order.verify(reporter, times(1)).reportStart(eq(fileID1));
+        order.verify(reporter, times(1)).reportFinish(eq(fileID1));
+        order.verify(reporter, times(1)).reportStart(eq(fileID2));
+        order.verify(reporter, times(1)).reportFinish(eq(fileID2));
+        order.verify(reporter, times(1)).printStatistics();
+        order.verifyNoMoreInteractions();
         
         verifyNoMoreInteractions(client);
     }
@@ -125,8 +128,8 @@ public class DeleteActionTest {
 
         ArgumentCaptor<EventHandler> eventHandlerCaptor = ArgumentCaptor.forClass(EventHandler.class);
         verify(client, timeout(3000).times(1)).deleteFile(eq(TEST_COLLECTION), eq(fileID1), eq(TEST_PILLAR), 
-                any(ChecksumDataForFileTYPE.class), (ChecksumSpecTYPE) isNull(), eventHandlerCaptor.capture(), 
-                (String) isNull());
+                any(ChecksumDataForFileTYPE.class), isNull(ChecksumSpecTYPE.class), eventHandlerCaptor.capture(), 
+                isNull(String.class));
         OperationFailedEvent firstFileFail = new OperationFailedEvent(TEST_COLLECTION, null, null);
         firstFileFail.setFileID(fileID1);
         eventHandlerCaptor.getValue().handleEvent(firstFileFail);
@@ -134,8 +137,8 @@ public class DeleteActionTest {
         assertFalse(runner.getFinished());
         
         verify(client, timeout(3000).times(1)).deleteFile(eq(TEST_COLLECTION), eq(fileID2), eq(TEST_PILLAR), 
-                any(ChecksumDataForFileTYPE.class), (ChecksumSpecTYPE) isNull(), eventHandlerCaptor.capture(), 
-                (String) isNull());
+                any(ChecksumDataForFileTYPE.class), isNull(ChecksumSpecTYPE.class), eventHandlerCaptor.capture(), 
+                isNull(String.class));
         CompleteEvent secondFileComplete = new CompleteEvent(TEST_COLLECTION, null);
         secondFileComplete.setFileID(fileID2);
         eventHandlerCaptor.getValue().handleEvent(secondFileComplete);
@@ -143,8 +146,8 @@ public class DeleteActionTest {
         assertFalse(runner.getFinished());
         
         verify(client, timeout(3000).times(2)).deleteFile(eq(TEST_COLLECTION), eq(fileID1), eq(TEST_PILLAR), 
-                any(ChecksumDataForFileTYPE.class), (ChecksumSpecTYPE) isNull(), eventHandlerCaptor.capture(), 
-                (String) isNull());
+                any(ChecksumDataForFileTYPE.class), isNull(ChecksumSpecTYPE.class), eventHandlerCaptor.capture(), 
+                isNull(String.class));
         CompleteEvent firstFileComplete = new CompleteEvent(TEST_COLLECTION, null);
         firstFileComplete.setFileID(fileID1);
         eventHandlerCaptor.getValue().handleEvent(firstFileComplete);
@@ -152,12 +155,13 @@ public class DeleteActionTest {
         runner.waitForFinish(3000);
         assertTrue(runner.getFinished());
         
-        verify(reporter, times(1)).reportStart(eq(fileID1));
-        verify(reporter, times(1)).reportStart(eq(fileID2));
-        verify(reporter, times(1)).reportFinish(eq(fileID2));
-        verify(reporter, times(1)).reportFinish(eq(fileID1));
-        verify(reporter, times(1)).printStatistics();
-        verifyNoMoreInteractions(reporter);
+        InOrder order = inOrder(reporter);
+        order.verify(reporter, times(1)).reportStart(eq(fileID1));
+        order.verify(reporter, times(1)).reportStart(eq(fileID2));
+        order.verify(reporter, times(1)).reportFinish(eq(fileID2));
+        order.verify(reporter, times(1)).reportFinish(eq(fileID1));
+        order.verify(reporter, times(1)).printStatistics();
+        order.verifyNoMoreInteractions();
         
         verifyNoMoreInteractions(client);
     }
@@ -187,8 +191,8 @@ public class DeleteActionTest {
 
         ArgumentCaptor<EventHandler> eventHandlerCaptor = ArgumentCaptor.forClass(EventHandler.class);
         verify(client, timeout(3000).times(1)).deleteFile(eq(TEST_COLLECTION), eq(fileID1), eq(TEST_PILLAR), 
-                any(ChecksumDataForFileTYPE.class), (ChecksumSpecTYPE) isNull(), eventHandlerCaptor.capture(), 
-                (String) isNull());
+                any(ChecksumDataForFileTYPE.class), isNull(ChecksumSpecTYPE.class), eventHandlerCaptor.capture(), 
+                isNull(String.class));
         OperationFailedEvent firstFileFail = new OperationFailedEvent(TEST_COLLECTION, null, null);
         firstFileFail.setFileID(fileID1);
         eventHandlerCaptor.getValue().handleEvent(firstFileFail);
@@ -196,19 +200,20 @@ public class DeleteActionTest {
         assertFalse(runner.getFinished());
 
         verify(client, timeout(3000).times(1)).deleteFile(eq(TEST_COLLECTION), eq(fileID2), eq(TEST_PILLAR), 
-                any(ChecksumDataForFileTYPE.class), (ChecksumSpecTYPE) isNull(), eventHandlerCaptor.capture(), 
-                (String) isNull());
+                any(ChecksumDataForFileTYPE.class), isNull(ChecksumSpecTYPE.class), eventHandlerCaptor.capture(), 
+                isNull(String.class));
         CompleteEvent secondFileComplete = new CompleteEvent(TEST_COLLECTION, null);
         secondFileComplete.setFileID(fileID2);
         eventHandlerCaptor.getValue().handleEvent(secondFileComplete);
         
         runner.waitForFinish(3000);
         assertTrue(runner.getFinished());
-        
+
+        // Not checking order, since threading makes this unstable
         verify(reporter, times(1)).reportStart(eq(fileID1));
-        verify(reporter, times(1)).reportFailure(eq(fileID1));
         verify(reporter, times(1)).reportStart(eq(fileID2));
         verify(reporter, times(1)).reportFinish(eq(fileID2));
+        verify(reporter, times(1)).reportFailure(eq(fileID1));
         verify(reporter, times(1)).printStatistics();
         verifyNoMoreInteractions(reporter);
         

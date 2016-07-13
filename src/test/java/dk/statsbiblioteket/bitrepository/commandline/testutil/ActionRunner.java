@@ -9,8 +9,9 @@ import dk.statsbiblioteket.bitrepository.commandline.action.ClientAction;
  */
 public class ActionRunner implements Runnable {
     private final Object finishLock = new Object();
-    boolean finished = false;
-    ClientAction action;
+    private boolean finished = false;
+    private ClientAction action;
+    private Exception ex;
     
     public ActionRunner(ClientAction action) {
         this.action = action;
@@ -18,6 +19,10 @@ public class ActionRunner implements Runnable {
     
     public boolean getFinished() {
         return finished;
+    }
+    
+    public Exception getException() {
+        return ex;
     }
     
     private void finish() {
@@ -39,8 +44,9 @@ public class ActionRunner implements Runnable {
         try {
             action.performAction();
         } catch (Exception e) {
-            // Err, not sure if we want to do anything?
+            ex = e;
+        } finally {
+            finish();
         }
-        finish();
     }
 }
