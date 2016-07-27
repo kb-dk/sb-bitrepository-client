@@ -35,7 +35,7 @@ public class CliOptions {
     private final static Option remoteOption 
         = new Option(REMOTE_PREFIX_OPT, "remote-prefix", true, "Remote prefix for operations");
     private final static Option pillarOption 
-        = new Option(PILLAR_OPT, "pillar", true, "Pillar to perform delete on");
+        = new Option(PILLAR_OPT, "pillar", true, "Pillar to perform the action on");
     private final static Option destinationOption 
         = new Option(DESTINATION_OPT, "destination", true, "Destination directory to place files in");
     private final static Option typeOption 
