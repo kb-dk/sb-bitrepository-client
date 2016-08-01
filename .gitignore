@@ -5,3 +5,7 @@
 src/main/config/Re*.xml
 src/main/config/*.pem
 test-output/
+*.iml
+*.ipr
+*.iws
+.idea/
