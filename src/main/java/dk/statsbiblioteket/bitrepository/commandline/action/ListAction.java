@@ -96,6 +96,9 @@ public class ListAction implements ClientAction {
      * Method to report a set of received data. 
      * Results are filtered using the optional local and remote prefixes. The results that is not filtered away
      * are written to the sumfile.  
+     * @param results Results to report
+     * @param md5SumFileWriter The {@link MD5SumFileWriter} to report results to
+     * @return Date The date of the latest file.
      * @throws IOException if writing to the sum file fails
      */
     private Date reportResults(List<ChecksumDataForChecksumSpecTYPE> results, MD5SumFileWriter md5SumFileWriter) 

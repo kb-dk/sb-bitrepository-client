@@ -11,12 +11,15 @@ import java.nio.file.StandardOpenOption;
 import java.nio.file.attribute.BasicFileAttributes;
 
 import org.apache.commons.codec.digest.DigestUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Helper class to traverse a file tree and calculate MD5 checksums for each file met.
  * The class uses an MD5SumFileWriter to output the calculated checksums.  
  */
 public class MD5CalculatingFileVisitor implements FileVisitor<Path> {
+    private final Logger log = LoggerFactory.getLogger(getClass());
     private MD5SumFileWriter writer;
 
     /**
@@ -34,6 +37,11 @@ public class MD5CalculatingFileVisitor implements FileVisitor<Path> {
 
     @Override
     public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+        log.trace("Visiting file '{}', with attributes '{}'", file, attrs);
+        if(attrs.isSymbolicLink()) {
+            return FileVisitResult.CONTINUE;
+        }
+        
         try (InputStream is = new BufferedInputStream(Files.newInputStream(file, StandardOpenOption.READ))) {
             String fileChecksum = DigestUtils.md5Hex(is);
             writer.writeChecksumLine(file, fileChecksum);
