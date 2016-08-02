@@ -11,7 +11,7 @@
   </Collections>
   <ProtocolSettings>
     <DefaultChecksumType>MD5</DefaultChecksumType>
-    <AllowedFileIDPattern>[a-zA-Z\\_\.\-0-9]+</AllowedFileIDPattern>
+    <AllowedFileIDPattern>[a-zA-Z/_\.\-0-9]+</AllowedFileIDPattern>
     <RequireMessageAuthentication>false</RequireMessageAuthentication>
     <RequireOperationAuthorization>false</RequireOperationAuthorization>
     <RequireChecksumForDestructiveRequests>true</RequireChecksumForDestructiveRequests>

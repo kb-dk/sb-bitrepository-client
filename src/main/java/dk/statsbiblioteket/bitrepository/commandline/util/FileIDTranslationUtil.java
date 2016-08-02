@@ -1,10 +1,15 @@
 package dk.statsbiblioteket.bitrepository.commandline.util;
 
+import java.io.File;
+
 /**
  * Utility class to handle translations between remote and local files.  
  */
 public class FileIDTranslationUtil {
 
+    /** Operating system specific directory separator */
+    static final String systemSeparator = File.separator;
+    
     /**
      * Translate local FileID to remote fileID. 
      * If a localPrefix is supplied and the local filename does not start with that
@@ -34,8 +39,7 @@ public class FileIDTranslationUtil {
             remoteFileID = stripped;
         }
         
-        //return remoteFileID; //Temporary to ensure that the file can be stored in a SB Pillar
-        return remoteFileID.replace("/", "\\");
+        return remoteFileID.replace(systemSeparator, "/");
     }
     
     /**
@@ -50,7 +54,7 @@ public class FileIDTranslationUtil {
      */    
     public static String remoteToLocal(String remoteFileID, String localPrefix, String remotePrefix) throws SkipFileException {
         String stripped;
-        remoteFileID = remoteFileID.replace("\\", "/"); // Temporary measure to ensure that files can handled on SB pillar
+        remoteFileID = remoteFileID.replace("/", systemSeparator); 
         if(remotePrefix != null) {
             if(remoteFileID.startsWith(remotePrefix)) {
                stripped = remoteFileID.substring(remotePrefix.length());
