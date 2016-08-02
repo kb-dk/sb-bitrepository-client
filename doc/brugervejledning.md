@@ -7,7 +7,7 @@ Bitmagasinet er et system til langtidsopbevaring af filer i flere uafhængige ko
 Komponenterne i bitmagasinet som gemmer filer kaldes for en *pillar* (eller et *ben* på dansk). En fil gemmes derfor i et antal ligeværdige kopier på et antal *pillars*. 
 En *pillar* kan indgå i et antal *collections* (samlinger på dansk). 
 
-Operationerne som klienten tilbyder arbejder alle (på nær 'makechecksums') på en *collection*. Enkelte operationer arbejder ikke på alle pillars i en *collection*, og kræver derfor også angivelse af en specifik *pillar*. 
+Operationerne som klienten tilbyder, arbejder alle (på nær 'makechecksums') på en *collection*. Enkelte operationer arbejder ikke på alle pillars i en *collection*, og kræver derfor også angivelse af en specifik *pillar*. 
 
 ## Sumfilen
 De forskellige operationer som klienten tilbyder arbejder med en sumfil. Sumfilen afspejler hvordan filerne vil se ud på den lokale maskine. Klienten tilbyder funktionalitet til at lave en sumfil enten ud fra et lokalt filtræ eller ud fra filer som allerede ligger i bitmagasinet. 
@@ -32,7 +32,7 @@ I løbet af kørslen af en operation vil der blive udskrevet status for de enkel
  * *Finished* - Operationen for filen er afsluttet med success
  * *Failed* - Operationen for filen fejlede
 
-Når en kørsel afsluttes udskrives der desuden en status som opsummere de forskellige statuser.
+Når en kørsel afsluttes udskrives der desuden en opsummering de forskellige statuser.
 
 ## Filnavne og prefixer
 De fleste operationer i klienten giver mulighed for brug af 'lokale' og 'bitmagasin' prefixes. Disse prefixes har til formål at begrænse hvilke filer der arbejdes på, samt at ændre filnavne mellem lokal og bitmagasin siden. 
@@ -47,7 +47,7 @@ mappe1/fil1 -> mappe1/fil1
 mappe2/fil2 -> mappe2/fil2
 ```
 
-Bitmagasin til lokal
+Bitmagasin til lokal:
 ```
 mappe1/fil1 -> mappe1/fil1
 mappe2/fil2 -> mappe2/fil2
@@ -62,7 +62,7 @@ mappe1/fil1 -> fil1
 mappe2/fil2 -> SKIPPED
 ```
 
-Bitmagasin til lokal
+Bitmagasin til lokal:
 ```
 mappe1/fil1 -> mappe1/mappe1/fil1
 mappe2/fil2 -> mappe1/mappe2/fil2
@@ -77,7 +77,7 @@ mappe1/fil1 -> mappe1/mappe1/fil1
 mappe2/fil2 -> mappe1/mappe2/fil2
 ```
 
-Bitmagasin til lokal
+Bitmagasin til lokal:
 ```
 mappe1/fil1 -> fil1
 mappe2/fil2 -> SKIPPED
@@ -92,7 +92,7 @@ mappe1/fil1 -> mappe3/fil1
 mappe2/fil2 -> SKIPPED
 ```
 
-Bitmagasin til lokal
+Bitmagasin til lokal:
 ```
 mappe1/fil1 -> SKIPPED
 mappe2/fil2 -> SKIPPED
@@ -165,4 +165,147 @@ List operationen henter filnavne og checksummer fra et ben i bitmagasinet og lav
 
 
 # Eksempler 
-eksempler 
+Følgende eksempler skulle gerne illustrere de grundliggende funktionaliteter af klienten.
+
+Der tages udgangspunkt i følgende filstruktur:
+```
+sb-client-ex
+│ 
+├── CD1
+│     ├─ cd1-track1  (Checksum: 297abb31e43c7b8ae947fa2a59fe9d40)
+│     ├─ cd1-track2  (Checksum: 2a005b7d68bbb88374a4bfb6e53b5537)
+│     ├─ cd1-track3  (Checksum: b4dfc4e7e4061a10f1cee2f030957733)
+│ 
+├── CD2
+│     ├─ cd2-track1  (Checksum: 297abb31e43c7b8ae947fa2a59fe9d40)
+│     ├─ cd2-track2  (Checksum: 2a005b7d68bbb88374a4bfb6e53b5537)
+│     ├─ cd2-track3  (Checksum: b4dfc4e7e4061a10f1cee2f030957733)
+```
+Kommandoerne der køres er lavet med udgangspunkt i Linux udgaven af klienten (sbclient.sh). For at køre det i et Windows miljø, udskift da 'sbclient.sh' i kommandoerne med 'sbclient.cmd'.
+
+## Generering af første sumfil
+For at lave en sumfil (sumfil1) ud fra det lokale fil træ (mappen 'sb-client-ex'), anvendes '*makechecksums*' operationen.
+
+```
+sb-bitrepository-client/bin/sbclient.sh -a makechecksums -s sb-client-ex -f sumfil1
+```
+
+Dette skulle resultere i en ny fil 'sumfil1' med følgende indhold:
+```
+b4dfc4e7e4061a10f1cee2f030957733  sb-client-ex/CD1/cd1-track3
+2a005b7d68bbb88374a4bfb6e53b5537  sb-client-ex/CD1/cd1-track2
+297abb31e43c7b8ae947fa2a59fe9d40  sb-client-ex/CD1/cd1-track1
+b4dfc4e7e4061a10f1cee2f030957733  sb-client-ex/CD2/cd2-track3
+2a005b7d68bbb88374a4bfb6e53b5537  sb-client-ex/CD2/cd2-track2
+297abb31e43c7b8ae947fa2a59fe9d40  sb-client-ex/CD2/cd2-track1
+```
+
+## Upload af filer
+For at uploade filer til bitmagasinet skal upload operationen anvendes. 
+
+Filerne som vi vil uploade ligger i mappen 'sb-client-ex' og den ønsker vi i bitmagasin enden skal hedde 'album1', og derfor skal vi bruge både lokale og bitmagasin prefixer. 
+For at uploade filerne til samlingen 'CD-collection' køres følgende (outputtet findes efter kommandoen):
+
+```
+sb-bitrepository-client/bin/sbclient.sh -a upload -f sumfil1 -c CD-collection -l sb-client-ex/ -r album1/
+[STARTING]: upload of sb-client-ex/CD1/cd1-track3
+[FINISHED]: upload of sb-client-ex/CD1/cd1-track3
+[STARTING]: upload of sb-client-ex/CD1/cd1-track2
+[FINISHED]: upload of sb-client-ex/CD1/cd1-track2
+[STARTING]: upload of sb-client-ex/CD1/cd1-track1
+[FINISHED]: upload of sb-client-ex/CD1/cd1-track1
+[STARTING]: upload of sb-client-ex/CD2/cd2-track3
+[FINISHED]: upload of sb-client-ex/CD2/cd2-track3
+[STARTING]: upload of sb-client-ex/CD2/cd2-track2
+[FINISHED]: upload of sb-client-ex/CD2/cd2-track2
+[STARTING]: upload of sb-client-ex/CD2/cd2-track1
+[FINISHED]: upload of sb-client-ex/CD2/cd2-track1
+Started: 6, Finished: 6, Failed: 0, Skipped: 0
+
+```
+
+## List filer i bitmagasinet
+For at tjekke at filerne er kommet godt over i bitmagasinet at de ligger i 'album1' fremfor 'sb-client-ex' kan list operationen anvendes:
+
+```
+sb-bitrepository-client/bin/sbclient.sh -a list -f sumfil2 -c CD-collection -p pillar1
+```
+
+Kørslen af operationen resultere i en ny sumfil, 'sumfil2', som indeholder: 
+```
+b4dfc4e7e4061a10f1cee2f030957733  album1/CD1/cd1-track3
+2a005b7d68bbb88374a4bfb6e53b5537  album1/CD1/cd1-track2
+297abb31e43c7b8ae947fa2a59fe9d40  album1/CD1/cd1-track1
+b4dfc4e7e4061a10f1cee2f030957733  album1/CD2/cd2-track3
+2a005b7d68bbb88374a4bfb6e53b5537  album1/CD2/cd2-track2
+297abb31e43c7b8ae947fa2a59fe9d40  album1/CD2/cd2-track1
+
+```
+
+## Download af filer
+Hvis sumfilen 'sumfil2' blot blev brugt til at hente filerne ned til klient maskinen igen, så ville alle filerne blive hentet hjem i ny mappe 'album1', da sumfilen altid afspejler hvordan filerne ser ud lokalt.
+Ønskes filerne placeret et andet sted lokalt, så skal der anvendes lokal og bitmagasin prefixer fx:
+
+```
+sb-bitrepository-client/bin/sbclient.sh -a list -f sumfil3 -c CD-collection -p pillar1 -r album1/ -l lokal-album/
+```
+
+Hvilket vil resultere i en ny sumfil, 'sumfil3' med følgende indhold:
+```
+b4dfc4e7e4061a10f1cee2f030957733  lokal-album/CD1/cd1-track3
+2a005b7d68bbb88374a4bfb6e53b5537  lokal-album/CD1/cd1-track2
+297abb31e43c7b8ae947fa2a59fe9d40  lokal-album/CD1/cd1-track1
+b4dfc4e7e4061a10f1cee2f030957733  lokal-album/CD2/cd2-track3
+2a005b7d68bbb88374a4bfb6e53b5537  lokal-album/CD2/cd2-track2
+297abb31e43c7b8ae947fa2a59fe9d40  lokal-album/CD2/cd2-track1
+```
+
+Ønsker vi nu kun at hente indholdet af 'CD2' kan download operation anvendes med: 
+```
+sb-bitrepository-client-1.0-SNAPSHOT/bin/sbclient.sh -a download -f sumfil3 -c SB-devel-test1 -r album1/CD2/ -l lokal-album/CD2/
+[SKIPPING]: download of lokal-album/CD1/cd1-track3
+[SKIPPING]: download of lokal-album/CD1/cd1-track2
+[SKIPPING]: download of lokal-album/CD1/cd1-track1
+[STARTING]: download of lokal-album/CD2/cd2-track3
+[FINISHED]: download of lokal-album/CD2/cd2-track3
+[STARTING]: download of lokal-album/CD2/cd2-track2
+[FINISHED]: download of lokal-album/CD2/cd2-track2
+[STARTING]: download of lokal-album/CD2/cd2-track1
+[FINISHED]: download of lokal-album/CD2/cd2-track1
+Started: 3, Finished: 3, Failed: 0, Skipped: 3
+
+```
+
+Hvor efter der vil være en lokal mappe 'lokal-album' med følgende indhold:
+```
+lokal-album
+│
+├── CD2
+│     ├─ cd2-track1  (Checksum: 297abb31e43c7b8ae947fa2a59fe9d40)
+│     ├─ cd2-track2  (Checksum: 2a005b7d68bbb88374a4bfb6e53b5537)
+│     ├─ cd2-track3  (Checksum: b4dfc4e7e4061a10f1cee2f030957733)
+```
+
+## Sletning af filer i bitmagasinet
+For at slette filer i bitmagasinet anvendes 'delete' operationen. For at gardere imod at nogen ved et uheld kommer til at slette alle kopier af en eller flere filer, så kan slette operationen kun slette filer på én *pillar* af gangen. Ønsker man derfor at slette filer i en samling skal samme operation køres imod alle *pillars* i ens samling hver for sig. 
+
+For at slette filerne vi uploade tidligere kan 'sumfil2' anvendes til 'delete' operationen med følgende kommando:
+```
+sb-bitrepository-client/bin/sbclient.sh -a delete -f sumfil2 -c CD-collection -p pillar1
+[STARTING]: delete of album1/CD1/cd1-track3
+[FINISHED]: delete of album1/CD1/cd1-track3
+[STARTING]: delete of album1/CD1/cd1-track2
+[FINISHED]: delete of album1/CD1/cd1-track2
+[STARTING]: delete of album1/CD1/cd1-track1
+[FINISHED]: delete of album1/CD1/cd1-track1
+[STARTING]: delete of album1/CD2/cd2-track3
+[FINISHED]: delete of album1/CD2/cd2-track3
+[STARTING]: delete of album1/CD2/cd2-track2
+[FINISHED]: delete of album1/CD2/cd2-track2
+[STARTING]: delete of album1/CD2/cd2-track1
+[FINISHED]: delete of album1/CD2/cd2-track1
+Started: 6, Finished: 6, Failed: 0, Skipped: 0
+
+```
+
+
