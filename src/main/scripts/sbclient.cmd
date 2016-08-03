@@ -10,7 +10,7 @@ set JAVA_OPTS=%JAVA_OPTS% -Dlogback.configurationFile="%CONFDIR%\logback.xml"
 set CMD=dk.statsbiblioteket.bitrepository.commandline.Commandline
 
 set CONFIG_OPT=-Dsbclient.config.dir="%CONFDIR%"
-set CLIENT_SCRIPT_OPT=-Dsbclient.script.name="%0"
+set CLIENT_SCRIPT_OPT=-Dsbclient.script.name=%0
 
 java %JAVA_OPTS% %CONFIG_OPT% %CLIENT_SCRIPT_OPT% %CMD% %*%
 
