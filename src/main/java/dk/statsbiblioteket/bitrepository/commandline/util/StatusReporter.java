@@ -42,7 +42,7 @@ public class StatusReporter {
      * Report that processing of a file has started 
      * @param file The ID of the file
      */
-    public void reportStart(String file) {
+    public synchronized void reportStart(String file) {
         log.debug("Starting {} operation for '{}'", operation, file);
         started++;
         writer.format("%s %s of %s%n", START, operation, file);
@@ -53,7 +53,7 @@ public class StatusReporter {
      * Report that processing of a file has finished successfully  
      * @param file The ID of the file
      */
-    public void reportFinish(String file) {
+    public synchronized void reportFinish(String file) {
         log.debug("Finished {} operation for '{}'", operation, file);
         finished++;
         writer.format("%s %s of %s%n", FINISH, operation, file);
@@ -64,7 +64,7 @@ public class StatusReporter {
      * Report that processing of a file has failed 
      * @param file The ID of the file
      */
-    public void reportFailure(String file) {
+    public synchronized void reportFailure(String file) {
         log.debug("Failed {} operation for '{}'", operation, file);
         failed++;
         writer.format("%s %s of %s%n", FAIL, operation, file);
@@ -75,7 +75,7 @@ public class StatusReporter {
      * Report that processing of a file has been skipped 
      * @param file The ID of the file
      */
-    public void reportSkipFile(String file) {
+    public synchronized void reportSkipFile(String file) {
         log.debug("Skipped {} operation for '{}'", operation, file);
         skipped++;
         writer.format("%s %s of %s%n", SKIP, operation, file);
@@ -85,7 +85,7 @@ public class StatusReporter {
     /**
      * Print statistics of files that has been reported. 
      */
-    public void printStatistics() {
+    public synchronized void printStatistics() {
         writer.format("Started: %d, Finished: %d, Failed: %d, Skipped: %d%n", started, finished, failed, skipped);
         writer.flush();
     }

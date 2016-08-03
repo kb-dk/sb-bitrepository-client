@@ -49,7 +49,7 @@ public class DownloadAction extends RetryingConcurrentClientAction {
     }
     
     @Override
-    protected void startJob(Job job) {
+    protected void runJob(Job job) {
         getFileClient.getFileFromFastestPillar(super.collectionID, job.getRemoteFileID(), null, job.getUrl(), 
                 eventHandler, null);
     }

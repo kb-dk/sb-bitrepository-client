@@ -13,7 +13,7 @@ import dk.statsbiblioteket.bitrepository.commandline.util.StatusReporter;
 
 /**
  * EventHandler to handle events related to DeleteFile operations.
- * Jobs that fail are queued for retried. When a delete job finishes, 
+ * Jobs that fail are queued for retrying. When a delete job finishes, 
  * the deleted file will be reported to the status reporter as completed.  
  */
 public class DeleteFilesEventHandler implements EventHandler {

@@ -125,7 +125,7 @@ public class Commandline {
                 try {
                     BitmagUtils.shutdown();
                 } catch (JMSException e) {
-                    Commandline.log.error("Caught an error shutting down bitrepository", e);
+                    log.error("Caught an error shutting down bitrepository", e);
                     System.err.println(e.getMessage());
                     exitStatus = 1;
                 }

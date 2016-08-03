@@ -37,8 +37,8 @@ public class MD5CalculatingFileVisitor implements FileVisitor<Path> {
 
     @Override
     public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
-        log.trace("Visiting file '{}', with attributes '{}'", file, attrs);
         if(attrs.isSymbolicLink()) {
+            log.info("Skipping file '{}' as it was found to be a symlink", file);
             return FileVisitResult.CONTINUE;
         }
         

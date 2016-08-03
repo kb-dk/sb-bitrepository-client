@@ -78,7 +78,7 @@ public abstract class RetryingConcurrentClientAction implements ClientAction {
                     reporter.reportSkipFile(origFilename);
                     continue;
                 }
-                startJob2(job);
+                startJob(job);
                 reporter.reportStart(origFilename);
             }
             
@@ -105,17 +105,23 @@ public abstract class RetryingConcurrentClientAction implements ClientAction {
         failedJobsQueue.drainTo(jobs);
         for(Job job : jobs) {
             if(job.getAttempts() < maxRetries) {
-                startJob2(job);
+                startJob(job);
             } else {
                 reporter.reportFailure(job.getLocalFile().toString());
             }
         }
     }
     
-    private void startJob2(Job job) {
+    /**
+     * Method to do the bookkeeping of starting a job, i.e. adding it to the running jobs queue, 
+     * incrementing the attempts it has been started and delegating the actual task of running the 
+     * job to the runJob method. 
+     * @param job The {@link Job} to be started. 
+     */
+    private void startJob(Job job) {
         runningJobs.addJob(job);
         job.incrementAttempts();
-        startJob(job);
+        runJob(job);
     }
     
     /**
@@ -131,10 +137,16 @@ public abstract class RetryingConcurrentClientAction implements ClientAction {
     
     
     /**
-     * TODO 
+     * Method to run a job for a specific action type.
+     * @param job The {@link Job} to be run 
      */
-    protected abstract void startJob(Job job);
+    protected abstract void runJob(Job job);
     
+    /**
+     * Method to create a job for a specific action type. 
+     * @param originalFilename The filename as it is on the local machine.
+     * @param checksum The checksum for the file
+     */
     protected abstract Job createJob(String originalFilename, String checksum) throws SkipFileException, MalformedURLException;
 
 }

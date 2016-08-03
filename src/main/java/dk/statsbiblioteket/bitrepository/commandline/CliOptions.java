@@ -38,8 +38,8 @@ public class CliOptions {
         = new Option(PILLAR_OPT, "pillar", true, "Pillar to perform the action on");
     private final static Option destinationOption 
         = new Option(DESTINATION_OPT, "destination", true, "Destination directory to place files in");
-    private final static Option typeOption 
-        = new Option(TYPE_OPT, "type", true, "Type of listing");
+    //private final static Option typeOption 
+    //    = new Option(TYPE_OPT, "type", true, "Type of listing");
     private final static Option retryOption 
         = new Option(RETRY_OPT, "retrys", true, "Number of retries before failing a file (Default: no retries)");
     private final static Option parallelOption 
@@ -93,7 +93,7 @@ public class CliOptions {
         options.addOption(remoteOption);
         options.addOption(pillarOption);
         options.addOption(destinationOption);
-        options.addOption(typeOption);
+        //options.addOption(typeOption);
         options.addOption(retryOption);
         options.addOption(parallelOption);
         options.addOption(helpOption);

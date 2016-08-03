@@ -1,16 +1,16 @@
 # Introduktion
 
-Klienten er til at arbejde med et bitmagasin hostet af SB og kan køres på både Windows og Linux miljøer, det eneste der kræves for at klienten kan køre er at maskinen har Java 8 installeret.
+Klienten er til at arbejde med et bitmagasin hostet af SB og kan køres på både Windows og Linux miljøer. Det eneste der kræves for at klienten kan køre er at maskinen har Java 8 installeret.
 
 ## Bitmagasinet
-Bitmagasinet er et system til langtidsopbevaring af filer i flere uafhængige kopier for at sikre bit sikkerheden. 
+[Bitmagasinet](http://bitrepository.org) er et system til langtidsopbevaring af filer i flere uafhængige kopier for at sikre bit sikkerheden. 
 Komponenterne i bitmagasinet som gemmer filer kaldes for en *pillar* (eller et *ben* på dansk). En fil gemmes derfor i et antal ligeværdige kopier på et antal *pillars*. 
 En *pillar* kan indgå i et antal *collections* (samlinger på dansk). 
 
 Operationerne som klienten tilbyder, arbejder alle (på nær 'makechecksums') på en *collection*. Enkelte operationer arbejder ikke på alle pillars i en *collection*, og kræver derfor også angivelse af en specifik *pillar*. 
 
 ## Sumfilen
-De forskellige operationer som klienten tilbyder arbejder med en sumfil. Sumfilen afspejler hvordan filerne vil se ud på den lokale maskine. Klienten tilbyder funktionalitet til at lave en sumfil enten ud fra et lokalt filtræ eller ud fra filer som allerede ligger i bitmagasinet. 
+De forskellige operationer som klienten tilbyder, arbejder med en sumfil. Sumfilen afspejler hvordan filerne vil se ud på den lokale maskine. Klienten tilbyder funktionalitet til at lave en sumfil enten ud fra et lokalt filtræ eller ud fra filer som allerede ligger i bitmagasinet. 
 
 En sumfils indhold er en liste med filnavne og de enkelte filers MD5 checksum. 
 
@@ -110,8 +110,8 @@ Hvis en fil allerede eksistere i repositoriet (samme navn og checksum), så vil 
  * **-c** Bitmagasin samlingen som der skal uploades filer til
  * **-f** Sumfil med filer der skal arbejdes på         
  * **-l** Lokalt prefix, kun filer som fremgår i sumfilen med dette prefix vil blive uploaded. Prefixet fjernes
- * **-r** Bitmagasin prefix, tilføjes filnavnet i bitmagasin enden. 
- * **-n** Antallet af parallele operationer 
+ * **-r** Bitmagasin prefix, tilføjes filnavnet i bitmagasinet
+ * **-n** Antallet af parallelle operationer 
  * **-x** Antal af automatiske genforsøg
 
  
@@ -124,8 +124,8 @@ Filer der allerede eksistere på klient maskinen springes over.
  * **-c** Bitmagasin samlingen som der skal downloades filer fra
  * **-f** Sumfil med filer der skal arbejdes på
  * **-l** Lokalt prefix, kun filer som fremgår i sumfilen med dette prefix vil blive downloaded. Prefixet tilføjes filnavnet fra bitmagsinet
- * **-r** Bitmagsin prefix, fjernes fra filnavnet i bitmagasin enden. 
- * **-n** Antallet af parallele operationer
+ * **-r** Bitmagsin prefix, fjernes fra filnavnet i bitmagasinet
+ * **-n** Antallet af parallelle operationer
  * **-x** Antal af automatiske genforsøg
 
 
@@ -136,24 +136,24 @@ Delete operationen anvender en sumfil til at afgøre hvilke filer der skal slett
 
  * **-c** Bitmagsin samlingen som der skal slettes filer fra
  * **-f** Sumfil med filer der skal arbejdes på
- * **-p** Pillar som operationen udføres på. 
- * **-l** Lokalt prefix, kun filer som fremgår i sumfilen med dette prefix vil blive slettet. 
- * **-r** Bitmagasin prefix, tilføjes filnavnet i bitmagsin enden 
- * **-n** Antallet af parallele operationer
+ * **-p** Pillar som operationen udføres på
+ * **-l** Lokalt prefix, kun filer som fremgår i sumfilen med dette prefix vil blive slettet
+ * **-r** Bitmagasin prefix, tilføjes filnavnet i bitmagsinet 
+ * **-n** Antallet af parallelle operationer
  * **-x** Antal af automatiske genforsøg
 
 
 ### Makechecksums
-Makechecksums laver en sumfil ud fra et lokalt filtræ på maskinen som kører klienten. Hver fil som eksistere i filtræet får beregnet en MD5 checksum.
+Makechecksums laver en sumfil ud fra et lokalt filtræ på maskinen som kører klienten. Hver fil som eksisterer i filtræet får beregnet en MD5 checksum.
 
 #### Parametre
 
  * **-f** Sumfil som der skal skrives til. Filen må ikke eksistere før genereringen
- * **-s** Sti som er udgangspunktet for filtræet der skal laves en sumfil til. Stien indgår i filnavnet og kan både være relativ og absolut. 
+ * **-s** Mappe hvis indhold der skal laves en sumfil for. Stien indgår i filnavnet og kan både være relativ og absolut. 
 
 
 ### List
-List operationen henter filnavne og checksummer fra et ben i bitmagasinet og laver på baggrund af de informationer en sumfil til at lave andre operationer på baggrund af. 
+List operationen henter filnavne og checksummer fra et ben i bitmagasinet og laver på baggrund af de informationer en sumfil. Denne sumfil kan anvendes til andre operationer. 
 
 #### Parametre
 
@@ -161,7 +161,7 @@ List operationen henter filnavne og checksummer fra et ben i bitmagasinet og lav
  * **-f** Sumfil som der skal skrives til. Filen må ikke eksistere før operationen
  * **-p** Pillar som operationen udføres på
  * **-l** Lokalt prefix. Prefixet tilføjes filnavnet fra bitmagsinet
- * **-r** Bitmagsin prefix, kun filer med dette prefix i bitmagasin enden vil blive skrevet i sumfilen. Prefixet fjernes fra filnavnet. 
+ * **-r** Bitmagsin prefix, kun filer med dette prefix i bitmagasin enden vil blive skrevet i sumfilen. Prefixet fjernes fra filnavnet
 
 
 # Eksempler 
@@ -225,7 +225,7 @@ Started: 6, Finished: 6, Failed: 0, Skipped: 0
 ```
 
 ## List filer i bitmagasinet
-For at tjekke at filerne er kommet godt over i bitmagasinet at de ligger i 'album1' fremfor 'sb-client-ex' kan list operationen anvendes:
+For at tjekke at filerne er kommet godt over i bitmagasinet og at de ligger i 'album1' fremfor 'sb-client-ex' kan list operationen anvendes:
 
 ```
 sb-bitrepository-client/bin/sbclient.sh -a list -f sumfil2 -c CD-collection -p pillar1

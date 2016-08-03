@@ -59,7 +59,7 @@ public class UploadAction extends RetryingConcurrentClientAction {
     }
     
     @Override
-    protected void startJob(Job job) {
+    protected void runJob(Job job) {
         try {
             putFileClient.putFile(super.collectionID, job.getUrl(), job.getRemoteFileID(), Files.size(job.getLocalFile()), 
                     job.getChecksum(), null, eventHandler, null);

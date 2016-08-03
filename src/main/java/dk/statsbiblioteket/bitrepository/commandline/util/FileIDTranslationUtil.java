@@ -7,9 +7,6 @@ import java.io.File;
  */
 public class FileIDTranslationUtil {
 
-    /** Operating system specific directory separator */
-    static final String systemSeparator = File.separator;
-    
     /**
      * Translate local FileID to remote fileID. 
      * If a localPrefix is supplied and the local filename does not start with that
@@ -39,7 +36,7 @@ public class FileIDTranslationUtil {
             remoteFileID = stripped;
         }
         
-        return remoteFileID.replace(systemSeparator, "/");
+        return remoteFileID.replace(File.separator, "/");
     }
     
     /**
@@ -54,7 +51,7 @@ public class FileIDTranslationUtil {
      */    
     public static String remoteToLocal(String remoteFileID, String localPrefix, String remotePrefix) throws SkipFileException {
         String stripped;
-        remoteFileID = remoteFileID.replace("/", systemSeparator); 
+        remoteFileID = remoteFileID.replace("/", File.separator); 
         if(remotePrefix != null) {
             if(remoteFileID.startsWith(remotePrefix)) {
                stripped = remoteFileID.substring(remotePrefix.length());
