@@ -57,6 +57,23 @@
                 775
             </directoryMode>
         </fileSet>
+        <fileSet>
+            <filtered>
+                true
+            </filtered>
+            <directory>
+                doc
+            </directory>
+            <outputDirectory>
+                doc
+            </outputDirectory>
+            <fileMode>
+                664
+            </fileMode>
+            <directoryMode>
+                775
+            </directoryMode>
+        </fileSet>
     </fileSets>
 
 </assembly>
