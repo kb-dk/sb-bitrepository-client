@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import dk.statsbiblioteket.bitrepository.commandline.util.InvalidParameterException;
 
 import org.apache.commons.cli.CommandLine;
 
@@ -24,10 +25,18 @@ public class MakeChecksumsAction implements ClientAction {
     /**
      * Constructor for the action
      * @param cmd The {@link CommandLine} with parsed arguments
+     * @throws InvalidParameterException if input fails validation
      */
-    public MakeChecksumsAction(CommandLine cmd) {
-        baseDir = Paths.get(cmd.getOptionValue(CliOptions.SOURCE_OPT));
+    public MakeChecksumsAction(CommandLine cmd) throws InvalidParameterException {
         sumfile = Paths.get(cmd.getOptionValue(CliOptions.SUMFILE_OPT));
+        baseDir = Paths.get(cmd.getOptionValue(CliOptions.SOURCE_OPT));
+        if(!Files.isDirectory(baseDir)) {
+            if(Files.notExists(baseDir)) {
+                throw new InvalidParameterException("Source directory '" + baseDir + "' does not exists");
+            } else {
+                throw new InvalidParameterException("Source directory '" + baseDir + "' is not a directory");
+            }
+        }
     }
  
     @Override

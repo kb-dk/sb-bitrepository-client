@@ -15,12 +15,13 @@ import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import dk.statsbiblioteket.bitrepository.commandline.CliOptions;
+import dk.statsbiblioteket.bitrepository.commandline.util.InvalidParameterException;
 
 
 public class MakeChecksumsActionTest {
 
     @Test
-    public void testGeneration() throws IOException {
+    public void testGeneration() throws IOException, InvalidParameterException {
         String sourceDir = "src/test/resources/testdir/";
         String outputSumFile = "target/MakeChecksumsActionTest-testGeneration";
         Path outputPath = Paths.get(outputSumFile);       
@@ -48,5 +49,24 @@ public class MakeChecksumsActionTest {
             line = reader.readLine();
             Assert.assertNull(line);
         }
+    }
+    
+    @Test(expectedExceptions = {InvalidParameterException.class})
+    public void testNoSourceDir() throws IOException, InvalidParameterException {
+        String sourceDir = "src/test/resources/nonexisting/directory/";
+        String outputSumFile = "target/MakeChecksumsActionTest-testNoSourceDir";
+        Path outputPath = Paths.get(outputSumFile);       
+        outputPath.toFile().deleteOnExit();
+        
+        CommandLine cmd = mock(CommandLine.class);
+        when(cmd.getOptionValue(CliOptions.SOURCE_OPT)).thenReturn(sourceDir);
+        when(cmd.getOptionValue(CliOptions.SUMFILE_OPT)).thenReturn(outputSumFile);
+        
+        Assert.assertTrue(Files.notExists(Paths.get(sourceDir)));
+        Assert.assertTrue(Files.notExists(Paths.get(outputSumFile)));
+        
+        MakeChecksumsAction action = new MakeChecksumsAction(cmd);
+        action.performAction();
+        
     }
 }
