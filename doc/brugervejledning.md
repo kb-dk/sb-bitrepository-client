@@ -1,6 +1,6 @@
 # Introduktion
 
-Klienten er til at arbejde med et bitmagasin hostet af SB og kan køres på både Windows og Linux miljøer. Det eneste der kræves for at klienten kan køre er at maskinen har Java 8 installeret.
+Klienten er til at arbejde med et bitmagasin hostet af SB og kan køres på både Windows og Linux miljøer. Det eneste der kræves for klienten kan køre er at maskinen har Java 8 installeret.
 
 ## Bitmagasinet
 [Bitmagasinet](http://bitrepository.org) er et system til langtidsopbevaring af filer i flere uafhængige kopier for at sikre bit sikkerheden. 
@@ -23,7 +23,7 @@ De forskellige operationer som klienten tilbyder er:
  * *makechecksums* - Lav en sumfil ud fra et lokalt filtræ
  * *list* - Lav en sumfil ud fra eksisterende filer i bitmagasinet
 
-De tre operationer som arbejder på sumfiler, udviser alle idempotent adfærd - samme operation kan altså sikkert køres igen hvis der fx skulle opstå en fejl undervejs, eller operationen måtte blive afbrudt.
+De tre operationer som arbejder på sumfiler, udviser alle idempotent adfærd - samme operation kan altså køres sikkert igen hvis der fx skulle opstå en fejl undervejs, eller operationen måtte blive afbrudt.
 
 I løbet af kørslen af en operation vil der blive udskrevet status for de enkelte filer der arbejdes på. De mulige statuser er: 
 
@@ -32,7 +32,7 @@ I løbet af kørslen af en operation vil der blive udskrevet status for de enkel
  * *Finished* - Operationen for filen er afsluttet med success
  * *Failed* - Operationen for filen fejlede
 
-Når en kørsel afsluttes udskrives der desuden en opsummering de forskellige statuser.
+Når en kørsel afsluttes udskrives der desuden en opsummering af de forskellige statuser.
 
 ## Filnavne og prefixer
 De fleste operationer i klienten giver mulighed for brug af 'lokale' og 'bitmagasin' prefixes. Disse prefixes har til formål at begrænse hvilke filer der arbejdes på, samt at ændre filnavne mellem lokal og bitmagasin siden. 
@@ -289,7 +289,7 @@ lokal-album
 ## Sletning af filer i bitmagasinet
 For at slette filer i bitmagasinet anvendes 'delete' operationen. For at gardere imod at nogen ved et uheld kommer til at slette alle kopier af en eller flere filer, så kan slette operationen kun slette filer på én *pillar* af gangen. Ønsker man derfor at slette filer i en samling skal samme operation køres imod alle *pillars* i ens samling hver for sig. 
 
-For at slette filerne vi uploade tidligere kan 'sumfil2' anvendes til 'delete' operationen med følgende kommando:
+For at slette filerne vi uploadede tidligere kan 'sumfil2' anvendes til 'delete' operationen med følgende kommando:
 ```
 sb-bitrepository-client/bin/sbclient.sh -a delete -f sumfil2 -c CD-collection -p pillar1
 [STARTING]: delete of album1/CD1/cd1-track3
