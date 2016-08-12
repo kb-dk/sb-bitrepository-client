@@ -99,6 +99,14 @@ mappe2/fil2 -> SKIPPED
 mappe3/fil3 -> mappe1/fil3
 ```
 
+# Brug af klienten
+Klienten er en kommandolinjeklient til brug på Linux (sbclient.sh) og Windows (sbclient.cmd).
+
+Klienten styres af de argumenter og parametre som gives til klienten på kommandolinjen. 
+Angives argumentet '-h', eller skulle der mangle påkrævede argumenter eller parametre udskriver klienten en hjælpe tekst. 
+
+Operations typen angives som parameter til argumentet '-a'. Beskrivelse af yderligere argumenter til de enkelte operationer findes i de følgende afsnit.
+
 ## Operations beskrivelser
 
 ### Upload
@@ -181,11 +189,13 @@ sb-client-ex
 │     ├─ cd2-track2  (Checksum: 2a005b7d68bbb88374a4bfb6e53b5537)
 │     ├─ cd2-track3  (Checksum: b4dfc4e7e4061a10f1cee2f030957733)
 ```
-Kommandoerne der køres er lavet med udgangspunkt i Linux udgaven af klienten (sbclient.sh). For at køre det i et Windows miljø, udskift da 'sbclient.sh' i kommandoerne med 'sbclient.cmd'.
+For hvert eksempel er kommandoerne der køres og de dertilhørende outputs angivet for både Linux og Windows udgaven.
+For at anvende eksemplerne i din egen installation, skal de angavne *collections* og *pillars* rettes til så de stemmer overens med den lokale installation.
 
 ## Generering af første sumfil
 For at lave en sumfil (sumfil1) ud fra det lokale fil træ (mappen 'sb-client-ex'), anvendes '*makechecksums*' operationen.
 
+**Linux**:
 ```
 sb-bitrepository-client/bin/sbclient.sh -a makechecksums -s sb-client-ex -f sumfil1
 ```
@@ -200,12 +210,28 @@ b4dfc4e7e4061a10f1cee2f030957733  sb-client-ex/CD2/cd2-track3
 297abb31e43c7b8ae947fa2a59fe9d40  sb-client-ex/CD2/cd2-track1
 ```
 
+**Windows**
+```
+sb-bitrepository-client\bin\sbclient.cmd -a makechecksums -s sb-client-ex -f sumfil1
+```
+
+Dette skulle resultere i en ny fil 'sumfil1' med følgende indhold:
+```
+b4dfc4e7e4061a10f1cee2f030957733  sb-client-ex\CD1\cd1-track3
+2a005b7d68bbb88374a4bfb6e53b5537  sb-client-ex\CD1\cd1-track2
+297abb31e43c7b8ae947fa2a59fe9d40  sb-client-ex\CD1\cd1-track1
+b4dfc4e7e4061a10f1cee2f030957733  sb-client-ex\CD2\cd2-track3
+2a005b7d68bbb88374a4bfb6e53b5537  sb-client-ex\CD2\cd2-track2
+297abb31e43c7b8ae947fa2a59fe9d40  sb-client-ex\CD2\cd2-track1
+```
+
 ## Upload af filer
 For at uploade filer til bitmagasinet skal upload operationen anvendes. 
 
 Filerne som vi vil uploade ligger i mappen 'sb-client-ex' og den ønsker vi i bitmagasin enden skal hedde 'album1', og derfor skal vi bruge både lokale og bitmagasin prefixer. 
 For at uploade filerne til samlingen 'CD-collection' køres følgende (outputtet findes efter kommandoen):
 
+**Linux**
 ```
 sb-bitrepository-client/bin/sbclient.sh -a upload -f sumfil1 -c CD-collection -l sb-client-ex/ -r album1/
 [STARTING]: upload of sb-client-ex/CD1/cd1-track3
@@ -221,12 +247,30 @@ sb-bitrepository-client/bin/sbclient.sh -a upload -f sumfil1 -c CD-collection -l
 [STARTING]: upload of sb-client-ex/CD2/cd2-track1
 [FINISHED]: upload of sb-client-ex/CD2/cd2-track1
 Started: 6, Finished: 6, Failed: 0, Skipped: 0
+```
 
+**Windows**
+```
+sb-bitrepository-client\bin\sbclient.cmd -a upload -f sumfil1 -c CD-collection -l sb-client-ex\ -r album1\
+[STARTING]: upload of sb-client-ex\CD1\cd1-track3
+[FINISHED]: upload of sb-client-ex\CD1\cd1-track3
+[STARTING]: upload of sb-client-ex\CD1\cd1-track2
+[FINISHED]: upload of sb-client-ex\CD1\cd1-track2
+[STARTING]: upload of sb-client-ex\CD1\cd1-track1
+[FINISHED]: upload of sb-client-ex\CD1\cd1-track1
+[STARTING]: upload of sb-client-ex\CD2\cd2-track3
+[FINISHED]: upload of sb-client-ex\CD2\cd2-track3
+[STARTING]: upload of sb-client-ex\CD2\cd2-track2
+[FINISHED]: upload of sb-client-ex\CD2\cd2-track2
+[STARTING]: upload of sb-client-ex\CD2\cd2-track1
+[FINISHED]: upload of sb-client-ex\CD2\cd2-track1
+Started: 6, Finished: 6, Failed: 0, Skipped: 0
 ```
 
 ## List filer i bitmagasinet
 For at tjekke at filerne er kommet godt over i bitmagasinet og at de ligger i 'album1' fremfor 'sb-client-ex' kan list operationen anvendes:
 
+**Linux**
 ```
 sb-bitrepository-client/bin/sbclient.sh -a list -f sumfil2 -c CD-collection -p pillar1
 ```
@@ -239,13 +283,29 @@ b4dfc4e7e4061a10f1cee2f030957733  album1/CD1/cd1-track3
 b4dfc4e7e4061a10f1cee2f030957733  album1/CD2/cd2-track3
 2a005b7d68bbb88374a4bfb6e53b5537  album1/CD2/cd2-track2
 297abb31e43c7b8ae947fa2a59fe9d40  album1/CD2/cd2-track1
-
 ```
+
+**Windows**
+```
+sb-bitrepository-client\bin\sbclient.cmd -a list -f sumfil2 -c CD-collection -p pillar1
+```
+
+Kørslen af operationen resultere i en ny sumfil, 'sumfil2', som indeholder: 
+```
+b4dfc4e7e4061a10f1cee2f030957733  album1\CD1\cd1-track3
+2a005b7d68bbb88374a4bfb6e53b5537  album1\CD1\cd1-track2
+297abb31e43c7b8ae947fa2a59fe9d40  album1\CD1\cd1-track1
+b4dfc4e7e4061a10f1cee2f030957733  album1\CD2\cd2-track3
+2a005b7d68bbb88374a4bfb6e53b5537  album1\CD2\cd2-track2
+297abb31e43c7b8ae947fa2a59fe9d40  album1\CD2\cd2-track1
+```
+
 
 ## Download af filer
 Hvis sumfilen 'sumfil2' blot blev brugt til at hente filerne ned til klient maskinen igen, så ville alle filerne blive hentet hjem i ny mappe 'album1', da sumfilen altid afspejler hvordan filerne ser ud lokalt.
 Ønskes filerne placeret et andet sted lokalt, så skal der anvendes lokal og bitmagasin prefixer fx:
 
+**Linux**
 ```
 sb-bitrepository-client/bin/sbclient.sh -a list -f sumfil3 -c CD-collection -p pillar1 -r album1/ -l lokal-album/
 ```
@@ -260,9 +320,27 @@ b4dfc4e7e4061a10f1cee2f030957733  lokal-album/CD2/cd2-track3
 297abb31e43c7b8ae947fa2a59fe9d40  lokal-album/CD2/cd2-track1
 ```
 
-Ønsker vi nu kun at hente indholdet af 'CD2' kan download operation anvendes med: 
+**Windows**
 ```
-sb-bitrepository-client-1.0-SNAPSHOT/bin/sbclient.sh -a download -f sumfil3 -c SB-devel-test1 -r album1/CD2/ -l lokal-album/CD2/
+sb-bitrepository-client\bin\sbclient.cmd -a list -f sumfil3 -c CD-collection -p pillar1 -r album1\ -l lokal-album\
+```
+
+Hvilket vil resultere i en ny sumfil, 'sumfil3' med følgende indhold:
+```
+b4dfc4e7e4061a10f1cee2f030957733  lokal-album\CD1\cd1-track3
+2a005b7d68bbb88374a4bfb6e53b5537  lokal-album\CD1\cd1-track2
+297abb31e43c7b8ae947fa2a59fe9d40  lokal-album\CD1\cd1-track1
+b4dfc4e7e4061a10f1cee2f030957733  lokal-album\CD2\cd2-track3
+2a005b7d68bbb88374a4bfb6e53b5537  lokal-album\CD2\cd2-track2
+297abb31e43c7b8ae947fa2a59fe9d40  lokal-album\CD2\cd2-track1
+```
+
+
+Ønsker vi nu kun at hente indholdet af 'CD2' kan download operation anvendes med: 
+
+**Linux**
+```
+sb-bitrepository-client/bin/sbclient.sh -a download -f sumfil3 -c SB-devel-test1 -r album1/CD2/ -l lokal-album/CD2/
 [SKIPPING]: download of lokal-album/CD1/cd1-track3
 [SKIPPING]: download of lokal-album/CD1/cd1-track2
 [SKIPPING]: download of lokal-album/CD1/cd1-track1
@@ -273,7 +351,21 @@ sb-bitrepository-client-1.0-SNAPSHOT/bin/sbclient.sh -a download -f sumfil3 -c S
 [STARTING]: download of lokal-album/CD2/cd2-track1
 [FINISHED]: download of lokal-album/CD2/cd2-track1
 Started: 3, Finished: 3, Failed: 0, Skipped: 3
+```
 
+**Windows**
+```
+sb-bitrepository-client\bin\sbclient.cmd -a download -f sumfil3 -c SB-devel-test1 -r album1\CD2\ -l lokal-album\CD2\
+[SKIPPING]: download of lokal-album\CD1\cd1-track3
+[SKIPPING]: download of lokal-album\CD1\cd1-track2
+[SKIPPING]: download of lokal-album\CD1\cd1-track1
+[STARTING]: download of lokal-album\CD2\cd2-track3
+[FINISHED]: download of lokal-album\CD2\cd2-track3
+[STARTING]: download of lokal-album\CD2\cd2-track2
+[FINISHED]: download of lokal-album\CD2\cd2-track2
+[STARTING]: download of lokal-album\CD2\cd2-track1
+[FINISHED]: download of lokal-album\CD2\cd2-track1
+Started: 3, Finished: 3, Failed: 0, Skipped: 3
 ```
 
 Hvor efter der vil være en lokal mappe 'lokal-album' med følgende indhold:
@@ -290,6 +382,8 @@ lokal-album
 For at slette filer i bitmagasinet anvendes 'delete' operationen. For at gardere imod at nogen ved et uheld kommer til at slette alle kopier af en eller flere filer, så kan slette operationen kun slette filer på én *pillar* af gangen. Ønsker man derfor at slette filer i en samling skal samme operation køres imod alle *pillars* i ens samling hver for sig. 
 
 For at slette filerne vi uploadede tidligere kan 'sumfil2' anvendes til 'delete' operationen med følgende kommando:
+
+**Linux**
 ```
 sb-bitrepository-client/bin/sbclient.sh -a delete -f sumfil2 -c CD-collection -p pillar1
 [STARTING]: delete of album1/CD1/cd1-track3
@@ -305,7 +399,23 @@ sb-bitrepository-client/bin/sbclient.sh -a delete -f sumfil2 -c CD-collection -p
 [STARTING]: delete of album1/CD2/cd2-track1
 [FINISHED]: delete of album1/CD2/cd2-track1
 Started: 6, Finished: 6, Failed: 0, Skipped: 0
-
 ```
 
+**Windows**
+```
+sb-bitrepository-client\bin\sbclient.cmd -a delete -f sumfil2 -c CD-collection -p pillar1
+[STARTING]: delete of album1\CD1\cd1-track3
+[FINISHED]: delete of album1\CD1\cd1-track3
+[STARTING]: delete of album1\CD1\cd1-track2
+[FINISHED]: delete of album1\CD1\cd1-track2
+[STARTING]: delete of album1\CD1\cd1-track1
+[FINISHED]: delete of album1\CD1\cd1-track1
+[STARTING]: delete of album1\CD2\cd2-track3
+[FINISHED]: delete of album1\CD2\cd2-track3
+[STARTING]: delete of album1\CD2\cd2-track2
+[FINISHED]: delete of album1\CD2\cd2-track2
+[STARTING]: delete of album1\CD2\cd2-track1
+[FINISHED]: delete of album1\CD2\cd2-track1
+Started: 6, Finished: 6, Failed: 0, Skipped: 0
+```
 
