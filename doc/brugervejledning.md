@@ -103,22 +103,22 @@ mappe3/fil3 -> mappe1/fil3
 Klienten er en kommandolinjeklient til brug på Linux (sbclient.sh) og Windows (sbclient.cmd).
 
 Klienten styres af de argumenter og parametre som gives til klienten på kommandolinjen. 
-Angives argumentet '-h', eller skulle der mangle påkrævede argumenter eller parametre udskriver klienten en hjælpe tekst. 
+Angives argumentet '**-h**', eller skulle der mangle påkrævede argumenter eller parametre udskriver klienten en hjælpe tekst. 
 
-Operations typen angives som parameter til argumentet '-a'. Beskrivelse af yderligere argumenter til de enkelte operationer findes i de følgende afsnit.
+Operationstypen angives som parameter til argumentet '**-a**'. Beskrivelse af yderligere argumenter til de enkelte operationer findes i de følgende afsnit.
 
-## Operations beskrivelser
+## Operationsbeskrivelser
 
 ### Upload
 Upload operationen anvender en sumfil til at afgøre hvilke filer der skal uploades til repositoriet. 
 Hvis en fil allerede eksistere i repositoriet (samme navn og checksum), så vil klienten undlade at uploade den igen. 
 
-#### Parametre
+#### Argumenter
 
  * **-c** Bitmagasin samlingen som der skal uploades filer til
  * **-f** Sumfil med filer der skal arbejdes på         
- * **-l** Lokalt prefix, kun filer som fremgår i sumfilen med dette prefix vil blive uploaded. Prefixet fjernes
- * **-r** Bitmagasin prefix, tilføjes filnavnet i bitmagasinet
+ * **-l** Lokalt prefix, kun filer som fremgår i sumfilen med dette prefix vil blive uploaded. Se afsnit om '*Filnavne og prefixer*'
+ * **-r** Bitmagasin prefix, tilføjes filnavnet i bitmagasinet. Se afsnit om '*Filnavne og prefixer*'
  * **-n** Antallet af parallelle operationer 
  * **-x** Antal af automatiske genforsøg
 
@@ -127,12 +127,12 @@ Hvis en fil allerede eksistere i repositoriet (samme navn og checksum), så vil 
 Download operationen anvender en sumfil til at afgøre hvilke filer der skal hentes fra repositoriet til klient maskinen. 
 Filer der allerede eksistere på klient maskinen springes over. 
 
-#### Parametre
+#### Argumenter
 
  * **-c** Bitmagasin samlingen som der skal downloades filer fra
  * **-f** Sumfil med filer der skal arbejdes på
- * **-l** Lokalt prefix, kun filer som fremgår i sumfilen med dette prefix vil blive downloaded. Prefixet tilføjes filnavnet fra bitmagsinet
- * **-r** Bitmagsin prefix, fjernes fra filnavnet i bitmagasinet
+ * **-l** Lokalt prefix, kun filer som fremgår i sumfilen med dette prefix vil blive downloaded. Se afsnit om '*Filnavne og prefixer*'
+ * **-r** Bitmagsin prefix, fjernes fra filnavnet i bitmagasinet. Se afsnit om '*Filnavne og prefixer*'
  * **-n** Antallet af parallelle operationer
  * **-x** Antal af automatiske genforsøg
 
@@ -140,13 +140,13 @@ Filer der allerede eksistere på klient maskinen springes over.
 ### Delete
 Delete operationen anvender en sumfil til at afgøre hvilke filer der skal slettes fra repositoriet. 
 
-#### Parametre
+#### Argumenter
 
  * **-c** Bitmagsin samlingen som der skal slettes filer fra
  * **-f** Sumfil med filer der skal arbejdes på
  * **-p** Pillar som operationen udføres på
- * **-l** Lokalt prefix, kun filer som fremgår i sumfilen med dette prefix vil blive slettet
- * **-r** Bitmagasin prefix, tilføjes filnavnet i bitmagsinet 
+ * **-l** Lokalt prefix, kun filer som fremgår i sumfilen med dette prefix vil blive slettet. Se afsnit om '*Filnavne og prefixer*'
+ * **-r** Bitmagasin prefix, tilføjes filnavnet i bitmagsinet. Se afsnit om '*Filnavne og prefixer*' 
  * **-n** Antallet af parallelle operationer
  * **-x** Antal af automatiske genforsøg
 
@@ -154,7 +154,7 @@ Delete operationen anvender en sumfil til at afgøre hvilke filer der skal slett
 ### Makechecksums
 Makechecksums laver en sumfil ud fra et lokalt filtræ på maskinen som kører klienten. Hver fil som eksisterer i filtræet får beregnet en MD5 checksum.
 
-#### Parametre
+#### Argumenter
 
  * **-f** Sumfil som der skal skrives til. Filen må ikke eksistere før genereringen
  * **-s** Mappe hvis indhold der skal laves en sumfil for. Stien indgår i filnavnet og kan både være relativ og absolut. 
@@ -163,13 +163,13 @@ Makechecksums laver en sumfil ud fra et lokalt filtræ på maskinen som kører k
 ### List
 List operationen henter filnavne og checksummer fra et ben i bitmagasinet og laver på baggrund af de informationer en sumfil. Denne sumfil kan anvendes til andre operationer. 
 
-#### Parametre
+#### Argumenter
 
  * **-c** Bitmagasin samlingen der skal hentes filnavne og checksummer fra
  * **-f** Sumfil som der skal skrives til. Filen må ikke eksistere før operationen
  * **-p** Pillar som operationen udføres på
- * **-l** Lokalt prefix. Prefixet tilføjes filnavnet fra bitmagsinet
- * **-r** Bitmagsin prefix, kun filer med dette prefix i bitmagasin enden vil blive skrevet i sumfilen. Prefixet fjernes fra filnavnet
+ * **-l** Lokalt prefix. Prefixet tilføjes filnavnet fra bitmagsinet. Se afsnit om '*Filnavne og prefixer*'
+ * **-r** Bitmagsin prefix, kun filer med dette prefix i bitmagasin enden vil blive skrevet i sumfilen. Se afsnit om '*Filnavne og prefixer*'
 
 
 # Eksempler 
@@ -340,7 +340,7 @@ b4dfc4e7e4061a10f1cee2f030957733  lokal-album\CD2\cd2-track3
 
 **Linux**
 ```
-sb-bitrepository-client/bin/sbclient.sh -a download -f sumfil3 -c SB-devel-test1 -r album1/CD2/ -l lokal-album/CD2/
+sb-bitrepository-client/bin/sbclient.sh -a download -f sumfil3 -c CD-collection -r album1/CD2/ -l lokal-album/CD2/
 [SKIPPING]: download of lokal-album/CD1/cd1-track3
 [SKIPPING]: download of lokal-album/CD1/cd1-track2
 [SKIPPING]: download of lokal-album/CD1/cd1-track1
@@ -355,7 +355,7 @@ Started: 3, Finished: 3, Failed: 0, Skipped: 3
 
 **Windows**
 ```
-sb-bitrepository-client\bin\sbclient.cmd -a download -f sumfil3 -c SB-devel-test1 -r album1\CD2\ -l lokal-album\CD2\
+sb-bitrepository-client\bin\sbclient.cmd -a download -f sumfil3 -c CD-collection -r album1\CD2\ -l lokal-album\CD2\
 [SKIPPING]: download of lokal-album\CD1\cd1-track3
 [SKIPPING]: download of lokal-album\CD1\cd1-track2
 [SKIPPING]: download of lokal-album\CD1\cd1-track1
