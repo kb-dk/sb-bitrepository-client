@@ -1,7 +1,10 @@
 package dk.statsbiblioteket.bitrepository.commandline.util;
 
+import org.apache.commons.io.output.ProxyWriter;
+
 import java.io.BufferedWriter;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -15,11 +18,15 @@ public class MD5SumFileWriter implements AutoCloseable {
     Charset charset = Charset.forName("UTF-8");
 
     public MD5SumFileWriter(Path sumfile) throws IOException {
-        if(Files.exists(sumfile)) {
-            throw new RuntimeException("The sum file exists, cannot proceed (sumfile: '" + sumfile + "')");
+        if (sumfile.getFileName().equals("-")){
+            this.writer = new BufferedWriter(new PrintWriter(System.out));
+        } else {
+            if (Files.exists(sumfile)) {
+                throw new RuntimeException("The sum file exists, cannot proceed (sumfile: '" + sumfile + "')");
+            }
+            this.writer = Files.newBufferedWriter(sumfile, charset,
+                                                  StandardOpenOption.CREATE_NEW, StandardOpenOption.WRITE);
         }
-        this.writer = Files.newBufferedWriter(sumfile, charset, 
-                StandardOpenOption.CREATE_NEW, StandardOpenOption.WRITE);
     }
     
     /**
