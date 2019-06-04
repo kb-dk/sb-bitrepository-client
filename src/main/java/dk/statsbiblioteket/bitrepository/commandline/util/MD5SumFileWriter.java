@@ -18,7 +18,7 @@ public class MD5SumFileWriter implements AutoCloseable {
     Charset charset = Charset.forName("UTF-8");
 
     public MD5SumFileWriter(Path sumfile) throws IOException {
-        if (sumfile.getFileName().equals("-")){
+        if (sumfile.getFileName().toString().equals("-")){
             this.writer = new BufferedWriter(new PrintWriter(System.out));
         } else {
             if (Files.exists(sumfile)) {
