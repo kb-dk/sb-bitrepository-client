@@ -5,7 +5,9 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.commons.cli.CommandLine;
 import org.bitrepository.access.ContributorQuery;
@@ -37,6 +39,7 @@ public class ListAction implements ClientAction {
 
     protected final static int PAGE_SIZE = 10000;
     private GetChecksumsClient getChecksumsClient;
+    private Set<String> lastPage = new HashSet<>();
     
     private final String collectionID;
     private final String pillarID;
@@ -104,6 +107,8 @@ public class ListAction implements ClientAction {
     private Date reportResults(List<ChecksumDataForChecksumSpecTYPE> results, MD5SumFileWriter md5SumFileWriter) 
             throws IOException {
         Date latestDate = new Date(0);
+        Set<String> currentPage = new HashSet<>();
+        
         for (ChecksumDataForChecksumSpecTYPE checksumData : results) {
             Date calculationDate = CalendarUtils.convertFromXMLGregorianCalendar(checksumData.getCalculationTimestamp());
             if(calculationDate.after(latestDate)) {
@@ -116,10 +121,18 @@ public class ListAction implements ClientAction {
                 log.debug("Skipping file '{}' due to '{}'", checksumData.getFileID(), e.getMessage());
                 continue;
             }
+            
+            if(lastPage.contains(checksumData.getFileID())) {
+                continue;
+            } else {
+                currentPage.add(checksumData.getFileID());
+            }
+            
             String checksum = Base16Utils.decodeBase16(checksumData.getChecksumValue());
             md5SumFileWriter.writeChecksumLine(file, checksum);
-            
         }    
+        
+        lastPage = currentPage;
         return latestDate;
     }
     
