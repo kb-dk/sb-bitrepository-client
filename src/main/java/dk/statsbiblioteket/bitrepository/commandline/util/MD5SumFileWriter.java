@@ -11,6 +11,7 @@ import java.nio.file.StandardOpenOption;
  * Helper class to write a file formatted like md5sum in text mode.  
  */
 public class MD5SumFileWriter implements AutoCloseable {
+    public final static String MD5_FILE_FIELD_SEPERATOR = "  ";
     private final BufferedWriter writer;
     Charset charset = Charset.forName("UTF-8");
 
@@ -31,7 +32,7 @@ public class MD5SumFileWriter implements AutoCloseable {
      * @throws IOException if there is trouble writing the output   
      */
     public void writeChecksumLine(Path file, String checksum) throws IOException {
-        String line = checksum + "  " + file.toString();
+        String line = checksum + MD5_FILE_FIELD_SEPERATOR + file.toString();
         writer.write(line);
         writer.newLine();
     }

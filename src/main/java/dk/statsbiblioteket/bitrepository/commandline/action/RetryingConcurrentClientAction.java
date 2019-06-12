@@ -21,6 +21,7 @@ import dk.statsbiblioteket.bitrepository.commandline.action.job.Job;
 import dk.statsbiblioteket.bitrepository.commandline.action.job.RunningJobs;
 import dk.statsbiblioteket.bitrepository.commandline.util.ArgumentValidationUtils;
 import dk.statsbiblioteket.bitrepository.commandline.util.InvalidParameterException;
+import dk.statsbiblioteket.bitrepository.commandline.util.MD5SumFileWriter;
 import dk.statsbiblioteket.bitrepository.commandline.util.SkipFileException;
 import dk.statsbiblioteket.bitrepository.commandline.util.StatusReporter;
 
@@ -68,9 +69,9 @@ public abstract class RetryingConcurrentClientAction implements ClientAction {
         try (BufferedReader reader = Files.newBufferedReader(sumFile, charset)) {
             String line = null;
             while ((line = reader.readLine()) != null) {
-                String[] parts = line.split("  ");
-                String origFilename = parts[1];
+                String[] parts = line.split(MD5SumFileWriter.MD5_FILE_FIELD_SEPERATOR);
                 String checksum = parts[0];
+                String origFilename = line.substring(checksum.length() + MD5SumFileWriter.MD5_FILE_FIELD_SEPERATOR.length());
                 Job job;
                 try {
                     job = createJob(origFilename, checksum);
