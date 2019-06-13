@@ -20,6 +20,8 @@ import dk.statsbiblioteket.bitrepository.commandline.util.InvalidParameterExcept
 import dk.statsbiblioteket.bitrepository.commandline.util.SkipFileException;
 import dk.statsbiblioteket.bitrepository.commandline.util.StatusReporter;
 
+import static dk.statsbiblioteket.bitrepository.commandline.util.FileExchangeUtils.getUrl;
+
 /**
  * Action for handling download of files from the repository. 
  * The class uses the functionality of {@link RetryingConcurrentClientAction} to handle 
@@ -64,19 +66,11 @@ public class DownloadAction extends RetryingConcurrentClientAction {
         String remoteFilename = FileIDTranslationUtil.localToRemote(originalFilename, super.localPrefix, 
                 super.remotePrefix);
         Job job = new Job(localFile, remoteFilename, BitmagUtils.getChecksum(checksum), 
-                getUrl(remoteFilename));
+                getUrl(super.collectionID,remoteFilename));
         
         return job;
     }
     
-    /**
-     * Method to create the URL to where the file should be placed on the {@link FileExchange}. 
-     * The URL's should be unique, but reproducible so as to help keep the {@link FileExchange} clean.   
-     */
-    private URL getUrl(String filename) throws MalformedURLException {
-        URL baseurl = BitmagUtils.getFileExchangeBaseURL();
-        String path = DigestUtils.md5Hex(super.collectionID + filename);
-        return new URL(baseurl.toString() + path);
-    }
+   
 
 }
