@@ -1,27 +1,9 @@
 # sb-bitrepository-client
 
-Original specs from SB IT operations:
+Commandline client for interacting with bitrepository.org 
 
-makecheksum DIR SUMFIL
-upload   COLL DIR SUMFIL [PREFIX]
-                         fx 123\
-Retry, uploader kun manglede på mindst et ben.
+Runs on Windos and Linux, and requires Java 8.
 
-list     COLL TYPE [PREFIX]
+Build for customers of the Royal Danish Library for interating with their hosted bitrepositories. 
 
-download COLL DIR FIL_LISTE [PREFIX]
-  PREFIX fjernes, tænk copy BITMAG:PREFIX/* DIR
-Retry, henter kun manglede
-
-delete   COLL PILLAR SUMFIL
-
-Fejlhåndtering:
-Forsøg nogle FÅ gange igen.
-Ved mange fejl stop.
-Raporter antal fejlede til slut.
-
-download til temp, og rename.
-
--x droppes
--l client prefix
--r bitmag prefix
+For usage instructions see doc/brugervejledning.md (in Danish)
