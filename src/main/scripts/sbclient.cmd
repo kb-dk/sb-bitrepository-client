@@ -6,6 +6,7 @@ set CONFDIR=%BASEDIR%\conf
 set JAVA_OPTS=" -Xmx=256m "
 set JAVA_OPTS=-classpath  "%BASEDIR%\lib\*"
 set JAVA_OPTS=%JAVA_OPTS% -Dlogback.configurationFile="%CONFDIR%\logback.xml"
+set JAVA_OPTS=%JAVA_OPTS% -Dfile.encoding=UTF-8
 
 set CMD=dk.statsbiblioteket.bitrepository.commandline.Commandline
 
